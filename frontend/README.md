@@ -225,20 +225,21 @@ Images are served from `public/`.
 
 | Image | Usage |
 | --- | --- |
-| `public/logo.jpg` | Header logo, hero logo orbit, footer logo, business information card |
-| `public/background.jpg` | About hero background and story/lifestyle fallback image |
+| `public/images/logo.jpg` | Header logo, hero logo orbit, footer logo, business information card |
+| `public/images/background.jpg` | About hero background and story/lifestyle fallback image |
 
 Vite public asset usage:
 
 ```jsx
-const logo = '/logo.jpg';
-const background = '/background.jpg';
+const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
+const logo = assetPath('images/logo.jpg');
+const background = assetPath('images/background.jpg');
 ```
 
 Recommended image rules:
 
 - Keep final frontend images in `public/`.
-- Use root-relative paths like `/logo.jpg`.
+- Use `import.meta.env.BASE_URL` paths like `assetPath('images/logo.jpg')`.
 - Compress large images before production deployment.
 - Keep hero and section images dark enough so white/gold text remains readable.
 - Avoid blurry or unrelated stock-style imagery for product/business sections.
@@ -400,7 +401,7 @@ function HeroLogo() {
     );
   }, []);
 
-  return <img ref={logoRef} src="/logo.jpg" alt="LIYAN'S VASTRA" />;
+  return <img ref={logoRef} src={assetPath('images/logo.jpg')} alt="LIYAN'S VASTRA" />;
 }
 ```
 

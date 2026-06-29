@@ -3,9 +3,10 @@ import { createRoot } from 'react-dom/client';
 import './styles.css';
 
 const brand = "LIYAN'S VASTRA";
-const logo = '/logo.jpg';
-const background = '/background.jpg';
-const lifestyleImage = '/background.jpg';
+const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
+const logo = assetPath('images/logo.jpg');
+const background = assetPath('images/background.jpg');
+const lifestyleImage = assetPath('images/background.jpg');
 
 const navItems = ['Home', 'About', 'Services', 'Contact'];
 

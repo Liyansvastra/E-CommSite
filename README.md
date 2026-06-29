@@ -1,210 +1,110 @@
-# LIYAN'S VASTRA Frontend Notes
+<div align="center">
 
-This folder documents the current frontend work for the Vite React site in:
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=800&size=34&duration=2600&pause=700&color=D2A935&center=true&vCenter=true&width=900&lines=LIYAN'S+VASTRA;Elevated+Elegance+in+Every+Thread;Luxury+Vite+React+Frontend;Dark+Gold+Premium+Apparel+UI" alt="LIYAN'S VASTRA animated title" />
 
-```text
-project/frontend
-```
+  <p>
+    <strong>LIYAN'S VASTRA</strong> is a premium apparel brand frontend project.
+    This repository contains the Vite React frontend, GitHub Actions workflow, images, and deployment-ready static build setup.
+  </p>
 
-The running method is intentionally simple:
+  <p><img alt="Vite" src="https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white" /> <img alt="React" src="https://img.shields.io/badge/React-18-149ECA?style=for-the-badge&logo=react&logoColor=white" /> <img alt="CSS" src="https://img.shields.io/badge/CSS-Plain%20CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white" /> <img alt="Node" src="https://img.shields.io/badge/Node.js-20%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" /> <img alt="Frontend" src="https://img.shields.io/badge/Frontend-Only-D2A935?style=for-the-badge" /></p>
 
-```powershell
-cd E:\job\Brillaris\E-CommSite\project\frontend
-npm install --no-audit --no-fund --ignore-scripts
-npm run dev
-```
+  <p>
+    <a href="#overview">Overview</a>
+    <span> | </span>
+    <a href="#project-layout">Layout</a>
+    <span> | </span>
+    <a href="#frontend-pages">Pages</a>
+    <span> | </span>
+    <a href="#images">Images</a>
+    <span> | </span>
+    <a href="#github-pages">GitHub Pages</a>
+  </p>
 
-Local URL:
+</div>
 
-```text
-http://localhost:5173
-```
+---
 
-## Current Frontend Stack
+## Overview
 
-- React 18
-- React DOM 18
-- Vite 5
-- Plain CSS in `src/styles.css`
-- Static assets served from `public/`
-- No Next.js
-- No Tailwind
-- No backend
-- No Netlify or Vercel config inside the frontend app
+This project contains the LIYAN'S VASTRA frontend website. The site presents the brand through a dark luxury visual system, gold accents, responsive sections, and a mobile-friendly navigation menu.
 
-## Page Structure
+The project is frontend-only. No backend is included.
 
-The frontend is built as a single Vite React app with in-page navigation:
+## Project Layout
 
-- Home
-- About
-- Services
-- Contact
+| Path | Purpose |
+| --- | --- |
+| `frontend` | Main Vite React frontend |
+| `frontend/public` | Public images and static assets |
+| `frontend/src` | Main React and CSS source files |
+| `.github/workflows/frontend.yml` | Frontend build and GitHub Pages deployment workflow |
+| `.gitignore` | Ignore rules for generated frontend folders |
 
-The UI follows the reference images in `ui_images`:
+## Frontend Pages
 
-- Home hero: `01_home_page.jpg`
-- Home about/story: `02_home_page_in_about_section.jpg`
-- Home why choose: `03_home_page_in_why_choose.jpg`
-- Footer: `04_home_page_in_footer.jpg`
-- About page: `05_about_page.jpg` through `09_about_page_in_lets_work_together.jpg`
-- Services: `10_our_services.jpg`
-- Contact: `11_contact_page.jpg`
-
-## Assets
-
-The frontend uses these copied assets:
-
-```text
-project/frontend/public/logo.jpg
-project/frontend/public/background.jpg
-```
-
-Source assets:
-
-```text
-images/logo.jpg
-images/background.jpg
-```
-
-Additional existing public images are available in:
-
-```text
-project/frontend/public
-```
-
-## Color System
-
-The main color tokens live in `src/styles.css`:
-
-```css
-:root {
-  --bg: #020202;
-  --panel: #0e0e0d;
-  --panel-soft: #121211;
-  --line: rgba(214, 178, 75, 0.18);
-  --line-strong: rgba(214, 178, 75, 0.38);
-  --gold: #d2a935;
-  --gold-light: #f1d562;
-  --text: #f7f4ef;
-  --muted: #a3a1aa;
-  --faint: #686771;
-}
-```
-
-Style direction:
-
-- Black luxury background
-- Gold accent text, borders, buttons, and icon blocks
-- White serif page headings
-- Muted gray body copy
-- Thin bordered cards
-- Dark glass-like panels
-
-## Typography
-
-Imported fonts:
-
-```css
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap');
-```
-
-Usage:
-
-- `Inter` for navigation, body text, buttons, labels, and cards
-- `Playfair Display` for large headings and premium editorial sections
+| Page | Main Content |
+| --- | --- |
+| Home | Hero, story, why choose cards, footer |
+| About | About hero, journey, values, business information, work together section |
+| Services | Custom Design, Sustainable, Expert Team, Quality First, Fast Delivery, Customer Care |
+| Contact | Address, phone, email, business hours, message form |
 
 ## Images
 
-Recommended image behavior:
+<div align="center">
+  <img src="./frontend/public/logo.png" alt="LIYAN'S VASTRA logo" width="180" />
+  <br />
+  <strong>Logo</strong>
+</div>
 
-- Use `logo.jpg` for header, hero orbit, footer, and business card
-- Use `background.jpg` for the About hero
-- Use a lifestyle/family apparel image in the Home story section
-- Keep all images in `public/` for simple Vite paths
-- Reference public images with absolute paths such as `/logo.jpg`
+<br />
 
-## Styles And Components
+<div align="center">
+  <img src="./frontend/public/background.jpg" alt="LIYAN'S VASTRA background" width="720" />
+  <br />
+  <strong>Background</strong>
+</div>
 
-Main UI sections are implemented in `src/main.jsx`:
+| Asset | Location | Usage |
+| --- | --- | --- |
+| Logo | `frontend/public/logo.png` | Header, hero, footer, business details |
+| Background | `frontend/public/background.jpg` | Global blurred background |
+| Background copy | `frontend/public/images/background.jpg` | Extra public image copy |
 
-- `Header`
-- `HomePage`
-- `WhyChoose`
-- `AboutPage`
-- `Journey`
-- `Values`
-- `BusinessInformation`
-- `ServicesPage`
-- `ContactPage`
-- `Footer`
+## Visual Style
 
-Reusable UI patterns:
+| Area | Direction |
+| --- | --- |
+| Background | Black luxury theme with blurred image layer |
+| Accent | Gold highlights and borders |
+| Typography | Serif headings and clean body text |
+| Cards | Dark bordered panels |
+| Header | Desktop nav plus mobile menu icon |
+| Footer | Business and legal information |
 
-- `SectionTitle`
-- `Eyebrow`
-- `FeatureCard`
-- `GoldIcon`
-- `Stat`
+## GitHub Pages
 
-## Animation Guidance
+The workflow in `.github/workflows/frontend.yml` builds the frontend and deploys the `dist` output using GitHub Pages.
 
-Current UI uses restrained interaction polish:
+To get the public URL:
 
-- Header backdrop blur
-- Button hover-ready structure
-- Navigation color transitions
-- Input focus border transitions
+1. Open repository Settings.
+2. Open Pages.
+3. Set Source to GitHub Actions.
+4. Run the frontend workflow from the Actions tab.
+5. Open the deployment URL shown in the workflow summary.
 
-Future animation additions should stay subtle:
+## Development Notes
 
-- Fade sections in on scroll
-- Slight card lift on hover
-- Soft gold glow on primary buttons
-- Slow hero logo glow pulse
-- Avoid heavy motion or bright effects that break the luxury style
+- The frontend lives inside `frontend`.
+- Keep generated folders ignored.
+- Keep images in `frontend/public`.
+- Keep backend code out of this repository unless a separate backend phase is planned.
 
-Example hover polish:
+---
 
-```css
-.feature-card {
-  transition: transform 180ms ease, border-color 180ms ease;
-}
-
-.feature-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--line-strong);
-}
-```
-
-## Build Check
-
-Run:
-
-```powershell
-npm run build
-```
-
-Expected result:
-
-```text
-vite build
-dist/
-```
-
-## Deployment Notes
-
-For Vercel:
-
-- Framework preset: Vite
-- Root directory: `project/frontend`
-- Build command: `npm run build`
-- Output directory: `dist`
-- Install command: `npm install --no-audit --no-fund --ignore-scripts`
-
-See:
-
-```text
-github-actions/vercel-deploy.yml
-```
-
+<div align="center">
+  <strong>LIYAN'S VASTRA</strong><br />
+  Premium apparel frontend with dark luxury styling.
+</div>

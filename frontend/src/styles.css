@@ -21,11 +21,35 @@
 html { background: #2d2c31; }
 
 body {
+  position: relative;
   margin: 0;
   min-width: 320px;
   background:
     radial-gradient(circle at 82% 28%, rgba(210, 169, 53, 0.11), transparent 22rem),
     linear-gradient(180deg, #020202 0%, #050505 58%, #030303 100%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(210, 169, 53, 0.1), transparent 26rem),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.92));
+  pointer-events: none;
+}
+
+.site-background {
+  position: fixed;
+  inset: -36px;
+  z-index: -2;
+  background-position: center;
+  background-size: cover;
+  filter: blur(22px) brightness(0.28) saturate(0.82);
+  transform: scale(1.04);
+  opacity: 0.62;
+  pointer-events: none;
 }
 
 button, input, textarea { font: inherit; }
@@ -45,6 +69,12 @@ button { cursor: pointer; }
   background: rgba(0, 0, 0, 0.94);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(16px);
+}
+
+main,
+.footer {
+  position: relative;
+  z-index: 1;
 }
 
 .header-inner {

@@ -5,8 +5,8 @@ import './styles.css';
 const brand = "LIYAN'S VASTRA";
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
 const logo = assetPath('logo.png');
-const background = assetPath('images/background.jpg');
-const lifestyleImage = assetPath('images/background.jpg');
+const background = assetPath('background.jpg');
+const lifestyleImage = assetPath('background.jpg');
 
 const navItems = ['Home', 'About', 'Services', 'Contact'];
 
@@ -380,6 +380,11 @@ function App() {
   const CurrentPage = useMemo(() => ({ Home: HomePage, About: AboutPage, Services: ServicesPage, Contact: ContactPage })[activePage], [activePage]);
   return (
     <>
+      <div
+        className="site-background"
+        style={{ backgroundImage: `url(${background})` }}
+        aria-hidden="true"
+      />
       <Header activePage={activePage} setActivePage={setActivePage} />
       <main><CurrentPage setActivePage={setActivePage} /></main>
       <Footer setActivePage={setActivePage} />

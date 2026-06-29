@@ -4,7 +4,7 @@ import './styles.css';
 
 const brand = "LIYAN'S VASTRA";
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
-const logo = assetPath('images/logo.png');
+const logo = assetPath('logo.png');
 const background = assetPath('images/background.jpg');
 const lifestyleImage = assetPath('images/background.jpg');
 

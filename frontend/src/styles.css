@@ -50,6 +50,7 @@ body::after {
   transform: scale(1.02);
   opacity: 0.72;
   pointer-events: none;
+  animation: backgroundDrift 22s ease-in-out infinite alternate;
 }
 
 button, input, textarea { font: inherit; }
@@ -139,6 +140,12 @@ main,
   border: 1px solid rgba(230, 199, 101, 0.48);
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.03);
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.menu-toggle:hover {
+  border-color: rgba(230, 199, 101, 0.82);
+  background: rgba(210, 169, 53, 0.08);
 }
 
 .menu-toggle span {
@@ -169,6 +176,7 @@ main,
   font-size: 0.86rem;
   font-weight: 900;
   letter-spacing: 0.08em;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
 }
 
 .outline-cta {
@@ -185,6 +193,14 @@ main,
   background: linear-gradient(135deg, #c59624 0%, #f1d45d 100%);
 }
 
+.gold-button:hover,
+.outline-cta:hover,
+.dark-button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(241, 213, 98, 0.86);
+  box-shadow: 0 14px 34px rgba(210, 169, 53, 0.18);
+}
+
 .dark-button {
   color: #e6c765;
   border: 1px solid rgba(230, 199, 101, 0.3);
@@ -198,6 +214,10 @@ main,
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
+}
+
+.page-enter {
+  animation: pageFade 520ms ease both;
 }
 
 .home-hero::before {
@@ -293,6 +313,7 @@ main,
   border: 1px solid rgba(214, 178, 75, 0.22);
   border-radius: 50%;
   background: radial-gradient(circle, rgba(210, 169, 53, 0.18), rgba(0, 0, 0, 0.72) 62%, transparent 70%);
+  animation: logoGlow 4.5s ease-in-out infinite;
 }
 
 .hero-logo-orbit > div::before,
@@ -310,6 +331,7 @@ main,
   height: 240px;
   object-fit: contain;
   filter: drop-shadow(0 0 20px rgba(210, 169, 53, 0.28));
+  animation: logoFloat 5.5s ease-in-out infinite;
 }
 
 .scroll-mark {
@@ -321,6 +343,7 @@ main,
   font-size: 0.75rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  animation: scrollPulse 1.7s ease-in-out infinite;
 }
 
 .split-story {
@@ -347,6 +370,12 @@ main,
   display: block;
   object-fit: cover;
   filter: saturate(0.82) brightness(0.74);
+  transition: transform 700ms ease, filter 700ms ease;
+}
+
+.story-image:hover img {
+  transform: scale(1.04);
+  filter: saturate(0.9) brightness(0.82);
 }
 
 .mini-logo {
@@ -385,6 +414,8 @@ main,
   width: 36px;
   height: 1px;
   background: rgba(210, 169, 53, 0.7);
+  transform-origin: center;
+  animation: lineShimmer 2.8s ease-in-out infinite;
 }
 
 .story-copy h2, .section-title h2, .page-hero h1, .work-together h2 {
@@ -452,11 +483,21 @@ main,
   border-radius: 10px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.025));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
 }
 
 .feature-card {
   min-height: 188px;
   padding: 2.2rem 2.35rem;
+}
+
+.feature-card:hover,
+.contact-card:hover,
+.business-card:hover,
+.message-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--line-strong);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 18px 46px rgba(0, 0, 0, 0.32);
 }
 
 .feature-card.centered { text-align: center; }
@@ -476,6 +517,14 @@ main,
   background: rgba(210, 169, 53, 0.15);
   font-size: 1.35rem;
   font-weight: 900;
+  transition: transform 220ms ease, background 220ms ease, box-shadow 220ms ease;
+}
+
+.feature-card:hover .gold-icon,
+.contact-card:hover .gold-icon {
+  transform: translateY(-2px) scale(1.06);
+  background: rgba(210, 169, 53, 0.24);
+  box-shadow: 0 10px 28px rgba(210, 169, 53, 0.16);
 }
 
 .feature-card h3, .contact-card h3 {
@@ -669,6 +718,78 @@ input, textarea {
 }
 input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
 
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 640ms ease, transform 640ms cubic-bezier(.2,.8,.2,1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes pageFade {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes backgroundDrift {
+  from {
+    transform: scale(1.02) translate3d(-8px, -6px, 0);
+  }
+  to {
+    transform: scale(1.05) translate3d(8px, 6px, 0);
+  }
+}
+
+@keyframes logoGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(210, 169, 53, 0);
+  }
+  50% {
+    box-shadow: 0 0 42px rgba(210, 169, 53, 0.22);
+  }
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes scrollPulse {
+  0%, 100% {
+    opacity: 0.42;
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    opacity: 0.86;
+    transform: translateX(-50%) translateY(5px);
+  }
+}
+
+@keyframes lineShimmer {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scaleX(0.72);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
 .footer {
   border-top: 1px solid rgba(214, 178, 75, 0.19);
   background: #050505;
@@ -824,4 +945,20 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
     gap: 0.35rem;
   }
   .footer-bottom { flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
 }

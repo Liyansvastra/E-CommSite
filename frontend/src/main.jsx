@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
@@ -25,6 +25,30 @@ const businessInfo = [
 
 function goTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function useRevealOnScroll(activePage) {
+  useEffect(() => {
+    const items = document.querySelectorAll('[data-reveal]');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.12 }
+    );
+
+    items.forEach((item, index) => {
+      item.style.setProperty('--reveal-delay', `${Math.min(index * 55, 330)}ms`);
+      observer.observe(item);
+    });
+
+    return () => observer.disconnect();
+  }, [activePage]);
 }
 
 function Header({ activePage, setActivePage }) {
@@ -88,7 +112,7 @@ function Eyebrow({ children }) {
 
 function SectionTitle({ eyebrow, title, subtitle }) {
   return (
-    <div className="section-title">
+    <div className="section-title" data-reveal>
       <Eyebrow>{eyebrow}</Eyebrow>
       <h2>{title}</h2>
       {subtitle && <p>{subtitle}</p>}
@@ -102,7 +126,7 @@ function GoldIcon({ children }) {
 
 function Stat({ value, label }) {
   return (
-    <div className="stat">
+    <div className="stat" data-reveal>
       <strong>{value}</strong>
       <small>{label}</small>
     </div>
@@ -111,7 +135,7 @@ function Stat({ value, label }) {
 
 function FeatureCard({ title, text, icon, centered = false }) {
   return (
-    <article className={centered ? 'feature-card centered' : 'feature-card'}>
+    <article className={centered ? 'feature-card centered' : 'feature-card'} data-reveal>
       <GoldIcon>{icon}</GoldIcon>
       <h3>{title}</h3>
       <p>{text}</p>
@@ -122,9 +146,9 @@ function FeatureCard({ title, text, icon, centered = false }) {
 function HomePage({ setActivePage }) {
   return (
     <>
-      <section className="home-hero">
+      <section className="home-hero page-enter">
         <div className="container hero-grid">
-          <div className="hero-copy">
+          <div className="hero-copy" data-reveal>
             <h1><span>{brand}</span><i /> Elevated Elegance in Every Thread</h1>
             <p>
               We craft premium apparel for the discerning individual. From meticulously sourced
@@ -140,7 +164,7 @@ function HomePage({ setActivePage }) {
               <Stat value="10+" label="Years Heritage" />
             </div>
           </div>
-          <div className="hero-logo-orbit" aria-hidden="true">
+          <div className="hero-logo-orbit" aria-hidden="true" data-reveal>
             <div><img src={logo} alt="" /></div>
           </div>
         </div>
@@ -148,11 +172,11 @@ function HomePage({ setActivePage }) {
       </section>
 
       <section className="container split-story">
-        <div className="story-image">
+        <div className="story-image" data-reveal>
           <img src={lifestyleImage} alt="Family apparel lifestyle" />
           <div className="mini-logo"><img src={logo} alt="" /></div>
         </div>
-        <div className="story-copy">
+        <div className="story-copy" data-reveal>
           <Eyebrow>Our Story</Eyebrow>
           <h2>About {brand}</h2>
           <p>
@@ -206,8 +230,8 @@ function WhyChoose() {
 
 function PageHero({ eyebrow, title, subtitle }) {
   return (
-    <section className="page-hero" style={{ backgroundImage: `linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,.84)), url(${background})` }}>
-      <div className="container page-hero-inner">
+    <section className="page-hero page-enter" style={{ backgroundImage: `linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,.84)), url(${background})` }}>
+      <div className="container page-hero-inner" data-reveal>
         <Eyebrow>{eyebrow}</Eyebrow>
         <h1>{title}</h1>
         <p>{subtitle}</p>
@@ -224,12 +248,12 @@ function AboutPage({ setActivePage }) {
       <section className="section-block journey-section">
         <div className="container narrow">
           <SectionTitle eyebrow="Who We Are" title="Our Journey" />
-          <div className="journey-copy">
+          <div className="journey-copy" data-reveal>
             <p>{brand} was born from a simple belief: everyone deserves to wear clothing that makes them feel their best.</p>
             <p>Every product is carefully crafted using premium cotton fabrics with superior GSM weights.</p>
             <p>As a GST-registered proprietorship, we operate with full transparency and commitment to our customers.</p>
           </div>
-          <div className="divider" />
+          <div className="divider" data-reveal />
           <div className="metric-row">
             <Stat value="100%" label="Premium Cotton" />
             <Stat value="220 GSM" label="Fabric Weight" />
@@ -240,7 +264,7 @@ function AboutPage({ setActivePage }) {
       </section>
       <Values />
       <BusinessInformation />
-      <section className="work-together">
+      <section className="work-together" data-reveal>
         <h2>Let's Work Together</h2>
         <p>Partner with us for premium apparel solutions tailored to your needs.</p>
         <button className="gold-button" onClick={() => setActivePage('Contact')}>Get In Touch</button>
@@ -273,7 +297,7 @@ function BusinessInformation() {
     <section className="section-block business-section">
       <div className="container">
         <SectionTitle eyebrow="Registered Details" title="Business Information" subtitle="Registered business details for your trust and transparency." />
-        <div className="business-card">
+        <div className="business-card" data-reveal>
           <img src={logo} alt="" />
           {businessInfo.map(([label, value]) => (
             <div className="business-row" key={label}><strong>{label}</strong><span>{value}</span></div>
@@ -294,7 +318,7 @@ function ServicesPage() {
     ['Customer Care', 'Exceptional support from inquiry through delivery.', '♡'],
   ];
   return (
-    <section className="section-block services-page">
+    <section className="section-block services-page page-enter">
       <div className="container">
         <SectionTitle eyebrow="What We Offer" title="Our Services" subtitle="Comprehensive apparel solutions designed to meet your needs" />
         <div className="card-grid">
@@ -313,9 +337,9 @@ function ContactPage() {
     ['Business Hours', 'Monday - Saturday\n10:00 AM - 6:00 PM IST', '◷'],
   ];
   return (
-    <section className="section-block contact-page">
+    <section className="section-block contact-page page-enter">
       <div className="container contact-grid">
-        <div>
+        <div data-reveal>
           <h2 className="contact-heading">Contact Information</h2>
           <div className="contact-list">
             {contacts.map(([title, text, icon]) => (
@@ -323,7 +347,7 @@ function ContactPage() {
             ))}
           </div>
         </div>
-        <form className="message-card" onSubmit={(event) => event.preventDefault()}>
+        <form className="message-card" data-reveal onSubmit={(event) => event.preventDefault()}>
           <h2>Send Us a Message</h2>
           <div className="form-two">
             <label>Your Name *<input required placeholder="Full name" /></label>
@@ -344,7 +368,7 @@ function Footer({ setActivePage }) {
     goTop();
   };
   return (
-    <footer className="footer">
+    <footer className="footer" data-reveal>
       <div className="container footer-inner">
         <div className="footer-brand">
           <img src={logo} alt={brand} />
@@ -378,6 +402,8 @@ function Footer({ setActivePage }) {
 function App() {
   const [activePage, setActivePage] = useState('Home');
   const CurrentPage = useMemo(() => ({ Home: HomePage, About: AboutPage, Services: ServicesPage, Contact: ContactPage })[activePage], [activePage]);
+  useRevealOnScroll(activePage);
+
   return (
     <>
       <div
@@ -386,7 +412,7 @@ function App() {
         aria-hidden="true"
       />
       <Header activePage={activePage} setActivePage={setActivePage} />
-      <main><CurrentPage setActivePage={setActivePage} /></main>
+      <main key={activePage}><CurrentPage setActivePage={setActivePage} /></main>
       <Footer setActivePage={setActivePage} />
     </>
   );

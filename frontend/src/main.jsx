@@ -371,7 +371,6 @@ function Footer({ setActivePage }) {
     <footer className="footer" data-reveal>
       <div className="container footer-inner">
         <div className="footer-brand">
-          <img src={logo} alt={brand} />
           <p>Premium quality textiles crafted for everyday elegance. Where comfort meets style in every thread.</p>
           <div className="footer-contact">
             <p><b>{brand}</b><br />Proprietor: Kishoreraaj Robert<br />No 53 G1 Sudha Madhuri Homes<br />Bengaluru - 560066, Karnataka</p>

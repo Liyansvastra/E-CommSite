@@ -425,12 +425,29 @@ main,
   line-height: 1.04;
 }
 
-.story-copy h2 { font-size: clamp(2.5rem, 4.3vw, 4rem); }
+.story-copy {
+  text-align: center;
+}
+
+.story-copy .eyebrow {
+  display: flex;
+  width: 100%;
+}
+
+.story-copy h2 {
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: clamp(2.35rem, 4vw, 3.65rem);
+  line-height: 0.98;
+  word-spacing: 0;
+}
+
 .story-copy p {
   margin: 1.45rem 0 0;
   color: #c5c3cc;
   font-size: 1rem;
-  line-height: 1.8;
+  line-height: 1.65;
 }
 .story-copy b { color: var(--gold); }
 
@@ -446,6 +463,14 @@ main,
 .section-block {
   padding: 6.2rem 0;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.journey-section {
+  padding-bottom: 3rem;
+}
+
+.values-section {
+  padding-top: 3rem;
 }
 
 .section-title {
@@ -595,7 +620,7 @@ main,
 
 .divider {
   height: 1px;
-  margin: 3.8rem 0 2.5rem;
+  margin: 2.4rem 0 2rem;
   background: rgba(255, 255, 255, 0.12);
 }
 
@@ -609,10 +634,16 @@ main,
   min-height: 88px;
   display: grid;
   place-items: center;
+  align-content: center;
+  gap: 0.2rem;
   text-align: center;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
+}
+
+.metric-row .stat small {
+  margin-top: 0;
 }
 
 .business-section { padding-top: 0; }
@@ -799,12 +830,6 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
   grid-template-columns: 1.2fr 0.7fr 1fr;
   gap: 5rem;
   padding: 4.8rem 0 4rem;
-}
-.footer-brand img {
-  width: 72px;
-  height: 72px;
-  object-fit: contain;
-  margin-bottom: 2.2rem;
 }
 .footer-brand p, .footer-column span, .footer-column button, .footer-bottom {
   color: #83818d;

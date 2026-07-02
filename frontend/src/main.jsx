@@ -174,7 +174,6 @@ function HomePage({ setActivePage }) {
       <section className="container split-story">
         <div className="story-image" data-reveal>
           <img src={lifestyleImage} alt="Family apparel lifestyle" />
-          <div className="mini-logo"><img src={logo} alt="" /></div>
         </div>
         <div className="story-copy" data-reveal>
           <Eyebrow>Our Story</Eyebrow>

@@ -58,7 +58,7 @@ The frontend focuses on:
 
 | Asset | Location | Usage |
 | --- | --- | --- |
-| Logo | `public/logo.png` | Header, hero logo, footer, business information card |
+| Logo | `public/logo.png` | Header, hero logo, business information card |
 | Background | `public/background.jpg` | Global blurred background and page visual treatment |
 | Background copy | `public/images/background.jpg` | Additional public image copy for page sections |
 

@@ -68,7 +68,7 @@ The project is frontend-only. No backend is included.
 
 | Asset | Location | Usage |
 | --- | --- | --- |
-| Logo | `frontend/public/logo.png` | Header, hero, footer, business details |
+| Logo | `frontend/public/logo.png` | Header, hero, business details |
 | Background | `frontend/public/background.jpg` | Global blurred background |
 | Background copy | `frontend/public/images/background.jpg` | Extra public image copy |
 

@@ -378,26 +378,6 @@ main,
   filter: saturate(0.9) brightness(0.82);
 }
 
-.mini-logo {
-  position: absolute;
-  top: -26px;
-  left: -26px;
-  width: 92px;
-  height: 92px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(214, 178, 75, 0.6);
-  border-radius: 50%;
-  background: #040404;
-}
-
-.mini-logo img {
-  width: 58px;
-  height: 58px;
-  min-height: auto;
-  object-fit: contain;
-}
-
 .eyebrow {
   display: inline-flex;
   align-items: center;

@@ -9,6 +9,9 @@ const background = assetPath('background.jpg');
 const lifestyleImage = assetPath('background.jpg');
 
 const navItems = ['Home', 'About', 'Services', 'Contact'];
+const phoneNumber = '+917871357999';
+const displayPhone = '+91 7871357999';
+const emailAddress = 'liyansvastra@gmail.com';
 
 const businessInfo = [
   ['Business Name:', "LIYAN'S VASTRA"],
@@ -143,6 +146,70 @@ function FeatureCard({ title, text, icon, centered = false }) {
   );
 }
 
+function ProductCard({ title, text, badge }) {
+  return (
+    <article className="product-card" data-reveal>
+      <div className="product-swatch" aria-hidden="true" />
+      <div>
+        <h3>{title}</h3>
+        <p>{text}</p>
+      </div>
+      <strong>{badge}</strong>
+    </article>
+  );
+}
+
+function FeaturedProducts({ setActivePage }) {
+  const products = [
+    ['Premium Cotton Tee', 'Soft everyday cotton with a refined unisex fit.', 'Best Seller'],
+    ['220 GSM Classic', 'Structured comfort for daily wear and gifting.', 'Premium Pick'],
+    ['Custom Apparel Set', 'Tailored textile solutions for teams and brands.', 'Custom Order'],
+  ];
+
+  return (
+    <section className="section-block compact-section">
+      <div className="container">
+        <SectionTitle
+          eyebrow="Best Sellers"
+          title="Featured Products"
+          subtitle="A quick look at our most requested premium cotton styles."
+        />
+        <div className="product-grid">
+          {products.map(([title, text, badge]) => <ProductCard key={title} title={title} text={text} badge={badge} />)}
+        </div>
+        <div className="section-action" data-reveal>
+          <button className="gold-button" onClick={() => setActivePage('Services')}>Shop Now</button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Testimonials() {
+  const reviews = [
+    ['Premium finish', 'The cotton feels rich, comfortable, and made for daily use.'],
+    ['Fast support', 'Quick response, clear updates, and smooth delivery experience.'],
+    ['Great quality', 'The fabric weight and stitching made the product feel premium.'],
+  ];
+
+  return (
+    <section className="section-block compact-section">
+      <div className="container">
+        <SectionTitle eyebrow="Customer Trust" title="What Customers Say" />
+        <div className="testimonial-grid">
+          {reviews.map(([title, text]) => (
+            <article className="testimonial-card" key={title} data-reveal>
+              <div className="stars" aria-hidden="true">*****</div>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function HomePage({ setActivePage }) {
   return (
     <>
@@ -155,6 +222,7 @@ function HomePage({ setActivePage }) {
               fabrics to innovative designs, every piece reflects our commitment to excellence.
             </p>
             <div className="button-row">
+              <button className="gold-button" onClick={() => setActivePage('Services')}>Shop Now</button>
               <button className="gold-button" onClick={() => setActivePage('About')}>Our Story</button>
               <button className="dark-button" onClick={() => setActivePage('Contact')}>Get In Touch</button>
             </div>
@@ -173,7 +241,7 @@ function HomePage({ setActivePage }) {
 
       <section className="container split-story">
         <div className="story-image" data-reveal>
-          <img src={lifestyleImage} alt="Family apparel lifestyle" />
+          <img src={lifestyleImage} alt="Family apparel lifestyle" loading="lazy" decoding="async" />
         </div>
         <div className="story-copy" data-reveal>
           <Eyebrow>Our Story</Eyebrow>
@@ -196,7 +264,9 @@ function HomePage({ setActivePage }) {
         </div>
       </section>
 
+      <FeaturedProducts setActivePage={setActivePage} />
       <WhyChoose />
+      <Testimonials />
     </>
   );
 }
@@ -292,6 +362,12 @@ function Values() {
 }
 
 function BusinessInformation() {
+  const renderValue = (label, value) => {
+    if (label === 'Phone:') return <a href={`tel:${phoneNumber}`}>{value}</a>;
+    if (label === 'Email:') return <a href={`mailto:${emailAddress}`}>{value}</a>;
+    return <span>{value}</span>;
+  };
+
   return (
     <section className="section-block business-section">
       <div className="container">
@@ -299,7 +375,7 @@ function BusinessInformation() {
         <div className="business-card" data-reveal>
           <img src={logo} alt="" />
           {businessInfo.map(([label, value]) => (
-            <div className="business-row" key={label}><strong>{label}</strong><span>{value}</span></div>
+            <div className="business-row" key={label}><strong>{label}</strong>{renderValue(label, value)}</div>
           ))}
         </div>
       </div>
@@ -330,11 +406,21 @@ function ServicesPage() {
 
 function ContactPage() {
   const contacts = [
-    ['Our Address', "LIYAN'S VASTRA\nNo 53 G1 Sudha Madhuri Homes\nNalluruhalli Main Road\nOpp. HP Petrol Pump, DNA Anantha Layout\nBengaluru - 560066, Karnataka", '⌖'],
-    ['Phone', '+91 7871357999\nMon - Sat: 10 AM - 6 PM IST', '☏'],
-    ['Email', 'liyansvastra@gmail.com\nWe reply within 24 hours', '✉'],
-    ['Business Hours', 'Monday - Saturday\n10:00 AM - 6:00 PM IST', '◷'],
+    ['Our Address', "LIYAN'S VASTRA\nNo 53 G1 Sudha Madhuri Homes\nNalluruhalli Main Road\nOpp. HP Petrol Pump, DNA Anantha Layout\nBengaluru - 560066, Karnataka", 'AD'],
+    ['Phone', `${displayPhone}\nMon - Sat: 10 AM - 6 PM IST`, 'PH'],
+    ['Email', `${emailAddress}\nWe reply within 24 hours`, 'EM'],
+    ['Business Hours', 'Monday - Saturday\n10:00 AM - 6:00 PM IST', 'HR'],
   ];
+  const renderContactText = (title, text) => {
+    if (title === 'Phone') {
+      return <p><a href={`tel:${phoneNumber}`}>{displayPhone}</a><br />Mon - Sat: 10 AM - 6 PM IST</p>;
+    }
+    if (title === 'Email') {
+      return <p><a href={`mailto:${emailAddress}`}>{emailAddress}</a><br />We reply within 24 hours</p>;
+    }
+    return <p>{text}</p>;
+  };
+
   return (
     <section className="section-block contact-page page-enter">
       <div className="container contact-grid">
@@ -342,7 +428,7 @@ function ContactPage() {
           <h2 className="contact-heading">Contact Information</h2>
           <div className="contact-list">
             {contacts.map(([title, text, icon]) => (
-              <article className="contact-card" key={title}><GoldIcon>{icon}</GoldIcon><div><h3>{title}</h3><p>{text}</p></div></article>
+              <article className="contact-card" key={title}><GoldIcon>{icon}</GoldIcon><div><h3>{title}</h3>{renderContactText(title, text)}</div></article>
             ))}
           </div>
         </div>
@@ -372,10 +458,11 @@ function Footer({ setActivePage }) {
         <div className="footer-brand">
           <p>Premium quality textiles crafted for everyday elegance. Where comfort meets style in every thread.</p>
           <div className="footer-contact">
-            <p><b>{brand}</b><br />Proprietor: Kishoreraaj Robert<br />No 53 G1 Sudha Madhuri Homes<br />Bengaluru - 560066, Karnataka</p>
-            <p>+91 7871357999</p>
-            <p>liyansvastra@gmail.com</p>
-            <p>GST: 29AXTPK6839P1Z5</p>
+            <p><b>{brand}</b><span>Proprietor: Kishoreraaj Robert</span></p>
+            <p><b>Address</b><span>No 53 G1 Sudha Madhuri Homes, Bengaluru - 560066, Karnataka</span></p>
+            <p><b>Phone</b><a href={`tel:${phoneNumber}`}>{displayPhone}</a></p>
+            <p><b>Email</b><a href={`mailto:${emailAddress}`}>{emailAddress}</a></p>
+            <p><b>GST</b><span>29AXTPK6839P1Z5</span></p>
           </div>
         </div>
         <div className="footer-column">
@@ -397,6 +484,23 @@ function Footer({ setActivePage }) {
   );
 }
 
+function FloatingActions() {
+  return (
+    <div className="floating-actions" aria-label="Quick actions">
+      <a className="whatsapp-float" href={`https://wa.me/${phoneNumber.replace('+', '')}`} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">
+        <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <path d="M16.02 3.2A12.68 12.68 0 0 0 5.27 22.6L4 29l6.56-1.22A12.7 12.7 0 1 0 16.02 3.2Zm0 22.9a10.3 10.3 0 0 1-5.24-1.44l-.38-.23-3.88.72.74-3.78-.25-.39a10.29 10.29 0 1 1 9.01 5.12Zm5.64-7.72c-.31-.16-1.83-.9-2.11-1-.28-.1-.49-.16-.7.16-.2.31-.8 1-.98 1.2-.18.2-.36.23-.67.08-.31-.16-1.31-.48-2.5-1.54-.92-.82-1.55-1.84-1.73-2.15-.18-.31-.02-.48.14-.64.14-.14.31-.36.47-.54.16-.18.2-.31.31-.52.1-.2.05-.39-.03-.54-.08-.16-.7-1.68-.96-2.3-.25-.6-.51-.52-.7-.53h-.59c-.2 0-.54.08-.82.39-.28.31-1.08 1.05-1.08 2.57 0 1.52 1.1 2.98 1.26 3.19.16.2 2.17 3.31 5.25 4.64.73.32 1.3.5 1.75.64.74.23 1.41.2 1.94.12.59-.09 1.83-.75 2.09-1.47.26-.72.26-1.34.18-1.47-.08-.13-.28-.2-.59-.36Z" />
+        </svg>
+      </a>
+      <button className="top-float" type="button" onClick={goTop} aria-label="Back to top">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 4.75 4.9 11.85l1.55 1.55 4.45-4.45V20h2.2V8.95l4.45 4.45 1.55-1.55L12 4.75Z" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
 function App() {
   const [activePage, setActivePage] = useState('Home');
   const CurrentPage = useMemo(() => ({ Home: HomePage, About: AboutPage, Services: ServicesPage, Contact: ContactPage })[activePage], [activePage]);
@@ -412,6 +516,7 @@ function App() {
       <Header activePage={activePage} setActivePage={setActivePage} />
       <main key={activePage}><CurrentPage setActivePage={setActivePage} /></main>
       <Footer setActivePage={setActivePage} />
+      <FloatingActions />
     </>
   );
 }

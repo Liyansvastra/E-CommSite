@@ -52,17 +52,12 @@ jobs:
       - name: Build frontend
         run: npm run build
 
-      - name: Upload production build
-        uses: actions/upload-artifact@v6
-        with:
-          name: frontend-dist
-          path: frontend/dist
-
       - name: Upload GitHub Pages artifact
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:
           path: frontend/dist
+          retention-days: 1
 
   deploy:
     name: Deploy To GitHub Pages
@@ -79,5 +74,3 @@ jobs:
       - name: Deploy Pages
         id: deployment
         uses: actions/deploy-pages@v5
-        with:
-          timeout: 900000

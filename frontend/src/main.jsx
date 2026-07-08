@@ -246,10 +246,7 @@ function HomePage({ setActivePage }) {
         <div className="scroll-mark">Scroll</div>
       </section>
 
-      <section className="container split-story">
-        <div className="story-image" data-reveal>
-          <img src={lifestyleImage} alt="Family apparel lifestyle" loading="lazy" decoding="async" />
-        </div>
+      <section className="container story-showcase" style={{ '--story-bg': `url(${lifestyleImage})` }}>
         <div className="story-copy" data-reveal>
           <Eyebrow>Our Story</Eyebrow>
           <h2>About {brand}</h2>

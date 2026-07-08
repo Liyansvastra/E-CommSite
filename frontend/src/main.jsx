@@ -7,11 +7,18 @@ const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
 const logo = assetPath('logo.png');
 const background = assetPath('background.jpg');
 const lifestyleImage = assetPath('background.jpg');
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 const navItems = ['Home', 'About', 'Services', 'Contact'];
 const phoneNumber = '+917871357999';
 const displayPhone = '+91 7871357999';
 const emailAddress = 'liyansvastra@gmail.com';
+const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=${encodeURIComponent("Hello LIYAN'S VASTRA, I would like to enquire about logo T-shirt styles.")}`;
+const showcaseImages = [
+  assetPath('showcase/logo-tee-black.svg'),
+  assetPath('showcase/cotton-style-gold.svg'),
+  assetPath('showcase/custom-model-set.svg'),
+];
 
 const businessInfo = [
   ['Business Name:', "LIYAN'S VASTRA"],
@@ -146,10 +153,10 @@ function FeatureCard({ title, text, icon, centered = false }) {
   );
 }
 
-function ProductCard({ title, text, badge }) {
+function ProductCard({ title, text, badge, image }) {
   return (
     <article className="product-card" data-reveal>
-      <div className="product-swatch" aria-hidden="true" />
+      <img className="product-image" src={image} alt={`${title} sample`} loading="lazy" decoding="async" />
       <div>
         <h3>{title}</h3>
         <p>{text}</p>
@@ -161,24 +168,24 @@ function ProductCard({ title, text, badge }) {
 
 function FeaturedProducts({ setActivePage }) {
   const products = [
-    ['Premium Cotton Tee', 'Soft everyday cotton with a refined unisex fit.', 'Best Seller'],
-    ['220 GSM Classic', 'Structured comfort for daily wear and gifting.', 'Premium Pick'],
-    ['Custom Apparel Set', 'Tailored textile solutions for teams and brands.', 'Custom Order'],
+    ['Logo T-shirt Sample', 'Black premium tee concept with LIYAN\'S VASTRA logo placement.', 'Logo Style', showcaseImages[0]],
+    ['Premium Cotton Style', '220 GSM cotton presentation for refined everyday apparel.', 'Fabric Focus', showcaseImages[1]],
+    ['Custom Model Set', 'Sample styling direction for team, brand, and custom apparel enquiries.', 'Custom Enquiry', showcaseImages[2]],
   ];
 
   return (
     <section className="section-block compact-section">
       <div className="container">
         <SectionTitle
-          eyebrow="Best Sellers"
-          title="Featured Products"
-          subtitle="A quick look at our most requested premium cotton styles."
+          eyebrow="Style Samples"
+          title="T-shirt Style Showcase"
+          subtitle="Sample T-shirt, logo, style, and model directions while final client images are pending."
         />
         <div className="product-grid">
-          {products.map(([title, text, badge]) => <ProductCard key={title} title={title} text={text} badge={badge} />)}
+          {products.map(([title, text, badge, image]) => <ProductCard key={title} title={title} text={text} badge={badge} image={image} />)}
         </div>
         <div className="section-action" data-reveal>
-          <button className="gold-button" onClick={() => setActivePage('Services')}>Shop Now</button>
+          <button className="gold-button" onClick={() => setActivePage('Services')}>View Styles</button>
         </div>
       </div>
     </section>
@@ -222,7 +229,7 @@ function HomePage({ setActivePage }) {
               fabrics to innovative designs, every piece reflects our commitment to excellence.
             </p>
             <div className="button-row">
-              <button className="gold-button" onClick={() => setActivePage('Services')}>Shop Now</button>
+              <button className="gold-button" onClick={() => setActivePage('Services')}>View Styles</button>
               <button className="gold-button" onClick={() => setActivePage('About')}>Our Story</button>
               <button className="dark-button" onClick={() => setActivePage('Contact')}>Get In Touch</button>
             </div>
@@ -273,12 +280,12 @@ function HomePage({ setActivePage }) {
 
 function WhyChoose() {
   const cards = [
-    ['Premium Fabric Quality', '100% premium cotton with superior GSM for lasting comfort and durability.', '☆'],
-    ['Comfortable Fit', 'Thoughtfully designed cuts that flatter all body types with ease.', '◎'],
-    ['Unisex Designs', 'Versatile styles crafted to look great on everyone.', '◇'],
-    ['Secure Payments', 'Safe checkout with multiple payment options.', '▭'],
-    ['Easy Returns', 'Hassle-free returns and exchanges within 7 days of delivery.', '↻'],
-    ['Fast Shipping', 'Delivered to your doorstep across India within 3-7 business days.', '▱'],
+    ['Premium Fabric Quality', '100% premium cotton with superior GSM for lasting comfort and durability.', 'PF'],
+    ['Comfortable Fit', 'Thoughtfully designed cuts that support clean everyday T-shirt styling.', 'CF'],
+    ['Unisex Designs', 'Versatile styles crafted for logo apparel, teams, and brand enquiries.', 'UD'],
+    ['Logo Customization', 'Logo placement and styling support for brand and team apparel enquiries.', 'LC'],
+    ['Easy Enquiry', 'Quick WhatsApp and email communication for custom T-shirt requirements.', 'EQ'],
+    ['Pan India Support', 'Delivery and support discussion available for customers across India.', 'PI'],
   ];
 
   return (
@@ -287,7 +294,7 @@ function WhyChoose() {
         <SectionTitle
           eyebrow="Our Promise"
           title={`Why Choose ${brand}?`}
-          subtitle="We are committed to delivering excellence in every stitch, every thread, and every experience."
+          subtitle="We help customers explore premium T-shirt styles, logo apparel, and custom enquiries with clear communication."
         />
         <div className="card-grid">
           {cards.map(([title, text, icon]) => <FeatureCard key={title} title={title} text={text} icon={icon} />)}
@@ -405,6 +412,15 @@ function ServicesPage() {
 }
 
 function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  const [formStatus, setFormStatus] = useState({ type: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const contacts = [
     ['Our Address', "LIYAN'S VASTRA\nNo 53 G1 Sudha Madhuri Homes\nNalluruhalli Main Road\nOpp. HP Petrol Pump, DNA Anantha Layout\nBengaluru - 560066, Karnataka", 'AD'],
     ['Phone', `${displayPhone}\nMon - Sat: 10 AM - 6 PM IST`, 'PH'],
@@ -421,6 +437,57 @@ function ContactPage() {
     return <p>{text}</p>;
   };
 
+  const updateField = (field, value) => {
+    setFormData((current) => ({ ...current, [field]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setFormStatus({ type: '', message: '' });
+
+    if (!formData.name.trim() || !formData.email.trim() || !formData.subject.trim() || !formData.message.trim()) {
+      setFormStatus({ type: 'error', message: 'Please fill all required fields.' });
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      setFormStatus({ type: 'error', message: 'Please enter a valid email address.' });
+      return;
+    }
+
+    if (formData.message.trim().length < 10) {
+      setFormStatus({ type: 'error', message: 'Please enter a message with at least 10 characters.' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/contact/send-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          subject: formData.subject.trim(),
+          message: formData.message.trim(),
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.message || 'Unable to send message.');
+      }
+      setFormStatus({ type: 'success', message: result.message || 'Message sent successfully.' });
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      setFormStatus({
+        type: 'error',
+        message: 'Email service is not available right now. Please use WhatsApp or try again later.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section className="section-block contact-page page-enter">
       <div className="container contact-grid">
@@ -432,15 +499,19 @@ function ContactPage() {
             ))}
           </div>
         </div>
-        <form className="message-card" data-reveal onSubmit={(event) => event.preventDefault()}>
+        <form className="message-card" data-reveal onSubmit={handleSubmit}>
           <h2>Send Us a Message</h2>
           <div className="form-two">
-            <label>Your Name *<input required placeholder="Full name" /></label>
-            <label>Email Address *<input required type="email" placeholder="your@email.com" /></label>
+            <label>Your Name *<input required placeholder="Full name" value={formData.name} onChange={(event) => updateField('name', event.target.value)} /></label>
+            <label>Email Address *<input required type="email" placeholder="your@email.com" value={formData.email} onChange={(event) => updateField('email', event.target.value)} /></label>
           </div>
-          <label>Subject<input placeholder="What is your query about?" /></label>
-          <label>Message *<textarea required rows="7" placeholder="Write your message here..." /></label>
-          <button className="gold-button" type="submit">Send Message</button>
+          <label>Subject *<input required placeholder="What is your query about?" value={formData.subject} onChange={(event) => updateField('subject', event.target.value)} /></label>
+          <label>Message *<textarea required rows="7" placeholder="Write your message here..." value={formData.message} onChange={(event) => updateField('message', event.target.value)} /></label>
+          {formStatus.message && <p className={`form-status ${formStatus.type}`}>{formStatus.message}</p>}
+          <div className="form-actions">
+            <button className="gold-button" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Sending...' : 'Send Message'}</button>
+            <a className="dark-button inline-whatsapp" href={whatsappUrl} target="_blank" rel="noreferrer">Enquire on WhatsApp</a>
+          </div>
         </form>
       </div>
     </section>
@@ -487,7 +558,7 @@ function Footer({ setActivePage }) {
 function FloatingActions() {
   return (
     <div className="floating-actions" aria-label="Quick actions">
-      <a className="whatsapp-float" href={`https://wa.me/${phoneNumber.replace('+', '')}`} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">
+      <a className="whatsapp-float" href={whatsappUrl} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">
         <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
           <path d="M16.02 3.2A12.68 12.68 0 0 0 5.27 22.6L4 29l6.56-1.22A12.7 12.7 0 1 0 16.02 3.2Zm0 22.9a10.3 10.3 0 0 1-5.24-1.44l-.38-.23-3.88.72.74-3.78-.25-.39a10.29 10.29 0 1 1 9.01 5.12Zm5.64-7.72c-.31-.16-1.83-.9-2.11-1-.28-.1-.49-.16-.7.16-.2.31-.8 1-.98 1.2-.18.2-.36.23-.67.08-.31-.16-1.31-.48-2.5-1.54-.92-.82-1.55-1.84-1.73-2.15-.18-.31-.02-.48.14-.64.14-.14.31-.36.47-.54.16-.18.2-.31.31-.52.1-.2.05-.39-.03-.54-.08-.16-.7-1.68-.96-2.3-.25-.6-.51-.52-.7-.53h-.59c-.2 0-.54.08-.82.39-.28.31-1.08 1.05-1.08 2.57 0 1.52 1.1 2.98 1.26 3.19.16.2 2.17 3.31 5.25 4.64.73.32 1.3.5 1.75.64.74.23 1.41.2 1.94.12.59-.09 1.83-.75 2.09-1.47.26-.72.26-1.34.18-1.47-.08-.13-.28-.2-.59-.36Z" />
         </svg>

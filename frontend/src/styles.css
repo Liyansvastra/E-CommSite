@@ -496,23 +496,21 @@ main,
 }
 
 .product-card {
-  min-height: 170px;
+  min-height: 250px;
   padding: 1.15rem;
   display: grid;
-  grid-template-columns: 74px 1fr;
-  align-items: center;
+  grid-template-rows: auto 1fr auto;
   gap: 1rem;
 }
 
-.product-swatch {
-  width: 74px;
-  aspect-ratio: 1;
+.product-image {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  display: block;
+  object-fit: cover;
   border-radius: 8px;
   border: 1px solid rgba(214, 178, 75, 0.3);
-  background:
-    linear-gradient(135deg, rgba(214, 178, 75, 0.3), rgba(255, 255, 255, 0.04)),
-    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.18), transparent 36%),
-    #11100e;
+  background: #050505;
 }
 
 .product-card h3,
@@ -530,7 +528,6 @@ main,
 }
 
 .product-card strong {
-  grid-column: 2;
   color: var(--gold);
   font-size: 0.78rem;
   letter-spacing: 0.08em;
@@ -816,6 +813,52 @@ input, textarea {
   resize: vertical;
 }
 input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
+
+.form-status {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.form-status.success {
+  color: #dff9e8;
+  border: 1px solid rgba(37, 211, 102, 0.42);
+  background: rgba(37, 211, 102, 0.1);
+}
+
+.form-status.error {
+  color: #ffe1df;
+  border: 1px solid rgba(255, 120, 108, 0.38);
+  background: rgba(255, 120, 108, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.form-actions .gold-button,
+.form-actions .dark-button {
+  min-width: 170px;
+  text-align: center;
+}
+
+.gold-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  transform: none;
+  box-shadow: none;
+}
+
+.inline-whatsapp {
+  display: inline-grid;
+  place-items: center;
+}
 
 [data-reveal] {
   opacity: 0;

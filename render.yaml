@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: liyans-vastra-backend
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        value: LIYAN'S VASTRA <onboarding@resend.dev>
+      - key: CONTACT_TO_EMAIL
+        value: liyansvastra@brillaris.pro
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:5173,http://127.0.0.1:5173,https://liyansvastra.github.io

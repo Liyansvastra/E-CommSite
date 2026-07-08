@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+  <title id="title">Custom model set sample</title>
+  <desc id="desc">Three sample apparel model silhouettes for custom LIYAN'S VASTRA styling.</desc>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f1d562"/>
+      <stop offset="1" stop-color="#a97922"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="620" fill="#050505"/>
+  <circle cx="450" cy="310" r="260" fill="#110f0b" stroke="#31240e" stroke-width="5"/>
+  <g fill="#121212" stroke="#d2a935" stroke-width="5">
+    <path d="M180 180h170l46 70-48 42-26-28v192H208V264l-26 28-48-42 46-70Z"/>
+    <path d="M365 145h170l46 70-48 42-26-28v227H393V229l-26 28-48-42 46-70Z"/>
+    <path d="M550 180h170l46 70-48 42-26-28v192H578V264l-26 28-48-42 46-70Z"/>
+  </g>
+  <text x="450" y="315" text-anchor="middle" font-family="Georgia, serif" font-size="72" font-weight="700" fill="url(#gold)">LV</text>
+  <text x="450" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="800" letter-spacing="4" fill="#d2a935">CUSTOM STYLE MODELS</text>
+</svg>

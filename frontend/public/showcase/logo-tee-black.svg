@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+  <title id="title">Black logo T-shirt sample</title>
+  <desc id="desc">Royal black T-shirt mockup with LIYAN'S VASTRA logo placement.</desc>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff2a8"/>
+      <stop offset="0.45" stop-color="#d2a935"/>
+      <stop offset="1" stop-color="#8b641f"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="45%" r="70%">
+      <stop offset="0" stop-color="#262017"/>
+      <stop offset="1" stop-color="#050505"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="620" fill="url(#bg)"/>
+  <path d="M260 115 370 70h160l110 45 105 96-80 92-56-44v245H291V259l-56 44-80-92 105-96Z" fill="#111" stroke="#4d3a16" stroke-width="6"/>
+  <path d="M370 70c16 44 46 66 80 66s64-22 80-66" fill="none" stroke="#2a241c" stroke-width="12"/>
+  <circle cx="450" cy="292" r="86" fill="none" stroke="url(#gold)" stroke-width="5"/>
+  <text x="450" y="280" text-anchor="middle" font-family="Georgia, serif" font-size="74" font-weight="700" fill="url(#gold)">L</text>
+  <text x="450" y="340" text-anchor="middle" font-family="Georgia, serif" font-size="30" font-weight="700" letter-spacing="6" fill="url(#gold)">LIYAN'S</text>
+  <text x="450" y="376" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="5" fill="#e9d070">VASTRA</text>
+  <text x="450" y="545" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="800" letter-spacing="4" fill="#c7a23a">PREMIUM LOGO TEE</text>
+</svg>

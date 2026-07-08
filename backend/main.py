@@ -33,11 +33,15 @@ def _split_origins(value: str) -> List[str]:
 
 _load_local_env()
 
-ALLOWED_ORIGINS = _split_origins(
-    os.getenv(
-        "ALLOWED_ORIGINS",
-        "http://localhost:5173,http://127.0.0.1:5173,https://e-comm-site-xi.vercel.app,https://liyansvastra.github.io",
-    )
+DEFAULT_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://e-comm-site-xi.vercel.app",
+    "https://liyansvastra.github.io",
+]
+
+ALLOWED_ORIGINS = list(
+    dict.fromkeys(_split_origins(os.getenv("ALLOWED_ORIGINS", "")) + DEFAULT_ALLOWED_ORIGINS)
 )
 
 app = FastAPI(

@@ -25,6 +25,12 @@ VITE_API_BASE_URL=https://your-render-backend.onrender.com
 
 Then deploy through Vercel Git integration. `frontend/vercel.json` configures the Vite build and SPA fallback.
 
+If the Vercel project root is the repository root instead, keep the root `vercel.json` settings:
+
+- Install Command: `npm --prefix frontend ci --no-audit --no-fund`
+- Build Command: `npm --prefix frontend run build`
+- Output Directory: `frontend/dist`
+
 ## Docker Local Run
 
 Create `backend/.env` with real email values, then run:

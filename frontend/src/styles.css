@@ -363,15 +363,34 @@ main,
   overflow: hidden;
   border: 1px solid rgba(210, 169, 53, 0.22);
   border-radius: 14px 14px 0 0;
-  background-image: var(--story-bg);
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
+  background: transparent;
   box-shadow: 0 22px 55px rgba(0, 0, 0, 0.28);
 }
 
 .story-showcase::before {
   display: none;
+}
+
+.story-bg-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: top center;
+  filter: none;
+  opacity: 1;
+}
+
+.story-showcase::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(0, 0, 0, 0.18);
+  pointer-events: none;
 }
 
 .eyebrow {
@@ -1149,10 +1168,6 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
     margin-top: 2.3rem;
     margin-bottom: 2.6rem;
     padding: 3.2rem 1.2rem;
-    background-image: var(--story-bg);
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
   }
   .compact-section {
     padding-top: 2.6rem;

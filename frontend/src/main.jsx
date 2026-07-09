@@ -199,15 +199,7 @@ function FeatureCard({ title, text, icon, centered = false }) {
 }
 
 function ProductCard({ category, onSelect }) {
-  const [detailsOpen, setDetailsOpen] = useState(false);
-
-  const isMobileCard = () => window.matchMedia('(max-width: 640px)').matches;
-
   const handleSelect = () => {
-    if (isMobileCard() && !detailsOpen) {
-      setDetailsOpen(true);
-      return;
-    }
     onSelect(category.id);
   };
 
@@ -219,7 +211,7 @@ function ProductCard({ category, onSelect }) {
 
   return (
     <article
-      className={detailsOpen ? 'product-card shirt-card is-details-open' : 'product-card shirt-card'}
+      className="product-card shirt-card"
       data-reveal
       onClick={handleSelect}
       tabIndex="0"
@@ -236,6 +228,29 @@ function ProductCard({ category, onSelect }) {
         <div className="shirt-meta">
           <span>{category.count}</span>
           <span>{category.rate}</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function GroupStyleCard({ style, index }) {
+  return (
+    <article className="group-style-card" data-reveal>
+      <div className="group-style-image">
+        <img className="group-shirt back" src={style.backImage} alt="" loading="lazy" decoding="async" />
+        <img className="group-shirt front" src={style.frontImage} alt={`${style.title} T-shirt style`} loading="lazy" decoding="async" />
+      </div>
+      <div className="group-style-details">
+        <span>{style.badge} / Style {index + 1}</span>
+        <h3>{style.title}</h3>
+        <p>{style.text}</p>
+        <div className="group-style-specs">
+          <strong>Cloth Style</strong><small>{style.clothStyle}</small>
+          <strong>Fabric</strong><small>{style.fabric}</small>
+          <strong>Fit</strong><small>{style.fit}</small>
+          <strong>Rating</strong><small>{style.rating}</small>
+          <strong>Rate</strong><small>{style.rate}</small>
         </div>
       </div>
     </article>
@@ -557,6 +572,10 @@ function ServiceDetailPage({ serviceFocus, setActivePage, setServiceFocus }) {
     title: item,
     text: `${category.text} This group sample can be replaced with the final client image set later.`,
     count: `${index + 1} sample`,
+    clothStyle: ['Round Neck', 'Logo Placement', 'Custom Color'][index] || 'Premium Tee',
+    fabric: index === 1 ? '220 GSM Cotton' : 'Premium Cotton',
+    fit: index === 2 ? 'Custom Fit' : 'Regular Comfort Fit',
+    rating: ['4.8 / 5', '4.7 / 5', '4.9 / 5'][index] || '4.8 / 5',
   }));
 
   const backToServices = () => {
@@ -577,11 +596,11 @@ function ServiceDetailPage({ serviceFocus, setActivePage, setServiceFocus }) {
           </div>
         </div>
         <div className="service-detail-grid">
-          {groupStyles.map((style) => (
-            <ProductCard
+          {groupStyles.map((style, index) => (
+            <GroupStyleCard
               key={style.id}
-              category={style}
-              onSelect={() => setServiceFocus(category.id)}
+              style={style}
+              index={index}
             />
           ))}
         </div>

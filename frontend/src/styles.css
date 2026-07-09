@@ -703,8 +703,8 @@ main,
 }
 
 .person-visual .shirt-image.back {
-  opacity: 0;
-  transform: translateX(74%) scale(1);
+  opacity: 1;
+  transform: translateX(38%) scale(0.98);
 }
 
 .shirt-card:hover .person-visual .shirt-image.front,
@@ -1137,8 +1137,8 @@ main,
 
 .person-group-image .group-shirt.back {
   right: -14%;
-  opacity: 0;
-  transform: translateX(48%) scale(1);
+  opacity: 1;
+  transform: translateX(22%) scale(0.98);
 }
 
 .group-style-card:hover .person-group-image .group-shirt.front {

@@ -271,11 +271,11 @@ main,
 .hero-copy h1 span {
   display: block;
   margin-bottom: 0.24rem;
-  color: rgb(180, 135, 46);
+  color: rgb(209, 163, 71);
   font-size: 1.62em;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  text-shadow: 0 0 18px rgba(180, 135, 46, 0.3);
+  text-shadow: 0 0 18px rgba(209, 163, 71, 0.3);
 }
 
 .hero-copy p {
@@ -1692,9 +1692,10 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
 }
 
 .whatsapp-float {
-  color: #fff;
-  border-color: rgba(37, 211, 102, 0.68);
-  background: linear-gradient(135deg, #128c4a 0%, #25d366 100%);
+  color: rgb(209, 163, 71);
+  border-color: rgba(209, 163, 71, 0.82);
+  background: transparent;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.38), inset 0 0 0 1px rgba(209, 163, 71, 0.16);
 }
 
 .top-float {

@@ -1412,6 +1412,36 @@ main,
 }
 
 .services-page, .contact-page { min-height: 720px; }
+
+.services-page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.services-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: var(--service-page-bg);
+  background-position: center top;
+  background-size: cover;
+  background-attachment: fixed;
+  opacity: 0.48;
+}
+
+.services-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(209, 163, 71, 0.16), transparent 24rem),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.62));
+  pointer-events: none;
+}
+
 .contact-grid {
   display: grid;
   grid-template-columns: 0.75fr 1.55fr;

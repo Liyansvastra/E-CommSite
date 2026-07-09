@@ -558,7 +558,7 @@ function ServicesPage({ serviceFocus, setServiceFocus, setActivePage }) {
   };
 
   return (
-    <section className="section-block services-page page-enter">
+    <section className="section-block services-page page-enter" style={{ '--service-page-bg': `url(${background})` }}>
       <div className="container">
         <ServicesHeroShowcase />
         <SectionTitle eyebrow="What We Offer" title="Our Services" subtitle="Explore T-shirt style categories, sample groups, and enquiry-ready apparel directions." />

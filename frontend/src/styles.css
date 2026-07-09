@@ -1333,43 +1333,6 @@ main,
   pointer-events: none;
 }
 
-.about-logo-bg {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-
-.about-logo-bg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background-image: var(--about-logo-bg);
-  background-position: center 6rem;
-  background-repeat: no-repeat;
-  background-size: min(64vw, 720px);
-  background-attachment: fixed;
-  opacity: 0.24;
-  filter: none;
-  pointer-events: none;
-}
-
-.about-logo-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background:
-    radial-gradient(circle at 50% 18%, rgba(209, 163, 71, 0.18), transparent 25rem),
-    linear-gradient(180deg, rgba(209, 163, 71, 0.06), rgba(209, 163, 71, 0.03));
-  pointer-events: none;
-}
-
-.about-logo-bg > * {
-  position: relative;
-  z-index: 2;
-}
-
 .journey-copy { text-align: center; }
 .journey-copy p {
   margin: 0 auto 1.6rem;

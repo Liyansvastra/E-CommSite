@@ -16,6 +16,10 @@ const emailAddress = 'liyansvastra@gmail.com';
 const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=${encodeURIComponent("Hello LIYAN'S VASTRA, I would like to enquire about logo T-shirt styles.")}`;
 const shirtFrontImage = assetPath('t-shirt-model/sample_frontside.png');
 const shirtBackImage = assetPath('t-shirt-model/sample_backside.png');
+const shirtFrontImage2 = assetPath('t-shirt-model/sample_frontside2.jpg');
+const shirtBackImage2 = assetPath('t-shirt-model/sample_backside2.jpg');
+const personImage1 = assetPath('t-shirt-model/sample_person1.png');
+const personImage2 = assetPath('t-shirt-model/sample_person2.png');
 
 const serviceCategories = [
   {
@@ -25,8 +29,8 @@ const serviceCategories = [
     badge: 'Logo Style',
     count: '18 styles',
     rate: 'From Rs. 499',
-    frontImage: shirtFrontImage,
-    backImage: shirtBackImage,
+    frontImage: shirtFrontImage2,
+    backImage: shirtBackImage2,
     items: ['Chest Logo Tee', 'Pocket Logo Tee', 'Event Logo Tee'],
   },
   {
@@ -36,8 +40,9 @@ const serviceCategories = [
     badge: 'Cotton Range',
     count: '12 styles',
     rate: 'From Rs. 599',
-    frontImage: shirtFrontImage,
-    backImage: shirtBackImage,
+    frontImage: personImage1,
+    backImage: personImage2,
+    visualType: 'person-pair',
     items: ['220 GSM Tee', 'Classic Crew Neck', 'Minimal Plain Tee'],
   },
   {
@@ -217,7 +222,7 @@ function ProductCard({ category, onSelect }) {
       tabIndex="0"
       onKeyDown={handleKeyDown}
     >
-      <div className="shirt-visual" aria-hidden="true">
+      <div className={category.visualType === 'person-pair' ? 'shirt-visual person-visual' : 'shirt-visual'} aria-hidden="true">
         <img className="shirt-image back" src={category.backImage} alt="" loading="lazy" decoding="async" />
         <img className="shirt-image front" src={category.frontImage} alt="" loading="lazy" decoding="async" />
       </div>
@@ -237,7 +242,7 @@ function ProductCard({ category, onSelect }) {
 function GroupStyleCard({ style, index }) {
   return (
     <article className="group-style-card" data-reveal>
-      <div className="group-style-image">
+      <div className={style.visualType === 'person-pair' ? 'group-style-image person-group-image' : 'group-style-image'}>
         <img className="group-shirt back" src={style.backImage} alt="" loading="lazy" decoding="async" />
         <img className="group-shirt front" src={style.frontImage} alt={`${style.title} T-shirt style`} loading="lazy" decoding="async" />
       </div>

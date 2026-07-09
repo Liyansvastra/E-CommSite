@@ -640,6 +640,31 @@ main,
   transform: translateX(30%) rotate(1.8deg) scale(0.9);
 }
 
+.person-visual .shirt-image {
+  width: min(62%, 235px);
+  height: 94%;
+}
+
+.person-visual .shirt-image.front {
+  transform: translateX(-10%) scale(1);
+}
+
+.person-visual .shirt-image.back {
+  opacity: 0;
+  transform: translateX(70%) scale(0.92);
+}
+
+.shirt-card:hover .person-visual .shirt-image.front,
+.shirt-card:focus-visible .person-visual .shirt-image.front {
+  transform: translateX(-20%) scale(0.96);
+}
+
+.shirt-card:hover .person-visual .shirt-image.back,
+.shirt-card:focus-visible .person-visual .shirt-image.back {
+  opacity: 1;
+  transform: translateX(24%) scale(0.92);
+}
+
 .product-card h3,
 .testimonial-card h3 {
   margin: 0;
@@ -1026,6 +1051,30 @@ main,
 .group-style-card:hover .group-shirt.back {
   opacity: 1;
   transform: translateX(5%) rotate(1.4deg) scale(0.92);
+}
+
+.person-group-image .group-shirt {
+  width: 60%;
+  height: 92%;
+}
+
+.person-group-image .group-shirt.front {
+  left: 8%;
+}
+
+.person-group-image .group-shirt.back {
+  right: -4%;
+  opacity: 0;
+  transform: translateX(45%) scale(0.92);
+}
+
+.group-style-card:hover .person-group-image .group-shirt.front {
+  transform: translateX(-8%) scale(0.96);
+}
+
+.group-style-card:hover .person-group-image .group-shirt.back {
+  opacity: 1;
+  transform: translateX(0) scale(0.92);
 }
 
 .group-style-details {

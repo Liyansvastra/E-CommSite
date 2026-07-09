@@ -373,7 +373,7 @@ function HomePage({ setActivePage, setServiceFocus }) {
       <section className="home-hero page-enter">
         <div className="container hero-grid">
           <div className="hero-copy" data-reveal>
-            <h1><span>{brand}</span><i /> Elevated Elegance in Every Thread</h1>
+            <h1><span>{brand}</span> Elevated Elegance in Every Thread</h1>
             <p>
               We craft premium apparel for the discerning individual. From meticulously sourced
               fabrics to innovative designs, every piece reflects our commitment to excellence.

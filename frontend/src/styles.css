@@ -260,9 +260,9 @@ main,
   max-width: 660px;
   margin: 0;
   font-family: "Bell MT", Georgia, "Times New Roman", serif;
-  font-size: clamp(2.35rem, 4.2vw, 3.85rem);
+  font-size: clamp(1.45rem, 2.8vw, 2.35rem);
   font-weight: 800;
-  line-height: 1.08;
+  line-height: 1.16;
   letter-spacing: 0.01em;
   color: #f6f3ee;
   text-shadow: 0 12px 34px rgba(0, 0, 0, 0.42);
@@ -270,12 +270,12 @@ main,
 
 .hero-copy h1 span {
   display: block;
-  margin-bottom: 0.28rem;
-  color: #ffc900;
-  font-size: 0.78em;
+  margin-bottom: 0.24rem;
+  color: rgb(180, 135, 46);
+  font-size: 1.62em;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  text-shadow: 0 0 18px rgba(255, 201, 0, 0.24);
+  text-shadow: 0 0 18px rgba(180, 135, 46, 0.3);
 }
 
 .hero-copy p {
@@ -1862,12 +1862,12 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
     padding-bottom: 2.6rem;
   }
   .hero-copy h1 {
-    font-size: clamp(1.85rem, 9vw, 2.35rem);
-    line-height: 1.08;
+    font-size: clamp(1.1rem, 5.6vw, 1.45rem);
+    line-height: 1.18;
   }
   .hero-copy h1 span {
     margin-bottom: 0.2rem;
-    font-size: 0.74em;
+    font-size: 1.5em;
     letter-spacing: 0.06em;
   }
   .hero-copy p {

@@ -199,8 +199,32 @@ function FeatureCard({ title, text, icon, centered = false }) {
 }
 
 function ProductCard({ category, onSelect }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  const isMobileCard = () => window.matchMedia('(max-width: 640px)').matches;
+
+  const handleSelect = () => {
+    if (isMobileCard() && !detailsOpen) {
+      setDetailsOpen(true);
+      return;
+    }
+    onSelect(category.id);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    handleSelect();
+  };
+
   return (
-    <article className="product-card shirt-card" data-reveal onClick={() => onSelect(category.id)} tabIndex="0" onKeyDown={(event) => event.key === 'Enter' && onSelect(category.id)}>
+    <article
+      className={detailsOpen ? 'product-card shirt-card is-details-open' : 'product-card shirt-card'}
+      data-reveal
+      onClick={handleSelect}
+      tabIndex="0"
+      onKeyDown={handleKeyDown}
+    >
       <div className="shirt-visual" aria-hidden="true">
         <img className="shirt-image back" src={category.backImage} alt="" loading="lazy" decoding="async" />
         <img className="shirt-image front" src={category.frontImage} alt="" loading="lazy" decoding="async" />

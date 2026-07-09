@@ -1697,18 +1697,29 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
   .shirt-details {
     inset: auto 0.85rem 0.85rem 0.85rem;
     width: auto;
-    opacity: 1;
-    transform: none;
+    opacity: 0;
+    transform: translateY(14px);
     backdrop-filter: blur(8px);
   }
   .shirt-card .shirt-image.front,
   .shirt-card:hover .shirt-image.front,
   .shirt-card:focus-visible .shirt-image.front {
-    transform: translate(-14%, -24px) scale(0.82);
+    transform: translate(0, 0) scale(1);
   }
   .shirt-card .shirt-image.back,
   .shirt-card:hover .shirt-image.back,
   .shirt-card:focus-visible .shirt-image.back {
+    opacity: 0.5;
+    transform: translate(18%, 0) scale(0.9);
+  }
+  .shirt-card.is-details-open .shirt-details {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .shirt-card.is-details-open .shirt-image.front {
+    transform: translate(-14%, -24px) scale(0.82);
+  }
+  .shirt-card.is-details-open .shirt-image.back {
     opacity: 0.9;
     transform: translate(24%, -24px) scale(0.74);
   }

@@ -528,6 +528,8 @@ main,
   min-height: 330px;
   padding: 1rem;
   display: grid;
+  grid-template-rows: minmax(222px, 1fr) auto;
+  gap: 0.75rem;
   align-items: stretch;
   overflow: hidden;
   cursor: pointer;
@@ -594,6 +596,32 @@ main,
   opacity: 0.38;
   transform: translateX(14%) rotate(1.5deg) scale(0.92);
   filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.2)) saturate(0.86);
+}
+
+.shirt-caption {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 0.18rem;
+  padding: 0.35rem 0.4rem 0;
+  text-align: center;
+}
+
+.shirt-caption strong {
+  color: var(--gold-light);
+  font-size: 0.95rem;
+  line-height: 1.18;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+.shirt-caption span {
+  color: var(--soft-silver);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .shirt-details {
@@ -847,6 +875,16 @@ main,
   font-size: 1.05rem;
 }
 
+.showcase-brand {
+  display: block;
+  margin-top: 0.16rem;
+  color: var(--silver);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
 .showcase-slide small {
   display: block;
   margin-top: 0.28rem;
@@ -1011,6 +1049,13 @@ main,
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 22px 52px rgba(0, 0, 0, 0.36);
 }
 
+.group-style-media {
+  display: grid;
+  grid-template-rows: minmax(260px, 1fr) auto;
+  gap: 0.72rem;
+  align-self: stretch;
+}
+
 .group-style-image {
   position: relative;
   min-height: 260px;
@@ -1020,6 +1065,10 @@ main,
   background:
     radial-gradient(circle at 62% 28%, rgba(255, 201, 0, 0.16), transparent 10rem),
     linear-gradient(135deg, rgba(234, 234, 234, 0.96), rgba(204, 204, 204, 0.76));
+}
+
+.group-caption {
+  padding-top: 0;
 }
 
 .group-shirt {

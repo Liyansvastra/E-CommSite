@@ -1348,8 +1348,8 @@ main,
   background-position: center;
   background-repeat: no-repeat;
   background-size: min(58vw, 620px);
-  opacity: 0.1;
-  filter: saturate(0.92);
+  opacity: 0.22;
+  filter: saturate(1.05);
   pointer-events: none;
 }
 
@@ -1359,8 +1359,8 @@ main,
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(circle at 50% 18%, rgba(209, 163, 71, 0.12), transparent 25rem),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.18));
+    radial-gradient(circle at 50% 18%, rgba(209, 163, 71, 0.18), transparent 25rem),
+    linear-gradient(180deg, rgba(209, 163, 71, 0.06), rgba(209, 163, 71, 0.03));
   pointer-events: none;
 }
 

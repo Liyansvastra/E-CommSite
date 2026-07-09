@@ -528,8 +528,7 @@ main,
   min-height: 330px;
   padding: 1rem;
   display: grid;
-  grid-template-rows: minmax(222px, 1fr) auto;
-  gap: 0.75rem;
+  grid-template-rows: minmax(222px, 1fr);
   align-items: stretch;
   overflow: hidden;
   cursor: pointer;
@@ -599,13 +598,22 @@ main,
 }
 
 .shirt-caption {
-  position: relative;
-  z-index: 2;
+  position: absolute;
+  right: 0.85rem;
+  bottom: 0.8rem;
+  left: 0.85rem;
+  z-index: 5;
   display: grid;
   justify-items: center;
   gap: 0.18rem;
-  padding: 0.35rem 0.4rem 0;
+  padding: 0.52rem 0.65rem;
+  border: 1px solid rgba(255, 201, 0, 0.22);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(3, 3, 3, 0.08), rgba(3, 3, 3, 0.58));
+  backdrop-filter: blur(4px);
   text-align: center;
+  transition: opacity 260ms ease, transform 320ms cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
 }
 
 .shirt-caption strong {
@@ -624,6 +632,18 @@ main,
   letter-spacing: 0.16em;
   text-shadow: 0 0 12px rgba(213, 173, 24, 0.18);
   text-transform: uppercase;
+}
+
+.shirt-card:hover .shirt-caption,
+.shirt-card:focus-visible .shirt-caption,
+.shirt-visual:hover .shirt-caption,
+.group-style-card:hover .group-caption,
+.group-style-card:focus-within .group-caption,
+.group-style-image:hover .group-caption,
+.showcase-slide:hover .showcase-caption,
+.showcase-shirt-stage:hover .showcase-caption {
+  opacity: 0;
+  transform: translateY(14px) scale(0.96);
 }
 
 .shirt-details {
@@ -1054,8 +1074,7 @@ main,
 
 .group-style-media {
   display: grid;
-  grid-template-rows: minmax(260px, 1fr) auto;
-  gap: 0.72rem;
+  grid-template-rows: minmax(260px, 1fr);
   align-self: stretch;
 }
 
@@ -1071,7 +1090,9 @@ main,
 }
 
 .group-caption {
-  padding-top: 0;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  left: 0.75rem;
 }
 
 .group-shirt {

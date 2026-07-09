@@ -225,10 +225,10 @@ function ProductCard({ category, onSelect }) {
       <div className={category.visualType === 'person-pair' ? 'shirt-visual person-visual' : 'shirt-visual'} aria-hidden="true">
         <img className="shirt-image back" src={category.backImage} alt="" loading="lazy" decoding="async" />
         <img className="shirt-image front" src={category.frontImage} alt="" loading="lazy" decoding="async" />
-      </div>
-      <div className="shirt-caption" aria-hidden="true">
-        <strong>{category.title}</strong>
-        <span>LIYAN'S VASTRA</span>
+        <div className="shirt-caption" aria-hidden="true">
+          <strong>{category.title}</strong>
+          <span>LIYAN'S VASTRA</span>
+        </div>
       </div>
       <div className="shirt-details">
         <strong>{category.badge}</strong>
@@ -250,10 +250,10 @@ function GroupStyleCard({ style, index }) {
         <div className={style.visualType === 'person-pair' ? 'group-style-image person-group-image' : 'group-style-image'}>
           <img className="group-shirt back" src={style.backImage} alt="" loading="lazy" decoding="async" />
           <img className="group-shirt front" src={style.frontImage} alt={`${style.title} T-shirt style`} loading="lazy" decoding="async" />
-        </div>
-        <div className="shirt-caption group-caption">
-          <strong>{style.title}</strong>
-          <span>LIYAN'S VASTRA</span>
+          <div className="shirt-caption group-caption">
+            <strong>{style.title}</strong>
+            <span>LIYAN'S VASTRA</span>
+          </div>
         </div>
       </div>
       <div className="group-style-details">
@@ -289,10 +289,12 @@ function ServicesHeroShowcase() {
               <div className="showcase-shirt-stage">
                 <img className="showcase-shirt back" src={shirtBackImage} alt="" loading="lazy" decoding="async" />
                 <img className="showcase-shirt front" src={shirtFrontImage} alt="" loading="lazy" decoding="async" />
+                <div className="shirt-caption showcase-caption">
+                  <strong>{title}</strong>
+                  <span>LIYAN'S VASTRA</span>
+                </div>
               </div>
               <div>
-                <strong>{title}</strong>
-                <span className="showcase-brand">LIYAN'S VASTRA</span>
                 <small>{text}</small>
               </div>
             </article>

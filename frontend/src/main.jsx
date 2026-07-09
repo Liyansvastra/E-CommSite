@@ -14,10 +14,55 @@ const phoneNumber = '+917871357999';
 const displayPhone = '+91 7871357999';
 const emailAddress = 'liyansvastra@gmail.com';
 const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=${encodeURIComponent("Hello LIYAN'S VASTRA, I would like to enquire about logo T-shirt styles.")}`;
-const showcaseImages = [
-  assetPath('showcase/logo-tee-black.svg'),
-  assetPath('showcase/cotton-style-gold.svg'),
-  assetPath('showcase/custom-model-set.svg'),
+const shirtFrontImage = assetPath('t-shirt-model/sample_frontside.png');
+const shirtBackImage = assetPath('t-shirt-model/sample_backside.png');
+
+const serviceCategories = [
+  {
+    id: 'logo-shirts',
+    title: 'Logo T-shirt Styles',
+    text: 'Premium logo placement samples for teams, brands, events, and daily apparel enquiries.',
+    badge: 'Logo Style',
+    count: '18 styles',
+    rate: 'From Rs. 499',
+    frontImage: shirtFrontImage,
+    backImage: shirtBackImage,
+    items: ['Chest Logo Tee', 'Pocket Logo Tee', 'Event Logo Tee'],
+  },
+  {
+    id: 'premium-cotton',
+    title: 'Premium Cotton Range',
+    text: 'Soft cotton T-shirt styles with refined stitching, clean fit, and premium everyday finish.',
+    badge: 'Cotton Range',
+    count: '12 styles',
+    rate: 'From Rs. 599',
+    frontImage: shirtFrontImage,
+    backImage: shirtBackImage,
+    items: ['220 GSM Tee', 'Classic Crew Neck', 'Minimal Plain Tee'],
+  },
+  {
+    id: 'custom-models',
+    title: 'Custom Model Showcase',
+    text: 'Model, color, and layout directions for custom apparel before final client images are supplied.',
+    badge: 'Custom Model',
+    count: '9 styles',
+    rate: 'Quote Based',
+    frontImage: shirtFrontImage,
+    backImage: shirtBackImage,
+    items: ['Brand Uniform Tee', 'Team Style Set', 'Custom Color Set'],
+  },
+];
+
+const findServiceCategory = (categoryId) => (
+  serviceCategories.find((category) => category.id === categoryId) || serviceCategories[0]
+);
+
+const serviceHeroSlides = [
+  ['Logo Placement', 'Chest logo sample for teams and brands'],
+  ['Premium Cotton', 'Clean 220 GSM everyday T-shirt finish'],
+  ['Corporate Style', 'Uniform-ready apparel direction'],
+  ['Event Series', 'Bulk event and campaign T-shirt sample'],
+  ['Custom Model', 'Color and model showcase placeholder'],
 ];
 
 const businessInfo = [
@@ -153,25 +198,61 @@ function FeatureCard({ title, text, icon, centered = false }) {
   );
 }
 
-function ProductCard({ title, text, badge, image }) {
+function ProductCard({ category, onSelect }) {
   return (
-    <article className="product-card" data-reveal>
-      <img className="product-image" src={image} alt={`${title} sample`} loading="lazy" decoding="async" />
-      <div>
-        <h3>{title}</h3>
-        <p>{text}</p>
+    <article className="product-card shirt-card" data-reveal onClick={() => onSelect(category.id)} tabIndex="0" onKeyDown={(event) => event.key === 'Enter' && onSelect(category.id)}>
+      <div className="shirt-visual" aria-hidden="true">
+        <img className="shirt-image back" src={category.backImage} alt="" loading="lazy" decoding="async" />
+        <img className="shirt-image front" src={category.frontImage} alt="" loading="lazy" decoding="async" />
       </div>
-      <strong>{badge}</strong>
+      <div className="shirt-details">
+        <strong>{category.badge}</strong>
+        <h3>{category.title}</h3>
+        <p>{category.text}</p>
+        <div className="shirt-meta">
+          <span>{category.count}</span>
+          <span>{category.rate}</span>
+        </div>
+      </div>
     </article>
   );
 }
 
-function FeaturedProducts({ setActivePage }) {
-  const products = [
-    ['Logo T-shirt Sample', 'Black premium tee concept with LIYAN\'S VASTRA logo placement.', 'Logo Style', showcaseImages[0]],
-    ['Premium Cotton Style', '220 GSM cotton presentation for refined everyday apparel.', 'Fabric Focus', showcaseImages[1]],
-    ['Custom Model Set', 'Sample styling direction for team, brand, and custom apparel enquiries.', 'Custom Enquiry', showcaseImages[2]],
-  ];
+function ServicesHeroShowcase() {
+  const slides = [...serviceHeroSlides, ...serviceHeroSlides];
+
+  return (
+    <div className="services-royal-showcase" data-reveal>
+      <div className="showcase-copy">
+        <span>Royal T-shirt Gallery</span>
+        <h2>Sample Style Movement</h2>
+        <p>Auto-moving sample display for logo T-shirts, premium cotton, and custom apparel categories.</p>
+      </div>
+      <div className="showcase-track-wrap" aria-hidden="true">
+        <div className="showcase-track">
+          {slides.map(([title, text], index) => (
+            <article className="showcase-slide" key={`${title}-${index}`}>
+              <div className="showcase-shirt-stage">
+                <img className="showcase-shirt back" src={shirtBackImage} alt="" loading="lazy" decoding="async" />
+                <img className="showcase-shirt front" src={shirtFrontImage} alt="" loading="lazy" decoding="async" />
+              </div>
+              <div>
+                <strong>{title}</strong>
+                <small>{text}</small>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FeaturedProducts({ setActivePage, setServiceFocus }) {
+  const openCategory = (categoryId) => {
+    setServiceFocus(categoryId);
+    setActivePage('Services');
+  };
 
   return (
     <section className="section-block compact-section">
@@ -182,7 +263,7 @@ function FeaturedProducts({ setActivePage }) {
           subtitle="Sample T-shirt, logo, style, and model directions while final client images are pending."
         />
         <div className="product-grid">
-          {products.map(([title, text, badge, image]) => <ProductCard key={title} title={title} text={text} badge={badge} image={image} />)}
+          {serviceCategories.map((category) => <ProductCard key={category.id} category={category} onSelect={openCategory} />)}
         </div>
         <div className="section-action" data-reveal>
           <button className="gold-button" onClick={() => setActivePage('Services')}>View Styles</button>
@@ -217,7 +298,7 @@ function Testimonials() {
   );
 }
 
-function HomePage({ setActivePage }) {
+function HomePage({ setActivePage, setServiceFocus }) {
   return (
     <>
       <section className="home-hero page-enter">
@@ -269,7 +350,7 @@ function HomePage({ setActivePage }) {
         </div>
       </section>
 
-      <FeaturedProducts setActivePage={setActivePage} />
+      <FeaturedProducts setActivePage={setActivePage} setServiceFocus={setServiceFocus} />
       <WhyChoose />
       <Testimonials />
     </>
@@ -388,27 +469,102 @@ function BusinessInformation() {
   );
 }
 
-function ServicesPage() {
-  const services = [
-    ['Custom Design', 'Tailored apparel solutions for corporate clients and individuals.', '♧'],
-    ['Sustainable', 'Eco-conscious production using ethical manufacturing practices.', '♢'],
-    ['Expert Team', 'Dedicated professionals with decades of textile expertise.', '◎'],
-    ['Quality First', 'Rigorous quality control at every stage of production.', '♙'],
-    ['Fast Delivery', 'Efficient turnaround without compromising on quality.', '↯'],
-    ['Customer Care', 'Exceptional support from inquiry through delivery.', '♡'],
-  ];
+function ServicesPage({ serviceFocus, setServiceFocus, setActivePage }) {
+  useEffect(() => {
+    if (!serviceFocus) return;
+    window.setTimeout(() => {
+      document.getElementById(serviceFocus)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+  }, [serviceFocus]);
+
+  const jumpToCategory = (categoryId) => {
+    setServiceFocus(categoryId);
+    document.getElementById(categoryId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const openCategoryPage = (categoryId) => {
+    setServiceFocus(categoryId);
+    setActivePage('ServiceDetail');
+    goTop();
+  };
+
   return (
     <section className="section-block services-page page-enter">
       <div className="container">
-        <SectionTitle eyebrow="What We Offer" title="Our Services" subtitle="Comprehensive apparel solutions designed to meet your needs" />
-        <div className="card-grid">
-          {services.map(([title, text, icon]) => <FeatureCard key={title} title={title} text={text} icon={icon} />)}
+        <ServicesHeroShowcase />
+        <SectionTitle eyebrow="What We Offer" title="Our Services" subtitle="Explore T-shirt style categories, sample groups, and enquiry-ready apparel directions." />
+        <div className="service-jump-grid">
+          {serviceCategories.map((category, index) => (
+            <button className="service-jump-card" key={category.id} onClick={() => jumpToCategory(category.id)} data-reveal>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <strong>{category.title}</strong>
+              <small>{category.count} / {category.rate}</small>
+            </button>
+          ))}
         </div>
+        {serviceCategories.map((category, index) => (
+          <section className="service-category-panel" id={category.id} key={category.id} data-reveal>
+            <div className="service-category-heading">
+              <span>Part {index + 1}</span>
+              <h3>{category.title}</h3>
+              <p>{category.text}</p>
+            </div>
+            <div className="service-shirt-grid">
+              {category.items.map((item) => (
+                <ProductCard
+                  key={item}
+                  category={{ ...category, title: item, text: category.text }}
+                  onSelect={() => openCategoryPage(category.id)}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
       </div>
     </section>
   );
 }
 
+function ServiceDetailPage({ serviceFocus, setActivePage, setServiceFocus }) {
+  const category = findServiceCategory(serviceFocus);
+  const groupStyles = category.items.map((item, index) => ({
+    ...category,
+    id: `${category.id}-${index}`,
+    title: item,
+    text: `${category.text} This group sample can be replaced with the final client image set later.`,
+    count: `${index + 1} sample`,
+  }));
+
+  const backToServices = () => {
+    setServiceFocus(category.id);
+    setActivePage('Services');
+  };
+
+  return (
+    <section className="section-block service-detail-page page-enter">
+      <div className="container">
+        <button className="dark-button back-service-button" onClick={backToServices}>Back To Services</button>
+        <SectionTitle eyebrow={category.badge} title={category.title} subtitle="Grouped T-shirt style images with the same front and back animation style." />
+        <div className="service-detail-hero" data-reveal>
+          <div>
+            <span>{category.count}</span>
+            <h3>{category.rate}</h3>
+            <p>{category.text}</p>
+          </div>
+        </div>
+        <div className="service-detail-grid">
+          {groupStyles.map((style) => (
+            <ProductCard
+              key={style.id}
+              category={style}
+              onSelect={() => setServiceFocus(category.id)}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',
@@ -572,7 +728,9 @@ function FloatingActions() {
 
 function App() {
   const [activePage, setActivePage] = useState('Home');
-  const CurrentPage = useMemo(() => ({ Home: HomePage, About: AboutPage, Services: ServicesPage, Contact: ContactPage })[activePage], [activePage]);
+  const [serviceFocus, setServiceFocus] = useState('');
+  const CurrentPage = useMemo(() => ({ Home: HomePage, About: AboutPage, Services: ServicesPage, ServiceDetail: ServiceDetailPage, Contact: ContactPage })[activePage], [activePage]);
+  const navActivePage = activePage === 'ServiceDetail' ? 'Services' : activePage;
   useRevealOnScroll(activePage);
 
   return (
@@ -582,8 +740,10 @@ function App() {
         style={{ backgroundImage: `url(${background})` }}
         aria-hidden="true"
       />
-      <Header activePage={activePage} setActivePage={setActivePage} />
-      <main key={activePage}><CurrentPage setActivePage={setActivePage} /></main>
+      <Header activePage={navActivePage} setActivePage={setActivePage} />
+      <main key={activePage}>
+        <CurrentPage setActivePage={setActivePage} serviceFocus={serviceFocus} setServiceFocus={setServiceFocus} />
+      </main>
       <Footer setActivePage={setActivePage} />
       <FloatingActions />
     </>

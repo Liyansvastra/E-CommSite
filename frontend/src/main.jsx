@@ -469,32 +469,30 @@ function AboutPage({ setActivePage }) {
   return (
     <>
       <PageHero eyebrow="Our Story" title={`About ${brand}`} subtitle="A premium textile brand born from passion for quality and timeless style." />
-      <div className="about-logo-bg" style={{ '--about-logo-bg': `url(${logo})` }}>
-        <section className="section-block journey-section">
-          <div className="container narrow">
-            <SectionTitle eyebrow="Who We Are" title="Our Journey" />
-            <div className="journey-copy" data-reveal>
-              <p>{brand} was born from a simple belief: everyone deserves to wear clothing that makes them feel their best.</p>
-              <p>Every product is carefully crafted using premium cotton fabrics with superior GSM weights.</p>
-              <p>As a GST-registered proprietorship, we operate with full transparency and commitment to our customers.</p>
-            </div>
-            <div className="divider" data-reveal />
-            <div className="metric-row">
-              <Stat value="100%" label="Premium Cotton" />
-              <Stat value="220 GSM" label="Fabric Weight" />
-              <Stat value="Pan India" label="Delivery" />
-              <Stat value="GST" label="Registered" />
-            </div>
+      <section className="section-block journey-section about-logo-bg" style={{ '--about-logo-bg': `url(${logo})` }}>
+        <div className="container narrow">
+          <SectionTitle eyebrow="Who We Are" title="Our Journey" />
+          <div className="journey-copy" data-reveal>
+            <p>{brand} was born from a simple belief: everyone deserves to wear clothing that makes them feel their best.</p>
+            <p>Every product is carefully crafted using premium cotton fabrics with superior GSM weights.</p>
+            <p>As a GST-registered proprietorship, we operate with full transparency and commitment to our customers.</p>
           </div>
-        </section>
-        <Values />
-        <BusinessInformation />
-        <section className="work-together" data-reveal>
-          <h2>Let's Work Together</h2>
-          <p>Partner with us for premium apparel solutions tailored to your needs.</p>
-          <button className="gold-button" onClick={() => setActivePage('Contact')}>Get In Touch</button>
-        </section>
-      </div>
+          <div className="divider" data-reveal />
+          <div className="metric-row">
+            <Stat value="100%" label="Premium Cotton" />
+            <Stat value="220 GSM" label="Fabric Weight" />
+            <Stat value="Pan India" label="Delivery" />
+            <Stat value="GST" label="Registered" />
+          </div>
+        </div>
+      </section>
+      <Values />
+      <BusinessInformation />
+      <section className="work-together" data-reveal>
+        <h2>Let's Work Together</h2>
+        <p>Partner with us for premium apparel solutions tailored to your needs.</p>
+        <button className="gold-button" onClick={() => setActivePage('Contact')}>Get In Touch</button>
+      </section>
     </>
   );
 }

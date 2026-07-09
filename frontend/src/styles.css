@@ -1348,8 +1348,9 @@ main,
   background-position: center 6rem;
   background-repeat: no-repeat;
   background-size: min(64vw, 720px);
+  background-attachment: fixed;
   opacity: 0.24;
-  filter: saturate(1.05);
+  filter: none;
   pointer-events: none;
 }
 

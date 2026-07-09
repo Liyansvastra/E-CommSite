@@ -700,28 +700,28 @@ main,
 
 .person-visual .shirt-image.front {
   z-index: 3;
-  opacity: 0.82;
+  opacity: 1;
   transform: translateX(-16%) scale(1.08);
 }
 
 .person-visual .shirt-image.back {
   z-index: 2;
-  opacity: 1;
-  transform: translateX(38%) scale(0.98);
+  opacity: 0;
+  transform: translateX(74%) scale(1);
 }
 
 .shirt-card:hover .person-visual .shirt-image.front,
 .shirt-card:focus-visible .person-visual .shirt-image.front {
-  z-index: 2;
-  opacity: 0.55;
-  transform: translateX(-34%) scale(1);
+  z-index: 3;
+  opacity: 1;
+  transform: translateX(-28%) scale(1.04);
 }
 
 .shirt-card:hover .person-visual .shirt-image.back,
 .shirt-card:focus-visible .person-visual .shirt-image.back {
-  z-index: 4;
+  z-index: 2;
   opacity: 1;
-  transform: translateX(18%) scale(1.04);
+  transform: translateX(28%) scale(1);
 }
 
 .product-card h3,
@@ -1140,26 +1140,26 @@ main,
 .person-group-image .group-shirt.front {
   left: 3%;
   z-index: 2;
-  opacity: 0.82;
+  opacity: 1;
 }
 
 .person-group-image .group-shirt.back {
   right: -14%;
   z-index: 1;
-  opacity: 1;
-  transform: translateX(22%) scale(0.98);
+  opacity: 0;
+  transform: translateX(48%) scale(1);
 }
 
 .group-style-card:hover .person-group-image .group-shirt.front {
-  z-index: 1;
-  opacity: 0.55;
-  transform: translateX(-16%) scale(0.98);
+  z-index: 2;
+  opacity: 1;
+  transform: translateX(-10%) scale(1);
 }
 
 .group-style-card:hover .person-group-image .group-shirt.back {
-  z-index: 3;
+  z-index: 1;
   opacity: 1;
-  transform: translateX(4%) scale(1.02);
+  transform: translateX(8%) scale(0.98);
 }
 
 .group-style-details {
@@ -1970,25 +1970,25 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
   }
   .shirt-card .person-visual .shirt-image.front {
     z-index: 3;
-    opacity: 0.82;
+    opacity: 1;
     transform: translateX(-16%) scale(1.04);
   }
   .shirt-card .person-visual .shirt-image.back {
     z-index: 2;
-    opacity: 1;
-    transform: translateX(34%) scale(0.96);
+    opacity: 0;
+    transform: translateX(74%) scale(1);
   }
   .shirt-card:hover .person-visual .shirt-image.front,
   .shirt-card:focus-visible .person-visual .shirt-image.front {
-    z-index: 2;
-    opacity: 0.55;
+    z-index: 3;
+    opacity: 1;
     transform: translateX(-28%) scale(0.98);
   }
   .shirt-card:hover .person-visual .shirt-image.back,
   .shirt-card:focus-visible .person-visual .shirt-image.back {
-    z-index: 4;
+    z-index: 2;
     opacity: 1;
-    transform: translateX(14%) scale(1.02);
+    transform: translateX(24%) scale(1);
   }
   .service-category-panel {
     padding: 1rem;

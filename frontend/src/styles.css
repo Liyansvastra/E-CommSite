@@ -1345,10 +1345,10 @@ main,
   inset: 0;
   z-index: -2;
   background-image: var(--about-logo-bg);
-  background-position: center;
+  background-position: center 6rem;
   background-repeat: no-repeat;
-  background-size: min(58vw, 620px);
-  opacity: 0.22;
+  background-size: min(64vw, 720px);
+  opacity: 0.2;
   filter: saturate(1.05);
   pointer-events: none;
 }

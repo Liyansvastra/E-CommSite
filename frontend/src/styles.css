@@ -609,18 +609,20 @@ main,
 }
 
 .shirt-caption strong {
-  color: var(--gold-light);
+  color: #ffc900;
   font-size: 0.95rem;
   line-height: 1.18;
   letter-spacing: 0.03em;
+  text-shadow: 0 0 14px rgba(255, 201, 0, 0.18);
   text-transform: none;
 }
 
 .shirt-caption span {
-  color: var(--soft-silver);
+  color: #d5ad18;
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.16em;
+  text-shadow: 0 0 12px rgba(213, 173, 24, 0.18);
   text-transform: uppercase;
 }
 
@@ -878,10 +880,11 @@ main,
 .showcase-brand {
   display: block;
   margin-top: 0.16rem;
-  color: var(--silver);
+  color: #d5ad18;
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.15em;
+  text-shadow: 0 0 12px rgba(213, 173, 24, 0.18);
   text-transform: uppercase;
 }
 

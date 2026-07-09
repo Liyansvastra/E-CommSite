@@ -293,6 +293,12 @@ function FeaturedProducts({ setActivePage, setServiceFocus }) {
     setActivePage('Services');
   };
 
+  const openServicesTop = () => {
+    setServiceFocus('');
+    setActivePage('Services');
+    goTop();
+  };
+
   return (
     <section className="section-block compact-section">
       <div className="container">
@@ -305,7 +311,7 @@ function FeaturedProducts({ setActivePage, setServiceFocus }) {
           {serviceCategories.map((category) => <ProductCard key={category.id} category={category} onSelect={openCategory} />)}
         </div>
         <div className="section-action" data-reveal>
-          <button className="gold-button" onClick={() => setActivePage('Services')}>View Styles</button>
+          <button className="gold-button" onClick={openServicesTop}>View Styles</button>
         </div>
       </div>
     </section>
@@ -338,6 +344,12 @@ function Testimonials() {
 }
 
 function HomePage({ setActivePage, setServiceFocus }) {
+  const openServicesTop = () => {
+    setServiceFocus('');
+    setActivePage('Services');
+    goTop();
+  };
+
   return (
     <>
       <section className="home-hero page-enter">
@@ -349,7 +361,7 @@ function HomePage({ setActivePage, setServiceFocus }) {
               fabrics to innovative designs, every piece reflects our commitment to excellence.
             </p>
             <div className="button-row">
-              <button className="gold-button" onClick={() => setActivePage('Services')}>View Styles</button>
+              <button className="gold-button" onClick={openServicesTop}>View Styles</button>
               <button className="gold-button" onClick={() => setActivePage('About')}>Our Story</button>
               <button className="dark-button" onClick={() => setActivePage('Contact')}>Get In Touch</button>
             </div>

@@ -600,17 +600,18 @@ main,
 .shirt-caption {
   position: absolute;
   right: 0.85rem;
-  bottom: 0.8rem;
+  top: 0.75rem;
+  bottom: auto;
   left: 0.85rem;
   z-index: 5;
   display: grid;
   justify-items: center;
   gap: 0.18rem;
-  padding: 0.52rem 0.65rem;
-  border: 1px solid rgba(255, 201, 0, 0.22);
-  border-radius: 10px;
-  background: linear-gradient(180deg, rgba(3, 3, 3, 0.08), rgba(3, 3, 3, 0.58));
-  backdrop-filter: blur(4px);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
   text-align: center;
   transition: opacity 260ms ease, transform 320ms cubic-bezier(.2,.8,.2,1);
   pointer-events: none;
@@ -1091,7 +1092,8 @@ main,
 
 .group-caption {
   right: 0.75rem;
-  bottom: 0.75rem;
+  top: 0.75rem;
+  bottom: auto;
   left: 0.75rem;
 }
 

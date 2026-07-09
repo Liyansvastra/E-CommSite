@@ -1716,6 +1716,9 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
     transform: translate(18%, 0) scale(0.9);
   }
   .shirt-card.is-details-open .shirt-details {
+    position: relative;
+    inset: auto;
+    margin-top: 0.9rem;
     opacity: 1;
     transform: translateY(0);
   }
@@ -1726,11 +1729,11 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
     left: 125%;
   }
   .shirt-card.is-details-open .shirt-image.front {
-    transform: translate(-14%, -24px) scale(0.82);
+    transform: translate(-10%, 0) scale(0.9);
   }
   .shirt-card.is-details-open .shirt-image.back {
     opacity: 0.9;
-    transform: translate(24%, -24px) scale(0.74);
+    transform: translate(24%, 0) scale(0.78);
   }
   .service-category-panel {
     padding: 1rem;

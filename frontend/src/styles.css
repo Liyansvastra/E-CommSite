@@ -600,8 +600,8 @@ main,
 .shirt-caption {
   position: absolute;
   right: 0.85rem;
-  top: 0.75rem;
-  bottom: auto;
+  top: auto;
+  bottom: 0.75rem;
   left: 0.85rem;
   z-index: 5;
   display: grid;
@@ -1092,8 +1092,8 @@ main,
 
 .group-caption {
   right: 0.75rem;
-  top: 0.75rem;
-  bottom: auto;
+  top: auto;
+  bottom: 0.75rem;
   left: 0.75rem;
 }
 

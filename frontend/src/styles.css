@@ -699,23 +699,29 @@ main,
 }
 
 .person-visual .shirt-image.front {
+  z-index: 3;
+  opacity: 0.82;
   transform: translateX(-16%) scale(1.08);
 }
 
 .person-visual .shirt-image.back {
+  z-index: 2;
   opacity: 1;
   transform: translateX(38%) scale(0.98);
 }
 
 .shirt-card:hover .person-visual .shirt-image.front,
 .shirt-card:focus-visible .person-visual .shirt-image.front {
-  transform: translateX(-28%) scale(1.04);
+  z-index: 2;
+  opacity: 0.55;
+  transform: translateX(-34%) scale(1);
 }
 
 .shirt-card:hover .person-visual .shirt-image.back,
 .shirt-card:focus-visible .person-visual .shirt-image.back {
+  z-index: 4;
   opacity: 1;
-  transform: translateX(28%) scale(1);
+  transform: translateX(18%) scale(1.04);
 }
 
 .product-card h3,
@@ -1133,21 +1139,27 @@ main,
 
 .person-group-image .group-shirt.front {
   left: 3%;
+  z-index: 2;
+  opacity: 0.82;
 }
 
 .person-group-image .group-shirt.back {
   right: -14%;
+  z-index: 1;
   opacity: 1;
   transform: translateX(22%) scale(0.98);
 }
 
 .group-style-card:hover .person-group-image .group-shirt.front {
-  transform: translateX(-10%) scale(1);
+  z-index: 1;
+  opacity: 0.55;
+  transform: translateX(-16%) scale(0.98);
 }
 
 .group-style-card:hover .person-group-image .group-shirt.back {
+  z-index: 3;
   opacity: 1;
-  transform: translateX(8%) scale(0.98);
+  transform: translateX(4%) scale(1.02);
 }
 
 .group-style-details {
@@ -1955,6 +1967,28 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
   .shirt-card:focus-visible .shirt-image.back {
     opacity: 0.5;
     transform: translate(18%, 0) scale(0.9);
+  }
+  .shirt-card .person-visual .shirt-image.front {
+    z-index: 3;
+    opacity: 0.82;
+    transform: translateX(-16%) scale(1.04);
+  }
+  .shirt-card .person-visual .shirt-image.back {
+    z-index: 2;
+    opacity: 1;
+    transform: translateX(34%) scale(0.96);
+  }
+  .shirt-card:hover .person-visual .shirt-image.front,
+  .shirt-card:focus-visible .person-visual .shirt-image.front {
+    z-index: 2;
+    opacity: 0.55;
+    transform: translateX(-28%) scale(0.98);
+  }
+  .shirt-card:hover .person-visual .shirt-image.back,
+  .shirt-card:focus-visible .person-visual .shirt-image.back {
+    z-index: 4;
+    opacity: 1;
+    transform: translateX(14%) scale(1.02);
   }
   .service-category-panel {
     padding: 1rem;

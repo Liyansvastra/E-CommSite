@@ -16,8 +16,8 @@ const emailAddress = 'liyansvastra@gmail.com';
 const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=${encodeURIComponent("Hello LIYAN'S VASTRA, I would like to enquire about logo T-shirt styles.")}`;
 const shirtFrontImage = assetPath('t-shirt-model/sample_frontside.png');
 const shirtBackImage = assetPath('t-shirt-model/sample_backside.png');
-const shirtFrontImage2 = assetPath('t-shirt-model/sample_frontside2.jpg');
-const shirtBackImage2 = assetPath('t-shirt-model/sample_backside2.jpg');
+const shirtFrontImage2 = assetPath('t-shirt-model/sample_frontside2.png');
+const shirtBackImage2 = assetPath('t-shirt-model/sample_backside2.png');
 const personImage1 = assetPath('t-shirt-model/sample_person1.png');
 const personImage2 = assetPath('t-shirt-model/sample_person2.png');
 

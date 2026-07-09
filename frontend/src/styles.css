@@ -641,28 +641,28 @@ main,
 }
 
 .person-visual .shirt-image {
-  width: min(62%, 235px);
-  height: 94%;
+  width: min(74%, 292px);
+  height: 104%;
 }
 
 .person-visual .shirt-image.front {
-  transform: translateX(-10%) scale(1);
+  transform: translateX(-16%) scale(1.08);
 }
 
 .person-visual .shirt-image.back {
   opacity: 0;
-  transform: translateX(70%) scale(0.92);
+  transform: translateX(74%) scale(1);
 }
 
 .shirt-card:hover .person-visual .shirt-image.front,
 .shirt-card:focus-visible .person-visual .shirt-image.front {
-  transform: translateX(-20%) scale(0.96);
+  transform: translateX(-28%) scale(1.04);
 }
 
 .shirt-card:hover .person-visual .shirt-image.back,
 .shirt-card:focus-visible .person-visual .shirt-image.back {
   opacity: 1;
-  transform: translateX(24%) scale(0.92);
+  transform: translateX(18%) scale(1);
 }
 
 .product-card h3,
@@ -1054,27 +1054,27 @@ main,
 }
 
 .person-group-image .group-shirt {
-  width: 60%;
-  height: 92%;
+  width: 70%;
+  height: 104%;
 }
 
 .person-group-image .group-shirt.front {
-  left: 8%;
+  left: 3%;
 }
 
 .person-group-image .group-shirt.back {
-  right: -4%;
+  right: -14%;
   opacity: 0;
-  transform: translateX(45%) scale(0.92);
+  transform: translateX(48%) scale(1);
 }
 
 .group-style-card:hover .person-group-image .group-shirt.front {
-  transform: translateX(-8%) scale(0.96);
+  transform: translateX(-10%) scale(1);
 }
 
 .group-style-card:hover .person-group-image .group-shirt.back {
   opacity: 1;
-  transform: translateX(0) scale(0.92);
+  transform: translateX(-2%) scale(0.98);
 }
 
 .group-style-details {

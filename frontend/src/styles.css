@@ -715,7 +715,7 @@ main,
 .shirt-card:hover .person-visual .shirt-image.back,
 .shirt-card:focus-visible .person-visual .shirt-image.back {
   opacity: 1;
-  transform: translateX(18%) scale(1);
+  transform: translateX(28%) scale(1);
 }
 
 .product-card h3,
@@ -1147,7 +1147,7 @@ main,
 
 .group-style-card:hover .person-group-image .group-shirt.back {
   opacity: 1;
-  transform: translateX(-2%) scale(0.98);
+  transform: translateX(8%) scale(0.98);
 }
 
 .group-style-details {

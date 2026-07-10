@@ -851,7 +851,7 @@ function ImageUploadField({ label, value, onChange }) {
 function AdminSaveBar({ status, onSave }) {
   return (
     <div className="admin-save-bar">
-      <button className="gold-button" type="button" onClick={onSave}>Save To Supabase</button>
+      <button className="gold-button" type="button" onClick={onSave}>Save</button>
       {status?.message && <span className={status.type === 'success' ? 'success' : 'error'}>{status.message}</span>}
     </div>
   );
@@ -1035,8 +1035,6 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
             <button className="dark-button" type="button" onClick={logout}>Logout</button>
           </div>
         </div>
-        <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
-
         <div className="admin-grid">
           <section className="admin-panel">
             <h2>Home Page</h2>
@@ -1044,6 +1042,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
             <label>Hero Text<textarea rows="4" value={content.site.heroText} onChange={(event) => updateSite('heroText', event.target.value)} /></label>
             <label>Our Story Title<input value={content.site.storyTitle} onChange={(event) => updateSite('storyTitle', event.target.value)} /></label>
             <label>Our Story Paragraphs<textarea rows="7" value={content.site.storyParagraphs.join('\n')} onChange={(event) => updateTextList('storyParagraphs', event.target.value)} /></label>
+            <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </section>
 
           <section className="admin-panel">
@@ -1052,6 +1051,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
             <label>Journey Paragraphs<textarea rows="6" value={content.site.aboutJourney.join('\n')} onChange={(event) => updateTextList('aboutJourney', event.target.value)} /></label>
             <label>Contact Form Title<input value={content.site.contactTitle} onChange={(event) => updateSite('contactTitle', event.target.value)} /></label>
             <label>Contact Form Subtitle<input value={content.site.contactSubtitle} onChange={(event) => updateSite('contactSubtitle', event.target.value)} /></label>
+            <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </section>
         </div>
 
@@ -1224,7 +1224,6 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
             <button className="gold-button" type="button" onClick={addGroupItem}>Add New Container</button>
           </div>
         </div>
-        <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
         <section className="admin-panel admin-wide">
           <div className="admin-edit-focus">
             <h3>Edit Category</h3>
@@ -1245,6 +1244,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
               <label><input type="checkbox" checked={category.showOnHome !== false} onChange={(event) => toggleCategory('showOnHome', event.target.checked)} /> Show on Home page</label>
               <label><input type="checkbox" checked={category.showOnServices !== false} onChange={(event) => toggleCategory('showOnServices', event.target.checked)} /> Show on Services category page</label>
             </div>
+            <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </div>
           <div className="admin-section-head">
             <div><h2>{category.title} Containers</h2><p>Edit containers shown inside this category group page.</p></div>
@@ -1296,7 +1296,6 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
           <div><span>Container Editor</span><h1>{selectedItem.title}</h1></div>
           <button className="dark-button" type="button" onClick={() => setActivePage('AdminCategoryEditor')}>Back Category</button>
         </div>
-        <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
         <section className="admin-panel admin-wide">
           <div className="admin-edit-focus">
             <h3>Edit Image Container</h3>
@@ -1313,6 +1312,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
               <label>Cloth Style<input value={selectedItem.clothStyle} onChange={(event) => updateGroupItem('clothStyle', event.target.value)} /></label>
               <label>Rate<input value={selectedItem.rate} onChange={(event) => updateGroupItem('rate', event.target.value)} /></label>
             </div>
+            <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </div>
           <div className="admin-section-head"><div><h2>{category.title} Containers</h2><p>Select another container to edit it.</p></div></div>
           <div className="admin-category-list admin-scroll-row">

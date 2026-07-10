@@ -1580,7 +1580,11 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
 .admin-page {
   min-height: 100vh;
   padding: 4rem 0;
-  background: var(--admin-bg) center / cover fixed;
+  background-color: transparent;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .admin-login-card,

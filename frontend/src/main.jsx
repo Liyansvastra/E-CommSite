@@ -10,6 +10,12 @@ const lifestyleImage = assetPath('background.jpg');
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 const navItems = ['Home', 'About', 'Services', 'Contact'];
+const pageToPath = { Home: '/', About: '/about', Services: '/services', Contact: '/contacts', AdminLogin: '/admin-login', AdminDashboard: '/admin-dashboard' };
+const pathToPage = { '/': 'Home', '/home': 'Home', '/about': 'About', '/services': 'Services', '/contact': 'Contact', '/contacts': 'Contact', '/admin-login': 'AdminLogin', '/admin-dashboard': 'AdminDashboard' };
+const adminEmail = 'liyansvastra@brillaris.pro';
+const adminPassword = 'Brillaris$12';
+const storageKey = 'liyans_vastra_admin_content_v1';
+const authKey = 'liyans_vastra_admin_auth_v1';
 const phoneNumber = '+917871357999';
 const displayPhone = '+91 7871357999';
 const emailAddress = 'liyansvastra@gmail.com';
@@ -21,7 +27,7 @@ const shirtBackImage2 = assetPath('t-shirt-model/sample_backside2.png');
 const personImage1 = assetPath('t-shirt-model/sample_person1.png');
 const personImage2 = assetPath('t-shirt-model/sample_person2.png');
 
-const serviceCategories = [
+const defaultServiceCategories = [
   {
     id: 'logo-shirts',
     title: 'Logo T-shirt Styles',
@@ -58,9 +64,54 @@ const serviceCategories = [
   },
 ];
 
-const findServiceCategory = (categoryId) => (
-  serviceCategories.find((category) => category.id === categoryId) || serviceCategories[0]
+const defaultSiteContent = {
+  heroTitle: 'Elevated Elegance in Every Thread',
+  heroText: 'We craft premium apparel for the discerning individual. From meticulously sourced fabrics to innovative designs, every piece reflects our commitment to excellence.',
+  storyTitle: `About ${brand}`,
+  storyParagraphs: [
+    `${brand} is a premium textile and apparel brand born from a passion for quality craftsmanship and timeless style.`,
+    'Founded as a proprietorship, we take pride in our hands-on approach to quality. Every product is carefully sourced and crafted using premium cotton fabrics.',
+    'Our tagline, "Elevated Elegance", reflects our commitment to everyday premium fashion.',
+  ],
+  aboutSubtitle: 'A premium textile brand born from passion for quality and timeless style.',
+  aboutJourney: [
+    `${brand} was born from a simple belief: everyone deserves to wear clothing that makes them feel their best.`,
+    'Every product is carefully crafted using premium cotton fabrics with superior GSM weights.',
+    'As a GST-registered proprietorship, we operate with full transparency and commitment to our customers.',
+  ],
+  contactTitle: 'Get In Touch',
+  contactSubtitle: 'Tell us about your logo T-shirt or custom apparel requirement.',
+};
+
+const defaultAdminContent = {
+  site: defaultSiteContent,
+  categories: defaultServiceCategories,
+};
+
+const findServiceCategory = (categories, categoryId) => (
+  categories.find((category) => category.id === categoryId) || categories[0]
 );
+
+const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `category-${Date.now()}`;
+
+function loadAdminContent() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(storageKey));
+    if (!stored) return defaultAdminContent;
+    return {
+      site: { ...defaultSiteContent, ...(stored.site || {}) },
+      categories: Array.isArray(stored.categories) && stored.categories.length ? stored.categories : defaultServiceCategories,
+    };
+  } catch {
+    return defaultAdminContent;
+  }
+}
+
+function getPageFromLocation() {
+  const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+  if (pathname.startsWith('/services/')) return { page: 'ServiceDetail', serviceFocus: pathname.split('/').filter(Boolean)[1] || '' };
+  return { page: pathToPage[pathname] || 'Home', serviceFocus: '' };
+}
 
 const serviceHeroSlides = [
   ['Logo Placement', 'Chest logo sample for teams and brands'],
@@ -305,7 +356,7 @@ function ServicesHeroShowcase() {
   );
 }
 
-function FeaturedProducts({ setActivePage, setServiceFocus }) {
+function FeaturedProducts({ categories, setActivePage, setServiceFocus }) {
   const openCategory = (categoryId) => {
     setServiceFocus(categoryId);
     setActivePage('Services');
@@ -326,7 +377,7 @@ function FeaturedProducts({ setActivePage, setServiceFocus }) {
           subtitle="Sample T-shirt, logo, style, and model directions while final client images are pending."
         />
         <div className="product-grid">
-          {serviceCategories.map((category) => <ProductCard key={category.id} category={category} onSelect={openCategory} />)}
+          {categories.filter((category) => category.showOnHome !== false).map((category) => <ProductCard key={category.id} category={category} onSelect={openCategory} />)}
         </div>
         <div className="section-action" data-reveal>
           <button className="gold-button" onClick={openServicesTop}>View Styles</button>
@@ -361,7 +412,7 @@ function Testimonials() {
   );
 }
 
-function HomePage({ setActivePage, setServiceFocus }) {
+function HomePage({ content, categories, setActivePage, setServiceFocus }) {
   const openServicesTop = () => {
     setServiceFocus('');
     setActivePage('Services');
@@ -373,11 +424,8 @@ function HomePage({ setActivePage, setServiceFocus }) {
       <section className="home-hero page-enter">
         <div className="container hero-grid">
           <div className="hero-copy" data-reveal>
-            <h1><span>{brand}</span> Elevated Elegance in Every Thread</h1>
-            <p>
-              We craft premium apparel for the discerning individual. From meticulously sourced
-              fabrics to innovative designs, every piece reflects our commitment to excellence.
-            </p>
+            <h1><span>{brand}</span> {content.site.heroTitle}</h1>
+            <p>{content.site.heroText}</p>
             <div className="button-row">
               <button className="gold-button" onClick={openServicesTop}>View Styles</button>
               <button className="gold-button" onClick={() => setActivePage('About')}>Our Story</button>
@@ -400,16 +448,8 @@ function HomePage({ setActivePage, setServiceFocus }) {
         <img className="story-bg-image" src={lifestyleImage} alt="" loading="lazy" decoding="async" />
         <div className="story-copy" data-reveal>
           <Eyebrow>Our Story</Eyebrow>
-          <h2>About {brand}</h2>
-          <p>
-            {brand} is a premium textile and apparel brand born from a passion for quality
-            craftsmanship and timeless style.
-          </p>
-          <p>
-            Founded as a proprietorship, we take pride in our hands-on approach to quality. Every
-            product is carefully sourced and crafted using premium cotton fabrics.
-          </p>
-          <p>Our tagline, <b>"Elevated Elegance"</b>, reflects our commitment to everyday premium fashion.</p>
+          <h2>{content.site.storyTitle}</h2>
+          {content.site.storyParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           <div className="mini-stat-grid">
             <Stat value="220 GSM" label="Premium Weight Fabric" />
             <Stat value="100%" label="Pure Cotton" />
@@ -419,7 +459,7 @@ function HomePage({ setActivePage, setServiceFocus }) {
         </div>
       </section>
 
-      <FeaturedProducts setActivePage={setActivePage} setServiceFocus={setServiceFocus} />
+      <FeaturedProducts categories={categories} setActivePage={setActivePage} setServiceFocus={setServiceFocus} />
       <WhyChoose />
       <Testimonials />
     </>
@@ -465,17 +505,15 @@ function PageHero({ eyebrow, title, subtitle }) {
   );
 }
 
-function AboutPage({ setActivePage }) {
+function AboutPage({ content, setActivePage }) {
   return (
     <>
-      <PageHero eyebrow="Our Story" title={`About ${brand}`} subtitle="A premium textile brand born from passion for quality and timeless style." />
+      <PageHero eyebrow="Our Story" title={`About ${brand}`} subtitle={content.site.aboutSubtitle} />
       <section className="section-block journey-section">
         <div className="container narrow">
           <SectionTitle eyebrow="Who We Are" title="Our Journey" />
           <div className="journey-copy" data-reveal>
-            <p>{brand} was born from a simple belief: everyone deserves to wear clothing that makes them feel their best.</p>
-            <p>Every product is carefully crafted using premium cotton fabrics with superior GSM weights.</p>
-            <p>As a GST-registered proprietorship, we operate with full transparency and commitment to our customers.</p>
+            {content.site.aboutJourney.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           </div>
           <div className="divider" data-reveal />
           <div className="metric-row">
@@ -538,7 +576,7 @@ function BusinessInformation() {
   );
 }
 
-function ServicesPage({ serviceFocus, setServiceFocus, setActivePage }) {
+function ServicesPage({ categories, serviceFocus, setServiceFocus, setActivePage }) {
   useEffect(() => {
     if (!serviceFocus) return;
     window.setTimeout(() => {
@@ -563,7 +601,7 @@ function ServicesPage({ serviceFocus, setServiceFocus, setActivePage }) {
         <ServicesHeroShowcase />
         <SectionTitle eyebrow="What We Offer" title="Our Services" subtitle="Explore T-shirt style categories, sample groups, and enquiry-ready apparel directions." />
         <div className="service-jump-grid">
-          {serviceCategories.map((category, index) => (
+          {categories.filter((category) => category.showOnServices !== false).map((category, index) => (
             <button className="service-jump-card" key={category.id} onClick={() => jumpToCategory(category.id)} data-reveal>
               <span>{String(index + 1).padStart(2, '0')}</span>
               <strong>{category.title}</strong>
@@ -571,7 +609,7 @@ function ServicesPage({ serviceFocus, setServiceFocus, setActivePage }) {
             </button>
           ))}
         </div>
-        {serviceCategories.map((category, index) => (
+        {categories.filter((category) => category.showOnServices !== false).map((category, index) => (
           <section className="service-category-panel" id={category.id} key={category.id} data-reveal>
             <div className="service-category-heading">
               <span>Part {index + 1}</span>
@@ -594,8 +632,8 @@ function ServicesPage({ serviceFocus, setServiceFocus, setActivePage }) {
   );
 }
 
-function ServiceDetailPage({ serviceFocus, setActivePage, setServiceFocus }) {
-  const category = findServiceCategory(serviceFocus);
+function ServiceDetailPage({ categories, serviceFocus, setActivePage, setServiceFocus }) {
+  const category = findServiceCategory(categories, serviceFocus);
   const groupStyles = category.items.map((item, index) => ({
     ...category,
     id: `${category.id}-${index}`,
@@ -638,7 +676,7 @@ function ServiceDetailPage({ serviceFocus, setActivePage, setServiceFocus }) {
     </section>
   );
 }
-function ContactPage() {
+function ContactPage({ content }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -727,7 +765,8 @@ function ContactPage() {
           </div>
         </div>
         <form className="message-card" data-reveal onSubmit={handleSubmit}>
-          <h2>Send Us a Message</h2>
+          <h2>{content.site.contactTitle}</h2>
+          <p>{content.site.contactSubtitle}</p>
           <div className="form-two">
             <label>Your Name *<input required placeholder="Full name" value={formData.name} onChange={(event) => updateField('name', event.target.value)} /></label>
             <label>Email Address *<input required type="email" placeholder="your@email.com" value={formData.email} onChange={(event) => updateField('email', event.target.value)} /></label>
@@ -740,6 +779,189 @@ function ContactPage() {
             <a className="dark-button inline-whatsapp" href={whatsappUrl} target="_blank" rel="noreferrer">Enquire on WhatsApp</a>
           </div>
         </form>
+      </div>
+    </section>
+  );
+}
+
+function AdminLoginPage({ setActivePage, setIsAdminAuthed }) {
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+
+  const handleLogin = (event) => {
+    event.preventDefault();
+    if (credentials.email.trim() === adminEmail && credentials.password === adminPassword) {
+      localStorage.setItem(authKey, 'true');
+      setIsAdminAuthed(true);
+      setActivePage('AdminDashboard');
+      return;
+    }
+    setError('Invalid admin email or password.');
+  };
+
+  return (
+    <section className="admin-page page-enter">
+      <form className="admin-login-card" onSubmit={handleLogin}>
+        <img src={logo} alt={brand} />
+        <h1>Admin Login</h1>
+        <p>Private content editor for LIYAN'S VASTRA.</p>
+        <label>Email<input type="email" value={credentials.email} onChange={(event) => setCredentials((current) => ({ ...current, email: event.target.value }))} /></label>
+        <label>Password<input type="password" value={credentials.password} onChange={(event) => setCredentials((current) => ({ ...current, password: event.target.value }))} /></label>
+        {error && <p className="form-status error">{error}</p>}
+        <button className="gold-button" type="submit">Login</button>
+      </form>
+    </section>
+  );
+}
+
+function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuthed }) {
+  const updateSite = (field, value) => {
+    setContent((current) => ({ ...current, site: { ...current.site, [field]: value } }));
+  };
+
+  const updateTextList = (field, value) => {
+    updateSite(field, value.split('\n').filter((line) => line.trim()));
+  };
+
+  const updateCategory = (index, field, value) => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((category, categoryIndex) => (
+        categoryIndex === index ? { ...category, [field]: value } : category
+      )),
+    }));
+  };
+
+  const toggleCategory = (index, field, checked) => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((category, categoryIndex) => (
+        categoryIndex === index ? { ...category, [field]: checked } : category
+      )),
+    }));
+  };
+
+  const updateCategoryItems = (index, value) => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((category, categoryIndex) => (
+        categoryIndex === index ? { ...category, items: value.split('\n').filter((line) => line.trim()) } : category
+      )),
+    }));
+  };
+
+  const addCategory = () => {
+    const title = `New T-shirt Category ${content.categories.length + 1}`;
+    setContent((current) => ({
+      ...current,
+      categories: [
+        ...current.categories,
+        {
+          id: slugify(title),
+          title,
+          text: 'Add description for this category.',
+          badge: 'New Style',
+          count: '0 styles',
+          rate: 'Quote Based',
+          frontImage: shirtFrontImage,
+          backImage: shirtBackImage,
+          showOnHome: true,
+          showOnServices: true,
+          items: ['New Style Group'],
+        },
+      ],
+    }));
+  };
+
+  const removeCategory = (index) => {
+    setContent((current) => ({ ...current, categories: current.categories.filter((_, categoryIndex) => categoryIndex !== index) }));
+  };
+
+  const resetContent = () => {
+    setContent(defaultAdminContent);
+  };
+
+  const logout = () => {
+    localStorage.removeItem(authKey);
+    setIsAdminAuthed(false);
+    setActivePage('AdminLogin');
+  };
+
+  return (
+    <section className="admin-page admin-dashboard page-enter">
+      <div className="container">
+        <div className="admin-topbar">
+          <div>
+            <span>Private Admin</span>
+            <h1>Website Content Dashboard</h1>
+          </div>
+          <div className="admin-actions">
+            <button className="dark-button" type="button" onClick={() => setActivePage('Home')}>View Site</button>
+            <button className="dark-button" type="button" onClick={logout}>Logout</button>
+          </div>
+        </div>
+
+        <div className="admin-grid">
+          <section className="admin-panel">
+            <h2>Home Page</h2>
+            <label>Hero Title<input value={content.site.heroTitle} onChange={(event) => updateSite('heroTitle', event.target.value)} /></label>
+            <label>Hero Text<textarea rows="4" value={content.site.heroText} onChange={(event) => updateSite('heroText', event.target.value)} /></label>
+            <label>Our Story Title<input value={content.site.storyTitle} onChange={(event) => updateSite('storyTitle', event.target.value)} /></label>
+            <label>Our Story Paragraphs<textarea rows="7" value={content.site.storyParagraphs.join('\n')} onChange={(event) => updateTextList('storyParagraphs', event.target.value)} /></label>
+          </section>
+
+          <section className="admin-panel">
+            <h2>About & Contact Pages</h2>
+            <label>About Subtitle<input value={content.site.aboutSubtitle} onChange={(event) => updateSite('aboutSubtitle', event.target.value)} /></label>
+            <label>Journey Paragraphs<textarea rows="6" value={content.site.aboutJourney.join('\n')} onChange={(event) => updateTextList('aboutJourney', event.target.value)} /></label>
+            <label>Contact Form Title<input value={content.site.contactTitle} onChange={(event) => updateSite('contactTitle', event.target.value)} /></label>
+            <label>Contact Form Subtitle<input value={content.site.contactSubtitle} onChange={(event) => updateSite('contactSubtitle', event.target.value)} /></label>
+          </section>
+        </div>
+
+        <section className="admin-panel admin-wide">
+          <div className="admin-section-head">
+            <div>
+              <h2>Image Containers & Service Categories</h2>
+              <p>Edit cards used on the Home style showcase, Services categories, and group detail pages.</p>
+            </div>
+            <div className="admin-actions">
+              <button className="gold-button" type="button" onClick={addCategory}>Add New Category</button>
+              <button className="dark-button" type="button" onClick={resetContent}>Reset Default</button>
+            </div>
+          </div>
+          <div className="admin-category-list">
+            {content.categories.map((category, index) => (
+              <article className="admin-category-card" key={`${category.id}-${index}`}>
+                <div className="admin-category-preview">
+                  <img src={category.frontImage} alt="" />
+                  <img src={category.backImage} alt="" />
+                </div>
+                <div className="admin-category-fields">
+                  <div className="form-two">
+                    <label>T-shirt / Category Name<input value={category.title} onChange={(event) => updateCategory(index, 'title', event.target.value)} /></label>
+                    <label>Brand / Badge Name<input value={category.badge} onChange={(event) => updateCategory(index, 'badge', event.target.value)} /></label>
+                  </div>
+                  <label>Description<textarea rows="3" value={category.text} onChange={(event) => updateCategory(index, 'text', event.target.value)} /></label>
+                  <div className="form-two">
+                    <label>Cloth Count<input value={category.count} onChange={(event) => updateCategory(index, 'count', event.target.value)} /></label>
+                    <label>Rating / Rate<input value={category.rate} onChange={(event) => updateCategory(index, 'rate', event.target.value)} /></label>
+                  </div>
+                  <div className="form-two">
+                    <label>Front Image URL<input value={category.frontImage} onChange={(event) => updateCategory(index, 'frontImage', event.target.value)} /></label>
+                    <label>Back Image URL<input value={category.backImage} onChange={(event) => updateCategory(index, 'backImage', event.target.value)} /></label>
+                  </div>
+                  <div className="admin-checks">
+                    <label><input type="checkbox" checked={category.showOnHome !== false} onChange={(event) => toggleCategory(index, 'showOnHome', event.target.checked)} /> Show on Home page</label>
+                    <label><input type="checkbox" checked={category.showOnServices !== false} onChange={(event) => toggleCategory(index, 'showOnServices', event.target.checked)} /> Show on Services category page</label>
+                  </div>
+                  <label>Group Page Style Names<textarea rows="4" value={category.items.join('\n')} onChange={(event) => updateCategoryItems(index, event.target.value)} /></label>
+                  <button className="dark-button" type="button" onClick={() => removeCategory(index)}>Remove Category</button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
       </div>
     </section>
   );
@@ -800,11 +1022,63 @@ function FloatingActions() {
 }
 
 function App() {
-  const [activePage, setActivePage] = useState('Home');
-  const [serviceFocus, setServiceFocus] = useState('');
-  const CurrentPage = useMemo(() => ({ Home: HomePage, About: AboutPage, Services: ServicesPage, ServiceDetail: ServiceDetailPage, Contact: ContactPage })[activePage], [activePage]);
+  const initialRoute = getPageFromLocation();
+  const [activePage, setActivePageState] = useState(initialRoute.page);
+  const [serviceFocus, setServiceFocus] = useState(initialRoute.serviceFocus);
+  const [content, setContent] = useState(loadAdminContent);
+  const [isAdminAuthed, setIsAdminAuthed] = useState(() => localStorage.getItem(authKey) === 'true');
+  const CurrentPage = useMemo(() => ({
+    Home: HomePage,
+    About: AboutPage,
+    Services: ServicesPage,
+    ServiceDetail: ServiceDetailPage,
+    Contact: ContactPage,
+    AdminLogin: AdminLoginPage,
+    AdminDashboard: AdminDashboardPage,
+  })[activePage] || HomePage, [activePage]);
   const navActivePage = activePage === 'ServiceDetail' ? 'Services' : activePage;
   useRevealOnScroll(activePage);
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(content));
+  }, [content]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const route = getPageFromLocation();
+      setActivePageState(route.page);
+      setServiceFocus(route.serviceFocus);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    if (activePage === 'AdminDashboard' && !isAdminAuthed) {
+      setActivePage('AdminLogin');
+    }
+  }, [activePage, isAdminAuthed]);
+
+  const setActivePage = (page) => {
+    const nextPath = page === 'ServiceDetail'
+      ? `/services/${serviceFocus || content.categories[0]?.id || ''}`
+      : pageToPath[page] || '/';
+    if (window.location.pathname !== nextPath) {
+      window.history.pushState({}, '', nextPath);
+    }
+    setActivePageState(page);
+  };
+
+  useEffect(() => {
+    const nextPath = activePage === 'ServiceDetail'
+      ? `/services/${serviceFocus || content.categories[0]?.id || ''}`
+      : pageToPath[activePage] || '/';
+    if (window.location.pathname !== nextPath) {
+      window.history.replaceState({}, '', nextPath);
+    }
+  }, [activePage, serviceFocus, content.categories]);
+
+  const isAdminPage = activePage === 'AdminLogin' || activePage === 'AdminDashboard';
 
   return (
     <>
@@ -813,12 +1087,20 @@ function App() {
         style={{ backgroundImage: `url(${background})` }}
         aria-hidden="true"
       />
-      <Header activePage={navActivePage} setActivePage={setActivePage} />
+      {!isAdminPage && <Header activePage={navActivePage} setActivePage={setActivePage} />}
       <main key={activePage}>
-        <CurrentPage setActivePage={setActivePage} serviceFocus={serviceFocus} setServiceFocus={setServiceFocus} />
+        <CurrentPage
+          content={content}
+          categories={content.categories}
+          setContent={setContent}
+          setActivePage={setActivePage}
+          serviceFocus={serviceFocus}
+          setServiceFocus={setServiceFocus}
+          setIsAdminAuthed={setIsAdminAuthed}
+        />
       </main>
-      <Footer setActivePage={setActivePage} />
-      <FloatingActions />
+      {!isAdminPage && <Footer setActivePage={setActivePage} />}
+      {!isAdminPage && <FloatingActions />}
     </>
   );
 }

@@ -502,8 +502,42 @@ function GroupStyleCard({ style, index }) {
   );
 }
 
-function ServicesHeroShowcase() {
-  const slides = [...serviceHeroSlides, ...serviceHeroSlides];
+function ServicesHeroShowcase({ categories }) {
+  const storedSlides = categories.flatMap((category) => {
+    const categorySlides = [
+      {
+        id: `${category.id}-category`,
+        title: category.title,
+        text: category.text,
+        frontImage: category.frontImage,
+        backImage: category.backImage,
+        cardGradient: category.cardGradient,
+      },
+    ];
+    const itemSlides = (category.items || []).map((item, index) => {
+      const style = normalizeStyleItem(item, category, index);
+      return {
+        id: style.id,
+        title: style.title,
+        text: style.text,
+        frontImage: style.frontImage,
+        backImage: style.backImage,
+        cardGradient: style.cardGradient,
+      };
+    });
+    return [...categorySlides, ...itemSlides];
+  }).filter((slide) => slide.frontImage);
+
+  const fallbackSlides = serviceHeroSlides.map(([title, text], index) => ({
+    id: `fallback-${index}`,
+    title,
+    text,
+    frontImage: shirtFrontImage,
+    backImage: shirtBackImage,
+    cardGradient: defaultGradient,
+  }));
+  const baseSlides = storedSlides.length ? storedSlides : fallbackSlides;
+  const slides = [...baseSlides, ...baseSlides];
 
   return (
     <div className="services-royal-showcase" data-reveal>
@@ -514,18 +548,18 @@ function ServicesHeroShowcase() {
       </div>
       <div className="showcase-track-wrap" aria-hidden="true">
         <div className="showcase-track">
-          {slides.map(([title, text], index) => (
-            <article className="showcase-slide" key={`${title}-${index}`}>
-              <div className="showcase-shirt-stage">
-                <img className="showcase-shirt back" src={shirtBackImage} alt="" loading="lazy" decoding="async" />
-                <img className="showcase-shirt front" src={shirtFrontImage} alt="" loading="lazy" decoding="async" />
+          {slides.map((slide, index) => (
+            <article className="showcase-slide" key={`${slide.id}-${index}`}>
+              <div className="showcase-shirt-stage" style={{ '--card-bg': slide.cardGradient || defaultGradient }}>
+                {slide.backImage && <img className="showcase-shirt back" src={slide.backImage} alt="" loading="lazy" decoding="async" />}
+                <img className={slide.backImage ? 'showcase-shirt front' : 'showcase-shirt front single'} src={slide.frontImage} alt="" loading="lazy" decoding="async" />
                 <div className="shirt-caption showcase-caption">
-                  <strong>{title}</strong>
+                  <strong>{slide.title}</strong>
                   <span>LIYAN'S VASTRA</span>
                 </div>
               </div>
               <div>
-                <small>{text}</small>
+                <small>{slide.text}</small>
               </div>
             </article>
           ))}
@@ -777,7 +811,7 @@ function ServicesPage({ categories, serviceFocus, setServiceFocus, setActivePage
   return (
     <section className="section-block services-page page-enter" style={{ '--service-page-bg': `url(${background})` }}>
       <div className="container">
-        <ServicesHeroShowcase />
+        <ServicesHeroShowcase categories={categories.filter((category) => category.showOnServices !== false)} />
         <SectionTitle eyebrow="What We Offer" title="Our Services" subtitle="Explore T-shirt style categories, sample groups, and enquiry-ready apparel directions." />
         <div className="service-jump-grid">
           {categories.filter((category) => category.showOnServices !== false).map((category, index) => (

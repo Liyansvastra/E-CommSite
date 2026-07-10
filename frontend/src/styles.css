@@ -955,9 +955,9 @@ main,
   min-height: 190px;
   overflow: hidden;
   border-radius: 12px;
-  background:
+  background: var(--card-bg,
     radial-gradient(circle at 58% 28%, rgba(255, 201, 0, 0.2), transparent 8rem),
-    linear-gradient(135deg, rgba(234, 234, 234, 0.94), rgba(204, 204, 204, 0.74));
+    linear-gradient(135deg, rgba(234, 234, 234, 0.94), rgba(204, 204, 204, 0.74)));
 }
 
 .showcase-shirt {
@@ -973,6 +973,11 @@ main,
 .showcase-shirt.front {
   left: 12%;
   z-index: 2;
+}
+
+.showcase-shirt.front.single {
+  left: 16%;
+  width: 70%;
 }
 
 .showcase-shirt.back {

@@ -2067,7 +2067,8 @@ input[type="range"] {
 }
 
 .admin-save-bar .success {
-  color: #99f2b4;
+  color: #ffc900;
+  text-shadow: 0 0 16px rgba(255, 201, 0, 0.24);
 }
 
 .admin-save-bar .error {

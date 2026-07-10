@@ -1742,7 +1742,7 @@ function App() {
       });
       const result = await response.json().catch(() => null);
       if (!response.ok || !result?.ok) throw new Error(result?.message || 'Unable to save content.');
-      setAdminSaveStatus({ type: 'success', message: result.message || 'Saved to Supabase.' });
+      setAdminSaveStatus({ type: 'success', message: 'Successfully Saved' });
     } catch (error) {
       setAdminSaveStatus({ type: 'error', message: 'Unable to save to Supabase. Check backend env settings.' });
     }

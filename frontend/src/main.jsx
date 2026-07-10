@@ -107,6 +107,35 @@ const findServiceCategory = (categories, categoryId) => (
 );
 
 const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `category-${Date.now()}`;
+const clampIndex = (value, length) => Math.min(Math.max(Number.isFinite(Number(value)) ? Number(value) : 0, 0), Math.max(length - 1, 0));
+
+function encodeAdminToken(value) {
+  try {
+    return btoa(JSON.stringify(value)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  } catch {
+    return '';
+  }
+}
+
+function decodeAdminToken(token = '') {
+  try {
+    const normalized = `${token}`.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+    return JSON.parse(atob(padded));
+  } catch {
+    return {};
+  }
+}
+
+function adminEditorPath(page, categoryIndex = 0, itemIndex = 0) {
+  if (page === 'AdminCategoryEditor') {
+    return `/admin-dashboard/category/${encodeAdminToken({ c: categoryIndex })}`;
+  }
+  if (page === 'AdminContainerEditor') {
+    return `/admin-dashboard/container/${encodeAdminToken({ c: categoryIndex, i: itemIndex })}`;
+  }
+  return pageToPath[page] || '/';
+}
 
 function loadAdminContent() {
   try {
@@ -123,8 +152,17 @@ function loadAdminContent() {
 
 function getPageFromLocation() {
   const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+  const parts = pathname.split('/').filter(Boolean);
   if (pathname.startsWith('/service/group-services/')) return { page: 'ServiceDetail', serviceFocus: pathname.split('/').filter(Boolean)[2] || '' };
   if (pathname === '/service/group-services') return { page: 'ServiceDetail', serviceFocus: '' };
+  if (parts[0] === 'admin-dashboard' && parts[1] === 'category') {
+    const token = decodeAdminToken(parts[2]);
+    return { page: 'AdminCategoryEditor', serviceFocus: '', adminCategoryIndex: Number(token.c || 0), adminItemIndex: 0 };
+  }
+  if (parts[0] === 'admin-dashboard' && parts[1] === 'container') {
+    const token = decodeAdminToken(parts[2]);
+    return { page: 'AdminContainerEditor', serviceFocus: '', adminCategoryIndex: Number(token.c || 0), adminItemIndex: Number(token.i || 0) };
+  }
   if (pathname.startsWith('/services/')) return { page: 'ServiceDetail', serviceFocus: pathname.split('/').filter(Boolean)[1] || '' };
   return { page: pathToPage[pathname] || 'NotFound', serviceFocus: '' };
 }
@@ -1319,7 +1357,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
                   <span>{category.badge}</span>
                   <small>{category.count} / {category.rate}</small>
                   <div className="admin-actions">
-                    <button className="gold-button" type="button" onClick={() => { setAdminEditCategoryIndex(index); setAdminEditItemIndex(0); setActivePage('AdminCategoryEditor'); }}>Edit</button>
+                    <button className="gold-button" type="button" onClick={() => { goTop(); setActivePage('AdminCategoryEditor', { categoryIndex: index, itemIndex: 0 }); }}>Edit</button>
                     <button className="dark-button" type="button" onClick={() => setDeleteTarget({ type: 'category', categoryIndex: index })}>Delete</button>
                   </div>
                 </div>
@@ -1384,7 +1422,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
 }
 
 function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEditCategoryIndex, setAdminEditCategoryIndex, setAdminEditItemIndex, onSaveContent, adminSaveStatus }) {
-  const categoryIndex = Math.min(adminEditCategoryIndex, Math.max(content.categories.length - 1, 0));
+  const categoryIndex = clampIndex(adminEditCategoryIndex, content.categories.length);
   const category = content.categories[categoryIndex] || content.categories[0];
   const [deleteTarget, setDeleteTarget] = useState(null);
 
@@ -1478,7 +1516,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
                   <div className="admin-category-fields">
                     <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
                     <div className="admin-actions">
-                      <button className="gold-button" type="button" onClick={() => { setAdminEditCategoryIndex(categoryIndex); setAdminEditItemIndex(itemIndex); setActivePage('AdminContainerEditor'); }}>Edit</button>
+                      <button className="gold-button" type="button" onClick={() => { goTop(); setActivePage('AdminContainerEditor', { categoryIndex, itemIndex }); }}>Edit</button>
                       <button className="dark-button" type="button" onClick={() => setDeleteTarget(itemIndex)}>Delete</button>
                     </div>
                   </div>
@@ -1493,8 +1531,9 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
 }
 
 function AdminContainerEditorPage({ content, setContent, setActivePage, adminEditCategoryIndex, adminEditItemIndex, setAdminEditItemIndex, onSaveContent, adminSaveStatus }) {
-  const category = content.categories[adminEditCategoryIndex] || content.categories[0];
-  const itemIndex = Math.min(adminEditItemIndex, Math.max((category?.items.length || 1) - 1, 0));
+  const editorCategoryIndex = clampIndex(adminEditCategoryIndex, content.categories.length);
+  const category = content.categories[editorCategoryIndex] || content.categories[0];
+  const itemIndex = clampIndex(adminEditItemIndex, category?.items.length || 1);
   const selectedItem = category ? normalizeStyleItem(category.items[itemIndex], category, itemIndex) : null;
   const [deleteTarget, setDeleteTarget] = useState(null);
 
@@ -1502,7 +1541,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
     setContent((current) => ({
       ...current,
       categories: current.categories.map((item, categoryIndex) => {
-        if (categoryIndex !== adminEditCategoryIndex) return item;
+        if (categoryIndex !== editorCategoryIndex) return item;
         return { ...item, items: item.items.map((group, groupIndex) => groupIndex === itemIndex ? { ...normalizeStyleItem(group, item, itemIndex), [field]: value } : group) };
       }),
     }));
@@ -1512,7 +1551,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
     setContent((current) => ({
       ...current,
       categories: current.categories.map((item, categoryIndex) => (
-        categoryIndex === adminEditCategoryIndex
+        categoryIndex === editorCategoryIndex
           ? { ...item, items: item.items.filter((_, currentIndex) => currentIndex !== targetIndex) }
           : item
       )),
@@ -1540,7 +1579,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
         )}
         <div className="admin-topbar">
           <div><span>Container Editor</span><h1>{selectedItem.title}</h1></div>
-          <button className="dark-button" type="button" onClick={() => setActivePage('AdminCategoryEditor')}>Back Category</button>
+          <button className="dark-button" type="button" onClick={() => setActivePage('AdminCategoryEditor', { categoryIndex: editorCategoryIndex, itemIndex: 0 })}>Back Category</button>
         </div>
         <section className="admin-panel admin-wide">
           <div className="admin-edit-focus">
@@ -1571,7 +1610,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
                   <div className="admin-category-fields">
                     <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
                     <div className="admin-actions">
-                      <button className="gold-button" type="button" onClick={() => setAdminEditItemIndex(index)}>Edit</button>
+                      <button className="gold-button" type="button" onClick={() => { setAdminEditItemIndex(index); window.history.replaceState({}, '', adminEditorPath('AdminContainerEditor', editorCategoryIndex, index)); goTop(); }}>Edit</button>
                       <button className="dark-button" type="button" onClick={() => setDeleteTarget(index)}>Delete</button>
                     </div>
                   </div>
@@ -1664,8 +1703,8 @@ function App() {
   const [serviceFocus, setServiceFocus] = useState(initialRoute.serviceFocus);
   const [content, setContent] = useState(loadAdminContent);
   const [isAdminAuthed, setIsAdminAuthed] = useState(() => localStorage.getItem(authKey) === 'true');
-  const [adminEditCategoryIndex, setAdminEditCategoryIndex] = useState(0);
-  const [adminEditItemIndex, setAdminEditItemIndex] = useState(0);
+  const [adminEditCategoryIndex, setAdminEditCategoryIndex] = useState(initialRoute.adminCategoryIndex || 0);
+  const [adminEditItemIndex, setAdminEditItemIndex] = useState(initialRoute.adminItemIndex || 0);
   const [adminSaveStatus, setAdminSaveStatus] = useState({ type: '', message: '' });
   const CurrentPage = useMemo(() => ({
     Home: HomePage,
@@ -1707,6 +1746,8 @@ function App() {
       const route = getPageFromLocation();
       setActivePageState(route.page);
       setServiceFocus(route.serviceFocus);
+      if (route.adminCategoryIndex !== undefined) setAdminEditCategoryIndex(route.adminCategoryIndex);
+      if (route.adminItemIndex !== undefined) setAdminEditItemIndex(route.adminItemIndex);
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -1718,10 +1759,14 @@ function App() {
     }
   }, [activePage, isAdminAuthed]);
 
-  const setActivePage = (page) => {
+  const setActivePage = (page, adminTarget = {}) => {
+    const nextCategoryIndex = adminTarget.categoryIndex ?? adminEditCategoryIndex;
+    const nextItemIndex = adminTarget.itemIndex ?? adminEditItemIndex;
+    if (adminTarget.categoryIndex !== undefined) setAdminEditCategoryIndex(adminTarget.categoryIndex);
+    if (adminTarget.itemIndex !== undefined) setAdminEditItemIndex(adminTarget.itemIndex);
     const nextPath = page === 'ServiceDetail'
       ? `/service/group-services/${serviceFocus || content.categories[0]?.id || ''}`
-      : pageToPath[page] || '/';
+      : adminEditorPath(page, nextCategoryIndex, nextItemIndex);
     if (window.location.pathname !== nextPath) {
       window.history.pushState({}, '', nextPath);
     }
@@ -1751,11 +1796,11 @@ function App() {
   useEffect(() => {
     const nextPath = activePage === 'ServiceDetail'
       ? `/service/group-services/${serviceFocus || content.categories[0]?.id || ''}`
-      : pageToPath[activePage] || '/';
+      : adminEditorPath(activePage, adminEditCategoryIndex, adminEditItemIndex);
     if (window.location.pathname !== nextPath) {
       window.history.replaceState({}, '', nextPath);
     }
-  }, [activePage, serviceFocus, content.categories]);
+  }, [activePage, serviceFocus, content.categories, adminEditCategoryIndex, adminEditItemIndex]);
 
   const isAdminPage = activePage === 'AdminLogin' || activePage === 'AdminDashboard' || activePage === 'AdminCategoryEditor' || activePage === 'AdminContainerEditor';
 

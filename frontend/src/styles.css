@@ -553,7 +553,7 @@ main,
   top: 50%;
   z-index: 8;
   width: 42px;
-  height: 58px;
+  height: 42px;
   display: grid;
   place-items: center;
   color: var(--gold-light);
@@ -2571,7 +2571,7 @@ input[type="range"] {
   }
   .scroll-arrow {
     width: 34px;
-    height: 50px;
+    height: 34px;
     font-size: 1.45rem;
   }
   .scroll-arrow-left { left: -0.25rem; }

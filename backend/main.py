@@ -191,6 +191,14 @@ def _send_email(payload: ContactMessage) -> None:
     raise RuntimeError("Email settings are not configured.")
 
 
+def _email_provider_name() -> str:
+    if _resend_configured():
+        return "resend"
+    if _smtp_configured():
+        return "smtp"
+    return "not-configured"
+
+
 def _supabase_configured() -> bool:
     return bool(os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_SERVICE_ROLE_KEY"))
 
@@ -402,6 +410,28 @@ def _sync_structured_tables(content: Dict[str, Any], edit_label: str) -> None:
     )
 
 
+def _store_contact_message(payload: ContactMessage, status: str, provider: str, error_message: str = "") -> None:
+    if not _supabase_configured():
+        return
+    row = [
+        {
+            "name": _clean(payload.name),
+            "email": payload.email.strip(),
+            "subject": _clean(payload.subject),
+            "message": payload.message.strip(),
+            "status": status,
+            "provider": provider,
+            "error_message": error_message[:500] if error_message else "",
+        }
+    ]
+    _supabase_request(
+        "contact_email_messages",
+        method="POST",
+        body=row,
+        extra_headers={"Prefer": "return=minimal"},
+    )
+
+
 @app.get("/health")
 def health():
     return {"ok": True, "service": "LIYAN'S VASTRA Contact API"}
@@ -409,9 +439,15 @@ def health():
 
 @app.post("/api/contact/send-email")
 def send_contact_email(payload: ContactMessage):
+    provider = _email_provider_name()
     try:
         _send_email(payload)
-    except Exception:
+        _store_contact_message(payload, "sent", provider)
+    except Exception as exc:
+        try:
+            _store_contact_message(payload, "failed", provider, str(exc))
+        except Exception:
+            pass
         return {
             "ok": False,
             "message": "Please check the form details and try again.",

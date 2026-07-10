@@ -130,6 +130,26 @@ create table if not exists public.image_containers_mirror (
 create index if not exists image_containers_mirror_edit_label_idx
 on public.image_containers_mirror (edit_label, created_at desc);
 
+-- Contact/email messages submitted from the website.
+-- This stores the enquiry payload and send status for reporting.
+create table if not exists public.contact_email_messages (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null,
+  subject text not null,
+  message text not null,
+  status text not null default 'received',
+  provider text,
+  error_message text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists contact_email_messages_created_at_idx
+on public.contact_email_messages (created_at desc);
+
+create index if not exists contact_email_messages_email_idx
+on public.contact_email_messages (email);
+
 -- Optional hardening if you later use non-service-role database users:
 -- revoke update, delete on public.site_content_backup from anon, authenticated;
 -- revoke update, delete on public.site_pages_mirror from anon, authenticated;

@@ -515,15 +515,28 @@ function Stat({ value, label }) {
   );
 }
 
-function FeatureCard({ title, text, icon, centered = false }) {
+function FeatureCard({ title, text, icon, centered = false, onSelect, actionLabel = 'Explore' }) {
+  const handleKeyDown = (event) => {
+    if (!onSelect || (event.key !== 'Enter' && event.key !== ' ')) return;
+    event.preventDefault();
+    onSelect();
+  };
+
   return (
-    <article className={centered ? 'feature-card centered' : 'feature-card'} data-reveal>
+    <article
+      className={centered ? 'feature-card centered' : 'feature-card'}
+      data-reveal
+      onClick={onSelect}
+      onKeyDown={handleKeyDown}
+      role={onSelect ? 'button' : undefined}
+      tabIndex={onSelect ? 0 : undefined}
+    >
       <GoldIcon icon={icon} />
       <div className="feature-card-content">
         <h3>{title}</h3>
         <div className="card-small-line" aria-hidden="true" />
         <p>{text}</p>
-        <span className="explore-link">Explore <b aria-hidden="true">-&gt;</b></span>
+        <span className="explore-link">{actionLabel} <b aria-hidden="true">-&gt;</b></span>
       </div>
     </article>
   );
@@ -789,21 +802,31 @@ function HomePage({ content, categories, setActivePage, setServiceFocus }) {
       </section>
 
       <FeaturedProducts categories={categories} setActivePage={setActivePage} setServiceFocus={setServiceFocus} />
-      <WhyChoose />
+      <WhyChoose setActivePage={setActivePage} setServiceFocus={setServiceFocus} />
       <Testimonials />
     </>
   );
 }
 
-function WhyChoose() {
+function WhyChoose({ setActivePage, setServiceFocus }) {
   const cards = [
-    ['Premium Fabric Quality', '100% premium cotton with superior GSM for lasting comfort and durability.', 'fabric'],
-    ['Comfortable Fit', 'Thoughtfully designed cuts that support clean everyday T-shirt styling.', 'fit'],
-    ['Unisex Designs', 'Versatile styles crafted for logo apparel, teams, and brand enquiries.', 'group'],
-    ['Logo Customization', 'Logo placement and styling support for brand and team apparel enquiries.', 'design'],
-    ['Easy Enquiry', 'Quick WhatsApp and email communication for custom T-shirt requirements.', 'chat'],
-    ['Pan India Support', 'Delivery and support discussion available for customers across India.', 'delivery'],
+    ['Premium Fabric Quality', '100% premium cotton with superior GSM for lasting comfort and durability.', 'fabric', 'premium-cotton', 'View Cotton'],
+    ['Comfortable Fit', 'Thoughtfully designed cuts that support clean everyday T-shirt styling.', 'fit', 'premium-cotton', 'View Fits'],
+    ['Unisex Designs', 'Versatile styles crafted for logo apparel, teams, and brand enquiries.', 'group', 'custom-models', 'View Models'],
+    ['Logo Customization', 'Logo placement and styling support for brand and team apparel enquiries.', 'design', 'logo-shirts', 'View Logo Styles'],
+    ['Easy Enquiry', 'Quick WhatsApp and email communication for custom T-shirt requirements.', 'chat', 'contact', 'Contact'],
+    ['Pan India Support', 'Delivery and support discussion available for customers across India.', 'delivery', 'contact', 'Contact'],
   ];
+
+  const openCard = (target) => {
+    if (target === 'contact') {
+      setActivePage('Contact');
+      goTop();
+      return;
+    }
+    setServiceFocus(target);
+    setActivePage('Services');
+  };
 
   return (
     <section className="section-block">
@@ -814,7 +837,16 @@ function WhyChoose() {
           subtitle="We help customers explore premium T-shirt styles, logo apparel, and custom enquiries with clear communication."
         />
         <div className="card-grid">
-          {cards.map(([title, text, icon]) => <FeatureCard key={title} title={title} text={text} icon={icon} />)}
+          {cards.map(([title, text, icon, target, actionLabel]) => (
+            <FeatureCard
+              key={title}
+              title={title}
+              text={text}
+              icon={icon}
+              actionLabel={actionLabel}
+              onSelect={() => openCard(target)}
+            />
+          ))}
         </div>
       </div>
     </section>
@@ -834,7 +866,7 @@ function PageHero({ eyebrow, title, subtitle }) {
   );
 }
 
-function AboutPage({ content, setActivePage }) {
+function AboutPage({ content, setActivePage, setServiceFocus }) {
   return (
     <>
       <PageHero eyebrow="Our Story" title={`About ${brand}`} subtitle={content.site.aboutSubtitle} />
@@ -853,9 +885,9 @@ function AboutPage({ content, setActivePage }) {
           </div>
         </div>
       </section>
-      <Values />
+      <Values setActivePage={setActivePage} setServiceFocus={setServiceFocus} />
       <BusinessInformation />
-      <section className="work-together" data-reveal>
+      <section className="work-together" id="lets-work-together" data-reveal>
         <h2>Let's Work Together</h2>
         <p>Partner with us for premium apparel solutions tailored to your needs.</p>
         <button className="gold-button" onClick={() => setActivePage('Contact')}>Get In Touch</button>
@@ -864,19 +896,44 @@ function AboutPage({ content, setActivePage }) {
   );
 }
 
-function Values() {
+function Values({ setActivePage, setServiceFocus }) {
   const values = [
-    ['Quality First', 'Premium fabrics and superior craftsmanship in every product we create.', 'quality'],
-    ['Customer Care', 'Your satisfaction is our priority from purchase to delivery and beyond.', 'care'],
-    ['Transparency', 'Honest pricing, clear policies, and open communication at every step.', 'transparent'],
-    ['Inclusivity', 'Unisex designs crafted to flatter and fit people of all body types.', 'inclusive'],
+    ['Quality First', 'Premium fabrics and superior craftsmanship in every product we create.', 'quality', 'premium-cotton', 'View Quality'],
+    ['Customer Care', 'Your satisfaction is our priority from purchase to delivery and beyond.', 'care', 'contact', 'Contact'],
+    ['Transparency', 'Honest pricing, clear policies, and open communication at every step.', 'transparent', 'business-information', 'View Details'],
+    ['Inclusivity', 'Unisex designs crafted to flatter and fit people of all body types.', 'inclusive', 'custom-models', 'View Models'],
   ];
+
+  const openValue = (target) => {
+    if (target === 'contact') {
+      setActivePage('Contact');
+      goTop();
+      return;
+    }
+    if (target === 'business-information') {
+      document.getElementById('business-information')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    setServiceFocus(target);
+    setActivePage('Services');
+  };
+
   return (
     <section className="section-block values-section">
       <div className="container">
         <SectionTitle eyebrow="What We Stand For" title="Our Values" subtitle={`The principles that guide everything we do at ${brand}.`} />
         <div className="value-grid">
-          {values.map(([title, text, icon]) => <FeatureCard key={title} title={title} text={text} icon={icon} centered />)}
+          {values.map(([title, text, icon, target, actionLabel]) => (
+            <FeatureCard
+              key={title}
+              title={title}
+              text={text}
+              icon={icon}
+              actionLabel={actionLabel}
+              onSelect={() => openValue(target)}
+              centered
+            />
+          ))}
         </div>
       </div>
     </section>
@@ -891,7 +948,7 @@ function BusinessInformation() {
   };
 
   return (
-    <section className="section-block business-section">
+    <section className="section-block business-section" id="business-information">
       <div className="container">
         <SectionTitle eyebrow="Registered Details" title="Business Information" subtitle="Registered business details for your trust and transparency." />
         <div className="business-card" data-reveal>
@@ -1031,6 +1088,24 @@ function ContactPage({ content }) {
     return <p>{text}</p>;
   };
 
+  const openContactCard = (title) => {
+    if (title === 'Phone') {
+      window.location.href = `tel:${phoneNumber}`;
+      return;
+    }
+    if (title === 'Email') {
+      window.location.href = `mailto:${emailAddress}`;
+      return;
+    }
+    document.querySelector('.message-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleContactKeyDown = (event, title) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    openContactCard(title);
+  };
+
   const updateField = (field, value) => {
     setFormData((current) => ({ ...current, [field]: value }));
   };
@@ -1089,7 +1164,22 @@ function ContactPage({ content }) {
           <h2 className="contact-heading">Contact Information</h2>
           <div className="contact-list">
             {contacts.map(([title, text, icon]) => (
-              <article className="contact-card royal-text-card" key={title}><GoldIcon icon={icon} /><div><h3>{title}</h3><div className="card-small-line" aria-hidden="true" />{renderContactText(title, text)}</div></article>
+              <article
+                className="contact-card royal-text-card"
+                key={title}
+                role="button"
+                tabIndex={0}
+                onClick={() => openContactCard(title)}
+                onKeyDown={(event) => handleContactKeyDown(event, title)}
+              >
+                <GoldIcon icon={icon} />
+                <div>
+                  <h3>{title}</h3>
+                  <div className="card-small-line" aria-hidden="true" />
+                  {renderContactText(title, text)}
+                  <span className="explore-link">{title === 'Phone' ? 'Call Now' : title === 'Email' ? 'Send Email' : 'Open Form'} <b aria-hidden="true">-&gt;</b></span>
+                </div>
+              </article>
             ))}
           </div>
         </div>

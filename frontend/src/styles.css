@@ -1767,6 +1767,31 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
   text-transform: none;
 }
 
+.admin-save-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0 0 1.25rem;
+  padding: 0.9rem;
+  border: 1px solid rgba(255, 201, 0, 0.22);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.24);
+}
+
+.admin-save-bar span {
+  color: var(--soft-silver);
+  font-weight: 800;
+}
+
+.admin-save-bar .success {
+  color: #99f2b4;
+}
+
+.admin-save-bar .error {
+  color: #ff9a90;
+}
+
 .admin-edit-focus {
   margin: 1rem 0 1.3rem;
   padding: 1.25rem;

@@ -6,9 +6,9 @@ import urllib.error
 import urllib.request
 from email.message import EmailMessage
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Header
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -83,6 +83,10 @@ class ContactMessage(BaseModel):
         if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", value):
             raise ValueError("Invalid email address.")
         return value
+
+
+class AdminContentPayload(BaseModel):
+    content: Dict[str, Any]
 
 
 def _clean(value: str) -> str:
@@ -187,6 +191,45 @@ def _send_email(payload: ContactMessage) -> None:
     raise RuntimeError("Email settings are not configured.")
 
 
+def _supabase_configured() -> bool:
+    return bool(os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_SERVICE_ROLE_KEY"))
+
+
+def _supabase_headers(extra: Dict[str, str] | None = None) -> Dict[str, str]:
+    key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+    headers = {
+        "apikey": key,
+        "Authorization": f"Bearer {key}",
+        "Content-Type": "application/json",
+        "User-Agent": "liyans-vastra-admin-api/1.0",
+    }
+    if extra:
+        headers.update(extra)
+    return headers
+
+
+def _supabase_request(path: str, method: str = "GET", body: Any | None = None, extra_headers: Dict[str, str] | None = None) -> Any:
+    base_url = os.environ["SUPABASE_URL"].rstrip("/")
+    data = None if body is None else json.dumps(body).encode("utf-8")
+    request = urllib.request.Request(
+        f"{base_url}/rest/v1/{path}",
+        data=data,
+        headers=_supabase_headers(extra_headers),
+        method=method,
+    )
+    with urllib.request.urlopen(request, timeout=25) as response:
+        raw = response.read().decode("utf-8", errors="ignore")
+        if not raw:
+            return None
+        return json.loads(raw)
+
+
+def _admin_authorized(email: str | None, password: str | None) -> bool:
+    expected_email = os.getenv("ADMIN_EMAIL", "liyansvastra@brillaris.pro")
+    expected_password = os.getenv("ADMIN_PASSWORD", "Brillaris$12")
+    return email == expected_email and password == expected_password
+
+
 @app.get("/health")
 def health():
     return {"ok": True, "service": "LIYAN'S VASTRA Contact API"}
@@ -205,4 +248,70 @@ def send_contact_email(payload: ContactMessage):
     return {
         "ok": True,
         "message": "Message sent successfully.",
+    }
+
+
+@app.get("/api/admin/content")
+def get_admin_content():
+    if not _supabase_configured():
+        return {
+            "ok": False,
+            "content": None,
+            "message": "Supabase is not configured.",
+        }
+    try:
+        rows = _supabase_request("site_content_current?select=content&id=eq.main&limit=1")
+    except Exception:
+        return {
+            "ok": False,
+            "content": None,
+            "message": "Unable to load website content.",
+        }
+    content = rows[0]["content"] if rows else None
+    return {
+        "ok": True,
+        "content": content,
+        "message": "Website content loaded.",
+    }
+
+
+@app.put("/api/admin/content")
+def save_admin_content(
+    payload: AdminContentPayload,
+    x_admin_email: str | None = Header(default=None),
+    x_admin_password: str | None = Header(default=None),
+):
+    if not _admin_authorized(x_admin_email, x_admin_password):
+        return {
+            "ok": False,
+            "message": "Admin access denied.",
+        }
+    if not _supabase_configured():
+        return {
+            "ok": False,
+            "message": "Supabase is not configured.",
+        }
+    try:
+        current_row = [{"id": "main", "content": payload.content}]
+        _supabase_request(
+            "site_content_current",
+            method="POST",
+            body=current_row,
+            extra_headers={"Prefer": "resolution=merge-duplicates,return=minimal"},
+        )
+        backup_row = [{"source_id": "main", "action": "save", "content": payload.content}]
+        _supabase_request(
+            "site_content_backup",
+            method="POST",
+            body=backup_row,
+            extra_headers={"Prefer": "return=minimal"},
+        )
+    except Exception:
+        return {
+            "ok": False,
+            "message": "Unable to save website content.",
+        }
+    return {
+        "ok": True,
+        "message": "Website content saved and backup snapshot created.",
     }

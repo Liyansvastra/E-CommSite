@@ -848,7 +848,16 @@ function ImageUploadField({ label, value, onChange }) {
   );
 }
 
-function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuthed, setAdminEditCategoryIndex, setAdminEditItemIndex }) {
+function AdminSaveBar({ status, onSave }) {
+  return (
+    <div className="admin-save-bar">
+      <button className="gold-button" type="button" onClick={onSave}>Save To Supabase</button>
+      {status?.message && <span className={status.type === 'success' ? 'success' : 'error'}>{status.message}</span>}
+    </div>
+  );
+}
+
+function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuthed, setAdminEditCategoryIndex, setAdminEditItemIndex, onSaveContent, adminSaveStatus }) {
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -1026,6 +1035,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
             <button className="dark-button" type="button" onClick={logout}>Logout</button>
           </div>
         </div>
+        <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
 
         <div className="admin-grid">
           <section className="admin-panel">
@@ -1154,7 +1164,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
   );
 }
 
-function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEditCategoryIndex, setAdminEditCategoryIndex, setAdminEditItemIndex }) {
+function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEditCategoryIndex, setAdminEditCategoryIndex, setAdminEditItemIndex, onSaveContent, adminSaveStatus }) {
   const categoryIndex = Math.min(adminEditCategoryIndex, Math.max(content.categories.length - 1, 0));
   const category = content.categories[categoryIndex] || content.categories[0];
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -1214,6 +1224,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
             <button className="gold-button" type="button" onClick={addGroupItem}>Add New Container</button>
           </div>
         </div>
+        <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
         <section className="admin-panel admin-wide">
           <div className="admin-edit-focus">
             <h3>Edit Category</h3>
@@ -1261,7 +1272,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
   );
 }
 
-function AdminContainerEditorPage({ content, setContent, setActivePage, adminEditCategoryIndex, adminEditItemIndex, setAdminEditItemIndex }) {
+function AdminContainerEditorPage({ content, setContent, setActivePage, adminEditCategoryIndex, adminEditItemIndex, setAdminEditItemIndex, onSaveContent, adminSaveStatus }) {
   const category = content.categories[adminEditCategoryIndex] || content.categories[0];
   const itemIndex = Math.min(adminEditItemIndex, Math.max((category?.items.length || 1) - 1, 0));
   const selectedItem = category ? normalizeStyleItem(category.items[itemIndex], category, itemIndex) : null;
@@ -1285,6 +1296,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
           <div><span>Container Editor</span><h1>{selectedItem.title}</h1></div>
           <button className="dark-button" type="button" onClick={() => setActivePage('AdminCategoryEditor')}>Back Category</button>
         </div>
+        <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
         <section className="admin-panel admin-wide">
           <div className="admin-edit-focus">
             <h3>Edit Image Container</h3>
@@ -1385,6 +1397,7 @@ function App() {
   const [isAdminAuthed, setIsAdminAuthed] = useState(() => localStorage.getItem(authKey) === 'true');
   const [adminEditCategoryIndex, setAdminEditCategoryIndex] = useState(0);
   const [adminEditItemIndex, setAdminEditItemIndex] = useState(0);
+  const [adminSaveStatus, setAdminSaveStatus] = useState({ type: '', message: '' });
   const CurrentPage = useMemo(() => ({
     Home: HomePage,
     About: AboutPage,
@@ -1402,6 +1415,22 @@ function App() {
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(content));
   }, [content]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${apiBaseUrl}/api/admin/content`)
+      .then((response) => response.json())
+      .then((result) => {
+        if (!cancelled && result?.ok && result.content?.site && Array.isArray(result.content?.categories)) {
+          setContent(result.content);
+          localStorage.setItem(storageKey, JSON.stringify(result.content));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -1427,6 +1456,26 @@ function App() {
       window.history.pushState({}, '', nextPath);
     }
     setActivePageState(page);
+  };
+
+  const saveContentToSupabase = async () => {
+    setAdminSaveStatus({ type: '', message: 'Saving content...' });
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/admin/content`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Email': adminEmail,
+          'X-Admin-Password': adminPassword,
+        },
+        body: JSON.stringify({ content }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.ok) throw new Error(result?.message || 'Unable to save content.');
+      setAdminSaveStatus({ type: 'success', message: result.message || 'Saved to Supabase.' });
+    } catch (error) {
+      setAdminSaveStatus({ type: 'error', message: 'Unable to save to Supabase. Check backend env settings.' });
+    }
   };
 
   useEffect(() => {
@@ -1457,6 +1506,8 @@ function App() {
           setAdminEditCategoryIndex={setAdminEditCategoryIndex}
           adminEditItemIndex={adminEditItemIndex}
           setAdminEditItemIndex={setAdminEditItemIndex}
+          onSaveContent={saveContentToSupabase}
+          adminSaveStatus={adminSaveStatus}
           setActivePage={setActivePage}
           serviceFocus={serviceFocus}
           setServiceFocus={setServiceFocus}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
@@ -32,6 +32,14 @@ const animationOptions = [
   ['hover-right-pair', 'Hover right-side pair'],
   ['royal-float', 'Royal floating zoom'],
 ];
+const gradientOptions = [
+  ['royal-light', 'Royal Light', 'radial-gradient(circle at 72% 22%, rgba(255, 201, 0, 0.2), transparent 11rem), linear-gradient(135deg, rgba(234, 234, 234, 0.96), rgba(204, 204, 204, 0.76))'],
+  ['black-gold', 'Black Gold', 'radial-gradient(circle at 74% 20%, rgba(255, 201, 0, 0.22), transparent 12rem), linear-gradient(135deg, rgba(12, 10, 6, 0.96), rgba(44, 33, 12, 0.82))'],
+  ['champagne', 'Champagne', 'radial-gradient(circle at 24% 18%, rgba(255, 201, 0, 0.18), transparent 10rem), linear-gradient(135deg, rgba(235, 225, 190, 0.96), rgba(174, 158, 108, 0.76))'],
+  ['silver-royal', 'Silver Royal', 'radial-gradient(circle at 70% 26%, rgba(213, 173, 24, 0.2), transparent 11rem), linear-gradient(135deg, rgba(234, 234, 234, 0.94), rgba(172, 172, 172, 0.78))'],
+  ['deep-maroon', 'Deep Maroon', 'radial-gradient(circle at 68% 18%, rgba(255, 201, 0, 0.2), transparent 11rem), linear-gradient(135deg, rgba(38, 8, 12, 0.96), rgba(11, 8, 6, 0.9))'],
+];
+const defaultGradient = gradientOptions[0][2];
 
 const defaultServiceCategories = [
   {
@@ -132,6 +140,15 @@ function normalizeStyleItem(item, category, index = 0) {
     frontImage,
     backImage,
     animationType: typeof item === 'object' && item?.animationType ? item.animationType : category.animationType || (backImage ? 'front-back-display' : 'royal-zoom-right'),
+    cardGradient: typeof item === 'object' && item?.cardGradient ? item.cardGradient : category.cardGradient || defaultGradient,
+    frontZoom: typeof item === 'object' && item?.frontZoom ? item.frontZoom : category.frontZoom || 1,
+    frontX: typeof item === 'object' && item?.frontX ? item.frontX : category.frontX || 0,
+    frontY: typeof item === 'object' && item?.frontY ? item.frontY : category.frontY || 0,
+    frontFit: typeof item === 'object' && item?.frontFit ? item.frontFit : category.frontFit || 'contain',
+    backZoom: typeof item === 'object' && item?.backZoom ? item.backZoom : category.backZoom || 1,
+    backX: typeof item === 'object' && item?.backX ? item.backX : category.backX || 0,
+    backY: typeof item === 'object' && item?.backY ? item.backY : category.backY || 0,
+    backFit: typeof item === 'object' && item?.backFit ? item.backFit : category.backFit || 'contain',
     clothStyle: typeof item === 'object' && item?.clothStyle ? item.clothStyle : ['Round Neck', 'Logo Placement', 'Custom Color'][index] || 'Premium Tee',
     fabric: typeof item === 'object' && item?.fabric ? item.fabric : index === 1 ? '220 GSM Cotton' : 'Premium Cotton',
     fit: typeof item === 'object' && item?.fit ? item.fit : index === 2 ? 'Custom Fit' : 'Regular Comfort Fit',
@@ -163,6 +180,83 @@ const businessInfo = [
 
 function goTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getVisualStyleVars(item = {}) {
+  const frontZoom = Number(item.frontZoom || 1);
+  const backZoom = Number(item.backZoom || 1);
+  return {
+    '--card-bg': item.cardGradient || defaultGradient,
+    '--front-zoom': String(frontZoom),
+    '--front-scale-096': String(frontZoom * 0.96),
+    '--front-scale-098': String(frontZoom * 0.98),
+    '--front-scale-104': String(frontZoom * 1.04),
+    '--front-scale-106': String(frontZoom * 1.06),
+    '--front-scale-108': String(frontZoom * 1.08),
+    '--front-x': `${item.frontX || 0}%`,
+    '--front-y': `${item.frontY || 0}%`,
+    '--front-fit': item.frontFit || 'contain',
+    '--back-zoom': String(backZoom),
+    '--back-scale-09': String(backZoom * 0.9),
+    '--back-scale-092': String(backZoom * 0.92),
+    '--back-scale-098': String(backZoom * 0.98),
+    '--back-x': `${item.backX || 0}%`,
+    '--back-y': `${item.backY || 0}%`,
+    '--back-fit': item.backFit || 'contain',
+  };
+}
+
+function ScrollArrowRow({ children, className = '' }) {
+  const rowRef = useRef(null);
+  const [scrollState, setScrollState] = useState({ canLeft: false, canRight: false });
+
+  const updateScrollState = () => {
+    const row = rowRef.current;
+    if (!row) return;
+    const maxScroll = row.scrollWidth - row.clientWidth;
+    setScrollState({
+      canLeft: row.scrollLeft > 8,
+      canRight: row.scrollLeft < maxScroll - 8,
+    });
+  };
+
+  const move = (direction) => {
+    const row = rowRef.current;
+    if (!row) return;
+    row.scrollBy({ left: direction * Math.max(row.clientWidth * 0.82, 280), behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    updateScrollState();
+    const row = rowRef.current;
+    if (!row) return undefined;
+    row.addEventListener('scroll', updateScrollState, { passive: true });
+    window.addEventListener('resize', updateScrollState);
+    const timer = window.setTimeout(updateScrollState, 80);
+    return () => {
+      row.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', updateScrollState);
+      window.clearTimeout(timer);
+    };
+  }, [children]);
+
+  return (
+    <div className="scroll-arrow-shell">
+      {scrollState.canLeft && (
+        <button className="scroll-arrow scroll-arrow-left" type="button" aria-label="Scroll left" onClick={() => move(-1)}>
+          &lt;
+        </button>
+      )}
+      <div className={className} ref={rowRef}>
+        {children}
+      </div>
+      {scrollState.canRight && (
+        <button className="scroll-arrow scroll-arrow-right" type="button" aria-label="Scroll right" onClick={() => move(1)}>
+          &gt;
+        </button>
+      )}
+    </div>
+  );
 }
 
 function useRevealOnScroll(activePage) {
@@ -310,7 +404,7 @@ function ProductCard({ category, onSelect }) {
       tabIndex="0"
       onKeyDown={handleKeyDown}
     >
-      <div className={visualClass} aria-hidden="true">
+      <div className={visualClass} style={getVisualStyleVars(category)} aria-hidden="true">
         {hasBackImage && <img className="shirt-image back" src={category.backImage} alt="" loading="lazy" decoding="async" />}
         <img className="shirt-image front" src={category.frontImage} alt="" loading="lazy" decoding="async" />
         <div className="shirt-caption" aria-hidden="true">
@@ -345,7 +439,7 @@ function GroupStyleCard({ style, index }) {
   return (
     <article className="group-style-card" data-reveal>
       <div className="group-style-media">
-        <div className={visualClass}>
+        <div className={visualClass} style={getVisualStyleVars(style)}>
           {hasBackImage && <img className="group-shirt back" src={style.backImage} alt="" loading="lazy" decoding="async" />}
           <img className="group-shirt front" src={style.frontImage} alt={`${style.title} T-shirt style`} loading="lazy" decoding="async" />
           <div className="shirt-caption group-caption">
@@ -423,9 +517,9 @@ function FeaturedProducts({ categories, setActivePage, setServiceFocus }) {
           title="T-shirt Style Showcase"
           subtitle="Sample T-shirt, logo, style, and model directions while final client images are pending."
         />
-        <div className="product-grid">
+        <ScrollArrowRow className="product-grid">
           {categories.filter((category) => category.showOnHome !== false).map((category) => <ProductCard key={category.id} category={category} onSelect={openCategory} />)}
-        </div>
+        </ScrollArrowRow>
         <div className="section-action" data-reveal>
           <button className="gold-button" onClick={openServicesTop}>View Styles</button>
         </div>
@@ -663,7 +757,7 @@ function ServicesPage({ categories, serviceFocus, setServiceFocus, setActivePage
               <h3>{category.title}</h3>
               <p>{category.text}</p>
             </div>
-            <div className="service-shirt-grid">
+            <ScrollArrowRow className="service-shirt-grid">
               {category.items.map((item, itemIndex) => {
                 const style = normalizeStyleItem(item, category, itemIndex);
                 return (
@@ -674,7 +768,7 @@ function ServicesPage({ categories, serviceFocus, setServiceFocus, setActivePage
                 />
                 );
               })}
-            </div>
+            </ScrollArrowRow>
           </section>
         ))}
       </div>
@@ -889,6 +983,79 @@ function ImageUploadField({ label, value, onChange, required = false, allowClear
   );
 }
 
+function VisualPreview({ item, badge = 'Live Preview' }) {
+  return (
+    <div className="admin-visual-preview">
+      <span>{badge}</span>
+      <ProductCard category={{ ...item, badge, count: item.count || 'Preview', rate: item.rate || 'Quote Based' }} onSelect={() => {}} />
+    </div>
+  );
+}
+
+function ImageAdjustmentControls({ title, prefix, item, updateField, disabled = false }) {
+  const fitValue = item[`${prefix}Fit`] || 'contain';
+  return (
+    <div className={disabled ? 'image-adjust-card disabled' : 'image-adjust-card'}>
+      <h4>{title}</h4>
+      {disabled ? (
+        <p>Add a backside image to enable backside crop and movement controls.</p>
+      ) : (
+        <>
+          <label>
+            Image Zoom
+            <input type="range" min="0.72" max="1.65" step="0.01" value={item[`${prefix}Zoom`] || 1} onChange={(event) => updateField(`${prefix}Zoom`, Number(event.target.value))} />
+          </label>
+          <div className="form-two compact">
+            <label>
+              Move Left / Right
+              <input type="range" min="-38" max="38" step="1" value={item[`${prefix}X`] || 0} onChange={(event) => updateField(`${prefix}X`, Number(event.target.value))} />
+            </label>
+            <label>
+              Move Top / Bottom
+              <input type="range" min="-28" max="28" step="1" value={item[`${prefix}Y`] || 0} onChange={(event) => updateField(`${prefix}Y`, Number(event.target.value))} />
+            </label>
+          </div>
+          <label>
+            Crop Method
+            <select value={fitValue} onChange={(event) => updateField(`${prefix}Fit`, event.target.value)}>
+              <option value="contain">Full Image</option>
+              <option value="cover">Crop Fill</option>
+              <option value="scale-down">Scale Down</option>
+            </select>
+          </label>
+        </>
+      )}
+    </div>
+  );
+}
+
+function RoyalVisualControls({ item, updateField }) {
+  const selectedGradient = item.cardGradient || defaultGradient;
+  return (
+    <div className="royal-visual-editor">
+      <div className="form-two">
+        <label>
+          Container Gradient
+          <select value={selectedGradient} onChange={(event) => updateField('cardGradient', event.target.value)}>
+            {gradientOptions.map(([, label, value]) => <option key={label} value={value}>{label}</option>)}
+          </select>
+        </label>
+        <label>
+          Animation Style
+          <select value={item.animationType || (item.backImage ? 'front-back-display' : 'royal-zoom-right')} onChange={(event) => updateField('animationType', event.target.value)}>
+            {animationOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          </select>
+        </label>
+      </div>
+      <div className="image-adjust-grid">
+        <ImageAdjustmentControls title="Frontside Crop & Position" prefix="front" item={item} updateField={updateField} />
+        <ImageAdjustmentControls title="Backside Crop & Position" prefix="back" item={item} updateField={updateField} disabled={!item.backImage} />
+      </div>
+      <VisualPreview item={item} />
+    </div>
+  );
+}
+
 function AdminSaveBar({ status, onSave }) {
   return (
     <div className="admin-save-bar">
@@ -975,6 +1142,15 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
           frontImage: shirtFrontImage,
           backImage: '',
           animationType: 'royal-zoom-right',
+          cardGradient: defaultGradient,
+          frontZoom: 1,
+          frontX: 0,
+          frontY: 0,
+          frontFit: 'contain',
+          backZoom: 1,
+          backX: 0,
+          backY: 0,
+          backFit: 'contain',
           showOnHome: true,
           showOnServices: true,
           items: ['New Style Group'],
@@ -1131,12 +1307,12 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
               </div>
             </div>
           )}
-          <div className="admin-category-list admin-scroll-row">
+          <ScrollArrowRow className="admin-category-list admin-scroll-row">
             {content.categories.map((category, index) => (
               <article className={selectedCategoryIndex === index ? 'admin-category-card selected' : 'admin-category-card'} key={`${category.id}-${index}`}>
-                <div className="admin-category-preview">
+                <div className="admin-category-preview" style={getVisualStyleVars(category)}>
                   <img src={category.frontImage} alt="" />
-                  <img src={category.backImage} alt="" />
+                  {category.backImage && <img src={category.backImage} alt="" />}
                 </div>
                 <div className="admin-category-fields">
                   <strong>{category.title}</strong>
@@ -1149,7 +1325,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
                 </div>
               </article>
             ))}
-          </div>
+          </ScrollArrowRow>
           {false && selectedCategory && (
             <div className="admin-group-editor">
               <div className="admin-section-head">
@@ -1177,14 +1353,14 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
                   </div>
                 </div>
               )}
-              <div className="admin-category-list admin-scroll-row">
+              <ScrollArrowRow className="admin-category-list admin-scroll-row">
                 {selectedCategory.items.map((item, itemIndex) => {
                   const style = normalizeStyleItem(item, selectedCategory, itemIndex);
                   return (
                     <article className={selectedItemIndex === itemIndex ? 'admin-category-card selected' : 'admin-category-card'} key={style.id}>
-                      <div className="admin-category-preview">
+                      <div className="admin-category-preview" style={getVisualStyleVars(style)}>
                         <img src={style.frontImage} alt="" />
-                        <img src={style.backImage} alt="" />
+                        {style.backImage && <img src={style.backImage} alt="" />}
                       </div>
                       <div className="admin-category-fields">
                         <strong>{style.title}</strong>
@@ -1198,7 +1374,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
                     </article>
                   );
                 })}
-              </div>
+              </ScrollArrowRow>
             </div>
           )}
         </section>
@@ -1283,18 +1459,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
               <ImageUploadField label="Front Image File" value={category.frontImage} required onChange={(value) => updateCategory('frontImage', value)} />
               <ImageUploadField label="Back Image File" value={category.backImage} allowClear onChange={(value) => updateCategory('backImage', value)} />
             </div>
-            <div className="form-two">
-              <label>
-                Animation Style
-                <select value={category.animationType || (category.backImage ? 'front-back-display' : 'royal-zoom-right')} onChange={(event) => updateCategory('animationType', event.target.value)}>
-                  {animationOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-                </select>
-              </label>
-              <label>
-                Animation Note
-                <input value={category.backImage ? 'Back image enabled: dual animation options are available.' : 'Front-only: zoom/right movement is recommended.'} readOnly />
-              </label>
-            </div>
+            <RoyalVisualControls item={category} updateField={updateCategory} />
             <div className="admin-checks">
               <label><input type="checkbox" checked={category.showOnHome !== false} onChange={(event) => toggleCategory('showOnHome', event.target.checked)} /> Show on Home page</label>
               <label><input type="checkbox" checked={category.showOnServices !== false} onChange={(event) => toggleCategory('showOnServices', event.target.checked)} /> Show on Services category page</label>
@@ -1304,12 +1469,12 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
           <div className="admin-section-head">
             <div><h2>{category.title} Containers</h2><p>Edit containers shown inside this category group page.</p></div>
           </div>
-          <div className="admin-category-list admin-scroll-row">
+          <ScrollArrowRow className="admin-category-list admin-scroll-row">
             {category.items.map((item, itemIndex) => {
               const style = normalizeStyleItem(item, category, itemIndex);
               return (
                 <article className="admin-category-card" key={style.id}>
-                  <div className="admin-category-preview"><img src={style.frontImage} alt="" />{style.backImage && <img src={style.backImage} alt="" />}</div>
+                  <div className="admin-category-preview" style={getVisualStyleVars(style)}><img src={style.frontImage} alt="" />{style.backImage && <img src={style.backImage} alt="" />}</div>
                   <div className="admin-category-fields">
                     <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
                     <div className="admin-actions">
@@ -1320,7 +1485,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
                 </article>
               );
             })}
-          </div>
+          </ScrollArrowRow>
         </section>
       </div>
     </section>
@@ -1389,18 +1554,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
               <ImageUploadField label="Front Image File" value={selectedItem.frontImage} required onChange={(value) => updateGroupItem('frontImage', value)} />
               <ImageUploadField label="Back Image File" value={selectedItem.backImage} allowClear onChange={(value) => updateGroupItem('backImage', value)} />
             </div>
-            <div className="form-two">
-              <label>
-                Animation Style
-                <select value={selectedItem.animationType || (selectedItem.backImage ? 'front-back-display' : 'royal-zoom-right')} onChange={(event) => updateGroupItem('animationType', event.target.value)}>
-                  {animationOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-                </select>
-              </label>
-              <label>
-                Animation Note
-                <input value={selectedItem.backImage ? 'Choose front/back or right-side pair movement.' : 'Backside is optional. Front image will zoom and move right.'} readOnly />
-              </label>
-            </div>
+            <RoyalVisualControls item={selectedItem} updateField={updateGroupItem} />
             <div className="form-two">
               <label>Cloth Style<input value={selectedItem.clothStyle} onChange={(event) => updateGroupItem('clothStyle', event.target.value)} /></label>
               <label>Rate<input value={selectedItem.rate} onChange={(event) => updateGroupItem('rate', event.target.value)} /></label>
@@ -1408,12 +1562,12 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
             <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </div>
           <div className="admin-section-head"><div><h2>{category.title} Containers</h2><p>Select another container to edit it.</p></div></div>
-          <div className="admin-category-list admin-scroll-row">
+          <ScrollArrowRow className="admin-category-list admin-scroll-row">
             {category.items.map((item, index) => {
               const style = normalizeStyleItem(item, category, index);
               return (
                 <article className={index === itemIndex ? 'admin-category-card selected' : 'admin-category-card'} key={style.id}>
-                  <div className="admin-category-preview"><img src={style.frontImage} alt="" />{style.backImage && <img src={style.backImage} alt="" />}</div>
+                  <div className="admin-category-preview" style={getVisualStyleVars(style)}><img src={style.frontImage} alt="" />{style.backImage && <img src={style.backImage} alt="" />}</div>
                   <div className="admin-category-fields">
                     <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
                     <div className="admin-actions">
@@ -1424,7 +1578,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
                 </article>
               );
             })}
-          </div>
+          </ScrollArrowRow>
         </section>
       </div>
     </section>

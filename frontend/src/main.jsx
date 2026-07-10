@@ -187,6 +187,8 @@ function normalizeStyleItem(item, category, index = 0) {
     backX: typeof item === 'object' && item?.backX ? item.backX : category.backX || 0,
     backY: typeof item === 'object' && item?.backY ? item.backY : category.backY || 0,
     backFit: typeof item === 'object' && item?.backFit ? item.backFit : category.backFit || 'contain',
+    showOnHome: typeof item === 'object' ? item?.showOnHome === true : false,
+    showOnServices: typeof item === 'object' ? item?.showOnServices !== false : true,
     clothStyle: typeof item === 'object' && item?.clothStyle ? item.clothStyle : ['Round Neck', 'Logo Placement', 'Custom Color'][index] || 'Premium Tee',
     fabric: typeof item === 'object' && item?.fabric ? item.fabric : index === 1 ? '220 GSM Cotton' : 'Premium Cotton',
     fit: typeof item === 'object' && item?.fit ? item.fit : index === 2 ? 'Custom Fit' : 'Regular Comfort Fit',
@@ -710,6 +712,15 @@ function FeaturedProducts({ categories, setActivePage, setServiceFocus }) {
     goTop();
   };
 
+  const homeCards = categories.flatMap((category) => {
+    const categoryCard = category.showOnHome !== false ? [category] : [];
+    const itemCards = category.items
+      .map((item, itemIndex) => normalizeStyleItem(item, category, itemIndex))
+      .filter((style) => style.showOnHome === true)
+      .map((style) => ({ ...category, ...style, id: `${category.id}-${style.id}`, badge: category.badge, count: category.count, parentCategoryId: category.id }));
+    return [...categoryCard, ...itemCards];
+  });
+
   return (
     <section className="section-block compact-section">
       <div className="container">
@@ -719,7 +730,7 @@ function FeaturedProducts({ categories, setActivePage, setServiceFocus }) {
           subtitle="Sample T-shirt, logo, style, and model directions while final client images are pending."
         />
         <ScrollArrowRow className="product-grid">
-          {categories.filter((category) => category.showOnHome !== false).map((category) => <ProductCard key={category.id} category={category} onSelect={openCategory} />)}
+          {homeCards.map((category) => <ProductCard key={category.id} category={category} onSelect={() => openCategory(category.parentCategoryId || category.id)} />)}
         </ScrollArrowRow>
         <div className="section-action" data-reveal>
           <button className="gold-button" onClick={openServicesTop}>View Styles</button>
@@ -1005,8 +1016,9 @@ function ServicesPage({ categories, serviceFocus, setServiceFocus, setActivePage
               <p>{category.text}</p>
             </div>
             <ScrollArrowRow className="service-shirt-grid">
-              {category.items.map((item, itemIndex) => {
-                const style = normalizeStyleItem(item, category, itemIndex);
+              {category.items.map((item, itemIndex) => ({ style: normalizeStyleItem(item, category, itemIndex), itemIndex }))
+                .filter(({ style }) => style.showOnServices !== false)
+                .map(({ style, itemIndex }) => {
                 return (
                 <ProductCard
                   key={style.id}
@@ -1025,12 +1037,9 @@ function ServicesPage({ categories, serviceFocus, setServiceFocus, setActivePage
 
 function ServiceDetailPage({ categories, serviceFocus, setActivePage, setServiceFocus }) {
   const category = findServiceCategory(categories, serviceFocus);
-  const groupStyles = category.items.map((item, index) => ({
-    ...category,
-    ...normalizeStyleItem(item, category, index),
-    id: `${category.id}-${index}`,
-    count: `${index + 1} sample`,
-  }));
+  const groupStyles = category.items
+    .map((item, index) => ({ ...category, ...normalizeStyleItem(item, category, index), id: `${category.id}-${index}`, count: `${index + 1} sample` }))
+    .filter((style) => style.showOnServices !== false);
 
   const backToServices = () => {
     setServiceFocus(category.id);
@@ -1469,6 +1478,8 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
               fit: 'Regular Comfort Fit',
               rating: '4.8 / 5',
               rate: category.rate,
+              showOnHome: false,
+              showOnServices: true,
             }, category, category.items.length),
           ],
         };
@@ -1676,6 +1687,20 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
   };
 
   const toggleCategory = (field, checked) => updateCategory(field, checked);
+  const toggleGroupItem = (itemIndex, field, checked) => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((item, index) => {
+        if (index !== categoryIndex) return item;
+        return {
+          ...item,
+          items: item.items.map((group, groupIndex) => (
+            groupIndex === itemIndex ? { ...normalizeStyleItem(group, item, itemIndex), [field]: checked } : group
+          )),
+        };
+      }),
+    }));
+  };
 
   const addGroupItem = () => {
     setContent((current) => ({
@@ -1685,7 +1710,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
         const title = `New Style Container ${item.items.length + 1}`;
         return {
           ...item,
-          items: [...item.items, normalizeStyleItem({ title, text: item.text, frontImage: item.frontImage, backImage: item.backImage, animationType: item.animationType || (item.backImage ? 'front-back-display' : 'royal-zoom-right') }, item, item.items.length)],
+          items: [...item.items, normalizeStyleItem({ title, text: item.text, frontImage: item.frontImage, backImage: item.backImage, animationType: item.animationType || (item.backImage ? 'front-back-display' : 'royal-zoom-right'), showOnHome: false, showOnServices: true }, item, item.items.length)],
         };
       }),
     }));
@@ -1757,6 +1782,10 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
                   <div className="admin-category-preview" style={getVisualStyleVars(style)}><img src={style.frontImage} alt="" />{style.backImage && <img src={style.backImage} alt="" />}</div>
                   <div className="admin-category-fields">
                     <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
+                    <div className="admin-checks compact-checks">
+                      <label><input type="checkbox" checked={style.showOnHome === true} onChange={(event) => toggleGroupItem(itemIndex, 'showOnHome', event.target.checked)} /> Show on Home page</label>
+                      <label><input type="checkbox" checked={style.showOnServices !== false} onChange={(event) => toggleGroupItem(itemIndex, 'showOnServices', event.target.checked)} /> Show on Services category page</label>
+                    </div>
                     <div className="admin-actions">
                       <button className="gold-button" type="button" onClick={() => { goTop(); setActivePage('AdminContainerEditor', { categoryIndex, itemIndex }); }}>Edit</button>
                       <button className="dark-button" type="button" onClick={() => setDeleteTarget(itemIndex)}>Delete</button>
@@ -1788,6 +1817,8 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
       }),
     }));
   };
+
+  const toggleGroupItem = (field, checked) => updateGroupItem(field, checked);
 
   const removeGroupItem = (targetIndex) => {
     setContent((current) => ({
@@ -1836,6 +1867,10 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
               <ImageUploadField label="Back Image File" value={selectedItem.backImage} allowClear onChange={(value) => updateGroupItem('backImage', value)} />
             </div>
             <RoyalVisualControls item={selectedItem} updateField={updateGroupItem} />
+            <div className="admin-checks">
+              <label><input type="checkbox" checked={selectedItem.showOnHome === true} onChange={(event) => toggleGroupItem('showOnHome', event.target.checked)} /> Show on Home page</label>
+              <label><input type="checkbox" checked={selectedItem.showOnServices !== false} onChange={(event) => toggleGroupItem('showOnServices', event.target.checked)} /> Show on Services category page</label>
+            </div>
             <div className="form-two">
               <label>Cloth Style<input value={selectedItem.clothStyle} onChange={(event) => updateGroupItem('clothStyle', event.target.value)} /></label>
               <label>Rate<input value={selectedItem.rate} onChange={(event) => updateGroupItem('rate', event.target.value)} /></label>

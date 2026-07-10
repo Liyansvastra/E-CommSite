@@ -256,6 +256,8 @@ def _style_item(item: Any, category: Dict[str, Any], index: int) -> Dict[str, An
             "fit": item.get("fit") or "",
             "rating": item.get("rating") or "",
             "rate": item.get("rate") or category.get("rate") or "",
+            "showOnHome": item.get("showOnHome", False) is True,
+            "showOnServices": item.get("showOnServices", True) is not False,
         }
     title = str(item or f"Style {index + 1}")
     return {
@@ -269,6 +271,8 @@ def _style_item(item: Any, category: Dict[str, Any], index: int) -> Dict[str, An
         "fit": "",
         "rating": "",
         "rate": category.get("rate") or "",
+        "showOnHome": False,
+        "showOnServices": True,
     }
 
 
@@ -362,8 +366,8 @@ def _image_rows(content: Dict[str, Any]) -> List[Dict[str, Any]]:
                     "rate": style["rate"],
                     "front_image": style["frontImage"],
                     "back_image": style["backImage"],
-                    "show_on_home": False,
-                    "show_on_services": True,
+                    "show_on_home": style.get("showOnHome", False) is True,
+                    "show_on_services": style.get("showOnServices", True) is not False,
                     "sort_order": item_index,
                 }
             )

@@ -1276,6 +1276,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
   const category = content.categories[adminEditCategoryIndex] || content.categories[0];
   const itemIndex = Math.min(adminEditItemIndex, Math.max((category?.items.length || 1) - 1, 0));
   const selectedItem = category ? normalizeStyleItem(category.items[itemIndex], category, itemIndex) : null;
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const updateGroupItem = (field, value) => {
     setContent((current) => ({
@@ -1287,11 +1288,36 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
     }));
   };
 
+  const removeGroupItem = (targetIndex) => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((item, categoryIndex) => (
+        categoryIndex === adminEditCategoryIndex
+          ? { ...item, items: item.items.filter((_, currentIndex) => currentIndex !== targetIndex) }
+          : item
+      )),
+    }));
+    setAdminEditItemIndex(0);
+    setDeleteTarget(null);
+  };
+
   if (!category || !selectedItem) return null;
 
   return (
     <section className="admin-page admin-dashboard page-enter" style={{ backgroundImage: `url(${background})` }}>
       <div className="container">
+        {deleteTarget !== null && (
+          <div className="admin-modal" role="dialog" aria-modal="true">
+            <div className="admin-modal-card">
+              <h2>Confirm Delete</h2>
+              <p>Are you sure you want to delete this image container?</p>
+              <div className="admin-actions">
+                <button className="dark-button" type="button" onClick={() => setDeleteTarget(null)}>Cancel</button>
+                <button className="gold-button" type="button" onClick={() => removeGroupItem(deleteTarget)}>Delete</button>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="admin-topbar">
           <div><span>Container Editor</span><h1>{selectedItem.title}</h1></div>
           <button className="dark-button" type="button" onClick={() => setActivePage('AdminCategoryEditor')}>Back Category</button>
@@ -1323,7 +1349,10 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
                   <div className="admin-category-preview"><img src={style.frontImage} alt="" /><img src={style.backImage} alt="" /></div>
                   <div className="admin-category-fields">
                     <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
-                    <button className="gold-button" type="button" onClick={() => setAdminEditItemIndex(index)}>Edit</button>
+                    <div className="admin-actions">
+                      <button className="gold-button" type="button" onClick={() => setAdminEditItemIndex(index)}>Edit</button>
+                      <button className="dark-button" type="button" onClick={() => setDeleteTarget(index)}>Delete</button>
+                    </div>
                   </div>
                 </article>
               );

@@ -1963,6 +1963,7 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
 }
 
 .admin-category-card {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.2rem;
@@ -1970,6 +1971,49 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
   min-width: min(360px, 86vw);
   scroll-snap-align: start;
   transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.admin-category-card.dragging {
+  opacity: 0.72;
+  transform: scale(0.98);
+  border-color: rgba(255, 201, 0, 0.88);
+  box-shadow: 0 0 0 1px rgba(255, 201, 0, 0.28), 0 18px 46px rgba(0, 0, 0, 0.42);
+}
+
+.drag-handle {
+  position: absolute;
+  top: 0.62rem;
+  left: 0.62rem;
+  z-index: 8;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 201, 0, 0.72);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 35%, #ffc900 0 2px, transparent 2.5px),
+    radial-gradient(circle at 65% 35%, #ffc900 0 2px, transparent 2.5px),
+    radial-gradient(circle at 35% 65%, #d5ad18 0 2px, transparent 2.5px),
+    radial-gradient(circle at 65% 65%, #d5ad18 0 2px, transparent 2.5px),
+    rgba(12, 9, 4, 0.72);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 10px 26px rgba(0, 0, 0, 0.38);
+  cursor: grab;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.drag-handle:hover,
+.drag-handle:focus-visible {
+  transform: scale(1.08);
+  border-color: #ffc900;
+  box-shadow:
+    0 0 18px rgba(255, 201, 0, 0.22),
+    0 12px 30px rgba(0, 0, 0, 0.4);
+  outline: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .admin-category-card.selected,

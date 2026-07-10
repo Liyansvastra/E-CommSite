@@ -108,6 +108,12 @@ const findServiceCategory = (categories, categoryId) => (
 
 const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `category-${Date.now()}`;
 const clampIndex = (value, length) => Math.min(Math.max(Number.isFinite(Number(value)) ? Number(value) : 0, 0), Math.max(length - 1, 0));
+const reorderArray = (items, fromIndex, toIndex) => {
+  const next = [...items];
+  const [moved] = next.splice(fromIndex, 1);
+  next.splice(toIndex, 0, moved);
+  return next;
+};
 
 function encodeAdminToken(value) {
   try {
@@ -1678,6 +1684,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
   const categoryIndex = clampIndex(adminEditCategoryIndex, content.categories.length);
   const category = content.categories[categoryIndex] || content.categories[0];
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [dragItemIndex, setDragItemIndex] = useState(null);
 
   const updateCategory = (field, value) => {
     setContent((current) => ({
@@ -1722,6 +1729,33 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
       categories: current.categories.map((item, index) => index === categoryIndex ? { ...item, items: item.items.filter((_, currentIndex) => currentIndex !== itemIndex) } : item),
     }));
     setDeleteTarget(null);
+  };
+
+  const reorderGroupItems = (fromIndex, toIndex) => {
+    if (!Number.isInteger(fromIndex) || !Number.isInteger(toIndex) || fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || fromIndex >= category.items.length || toIndex >= category.items.length) return;
+    const nextItems = reorderArray(category.items, fromIndex, toIndex);
+    const nextContent = {
+      ...content,
+      categories: content.categories.map((item, index) => (
+        index === categoryIndex ? { ...item, items: nextItems } : item
+      )),
+    };
+    setContent(nextContent);
+    setAdminEditItemIndex(toIndex);
+    onSaveContent(nextContent);
+  };
+
+  const startItemDrag = (event, itemIndex) => {
+    setDragItemIndex(itemIndex);
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', `${itemIndex}`);
+  };
+
+  const dropItem = (event, targetIndex) => {
+    event.preventDefault();
+    const sourceIndex = dragItemIndex ?? Number(event.dataTransfer.getData('text/plain'));
+    setDragItemIndex(null);
+    reorderGroupItems(sourceIndex, targetIndex);
   };
 
   if (!category) return null;
@@ -1778,7 +1812,21 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
             {category.items.map((item, itemIndex) => {
               const style = normalizeStyleItem(item, category, itemIndex);
               return (
-                <article className="admin-category-card" key={style.id}>
+                <article
+                  className={dragItemIndex === itemIndex ? 'admin-category-card dragging' : 'admin-category-card'}
+                  key={style.id}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={(event) => dropItem(event, itemIndex)}
+                >
+                  <button
+                    className="drag-handle"
+                    type="button"
+                    draggable
+                    onClick={(event) => event.stopPropagation()}
+                    onDragStart={(event) => startItemDrag(event, itemIndex)}
+                    onDragEnd={() => setDragItemIndex(null)}
+                    aria-label={`Move ${style.title}`}
+                  />
                   <div className="admin-category-preview" style={getVisualStyleVars(style)}><img src={style.frontImage} alt="" />{style.backImage && <img src={style.backImage} alt="" />}</div>
                   <div className="admin-category-fields">
                     <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
@@ -1807,6 +1855,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
   const itemIndex = clampIndex(adminEditItemIndex, category?.items.length || 1);
   const selectedItem = category ? normalizeStyleItem(category.items[itemIndex], category, itemIndex) : null;
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [dragItemIndex, setDragItemIndex] = useState(null);
 
   const updateGroupItem = (field, value) => {
     setContent((current) => ({
@@ -1831,6 +1880,42 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
     }));
     setAdminEditItemIndex(0);
     setDeleteTarget(null);
+  };
+
+  const getSelectedIndexAfterReorder = (selectedIndex, fromIndex, toIndex) => {
+    if (selectedIndex === fromIndex) return toIndex;
+    if (fromIndex < selectedIndex && selectedIndex <= toIndex) return selectedIndex - 1;
+    if (toIndex <= selectedIndex && selectedIndex < fromIndex) return selectedIndex + 1;
+    return selectedIndex;
+  };
+
+  const reorderGroupItems = (fromIndex, toIndex) => {
+    if (!Number.isInteger(fromIndex) || !Number.isInteger(toIndex) || fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || fromIndex >= category.items.length || toIndex >= category.items.length) return;
+    const nextItems = reorderArray(category.items, fromIndex, toIndex);
+    const nextSelectedIndex = getSelectedIndexAfterReorder(itemIndex, fromIndex, toIndex);
+    const nextContent = {
+      ...content,
+      categories: content.categories.map((item, categoryIndex) => (
+        categoryIndex === editorCategoryIndex ? { ...item, items: nextItems } : item
+      )),
+    };
+    setContent(nextContent);
+    setAdminEditItemIndex(nextSelectedIndex);
+    window.history.replaceState({}, '', adminEditorPath('AdminContainerEditor', editorCategoryIndex, nextSelectedIndex));
+    onSaveContent(nextContent);
+  };
+
+  const startItemDrag = (event, index) => {
+    setDragItemIndex(index);
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', `${index}`);
+  };
+
+  const dropItem = (event, targetIndex) => {
+    event.preventDefault();
+    const sourceIndex = dragItemIndex ?? Number(event.dataTransfer.getData('text/plain'));
+    setDragItemIndex(null);
+    reorderGroupItems(sourceIndex, targetIndex);
   };
 
   if (!category || !selectedItem) return null;
@@ -1882,7 +1967,21 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
             {category.items.map((item, index) => {
               const style = normalizeStyleItem(item, category, index);
               return (
-                <article className={index === itemIndex ? 'admin-category-card selected' : 'admin-category-card'} key={style.id}>
+                <article
+                  className={`${index === itemIndex ? 'admin-category-card selected' : 'admin-category-card'}${dragItemIndex === index ? ' dragging' : ''}`}
+                  key={style.id}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={(event) => dropItem(event, index)}
+                >
+                  <button
+                    className="drag-handle"
+                    type="button"
+                    draggable
+                    onClick={(event) => event.stopPropagation()}
+                    onDragStart={(event) => startItemDrag(event, index)}
+                    onDragEnd={() => setDragItemIndex(null)}
+                    aria-label={`Move ${style.title}`}
+                  />
                   <div className="admin-category-preview" style={getVisualStyleVars(style)}><img src={style.frontImage} alt="" />{style.backImage && <img src={style.backImage} alt="" />}</div>
                   <div className="admin-category-fields">
                     <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
@@ -2050,7 +2149,7 @@ function App() {
     setActivePageState(page);
   };
 
-  const saveContentToSupabase = async () => {
+  const saveContentToSupabase = async (contentOverride = content) => {
     setAdminSaveStatus({ type: '', message: 'Saving content...' });
     try {
       const response = await fetch(`${apiBaseUrl}/api/admin/content`, {
@@ -2060,7 +2159,7 @@ function App() {
           'X-Admin-Email': adminEmail,
           'X-Admin-Password': adminPassword,
         },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ content: contentOverride }),
       });
       const result = await response.json().catch(() => null);
       if (!response.ok || !result?.ok) throw new Error(result?.message || 'Unable to save content.');

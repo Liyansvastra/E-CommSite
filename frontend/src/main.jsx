@@ -10,8 +10,8 @@ const lifestyleImage = assetPath('background.jpg');
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 const navItems = ['Home', 'About', 'Services', 'Contact'];
-const pageToPath = { Home: '/', About: '/about', Services: '/services', Contact: '/contacts', AdminLogin: '/admin-login', AdminDashboard: '/admin-dashboard' };
-const pathToPage = { '/': 'Home', '/home': 'Home', '/about': 'About', '/services': 'Services', '/contact': 'Contact', '/contacts': 'Contact', '/admin-login': 'AdminLogin', '/admin-dashboard': 'AdminDashboard' };
+const pageToPath = { Home: '/', About: '/about', Services: '/services', Contact: '/contacts', AdminLogin: '/admin-login', AdminDashboard: '/admin-dashboard', AdminCategoryEditor: '/admin-dashboard/category', AdminContainerEditor: '/admin-dashboard/container' };
+const pathToPage = { '/': 'Home', '/home': 'Home', '/about': 'About', '/services': 'Services', '/contact': 'Contact', '/contacts': 'Contact', '/admin-login': 'AdminLogin', '/admin-dashboard': 'AdminDashboard', '/admin-dashboard/category': 'AdminCategoryEditor', '/admin-dashboard/container': 'AdminContainerEditor' };
 const adminEmail = 'liyansvastra@brillaris.pro';
 const adminPassword = 'Brillaris$12';
 const storageKey = 'liyans_vastra_admin_content_v1';
@@ -830,7 +830,25 @@ function AdminLoginPage({ setActivePage, setIsAdminAuthed }) {
   );
 }
 
-function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuthed }) {
+function ImageUploadField({ label, value, onChange }) {
+  const handleFile = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => onChange(String(reader.result || value));
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <label className="image-upload-field">
+      {label}
+      <input type="file" accept="image/*" onChange={handleFile} />
+      <span>{value?.startsWith('data:') ? 'Uploaded image selected' : 'Using current project image'}</span>
+    </label>
+  );
+}
+
+function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuthed, setAdminEditCategoryIndex, setAdminEditItemIndex }) {
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -1038,7 +1056,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
               <button className="dark-button" type="button" onClick={resetContent}>Reset Default</button>
             </div>
           </div>
-          {selectedCategory && (
+          {false && selectedCategory && (
             <div className="admin-edit-focus">
               <h3>Edit Selected Category</h3>
               <div className="form-two">
@@ -1072,14 +1090,14 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
                   <span>{category.badge}</span>
                   <small>{category.count} / {category.rate}</small>
                   <div className="admin-actions">
-                    <button className="gold-button" type="button" onClick={() => { setSelectedCategoryIndex(index); setSelectedItemIndex(0); }}>Edit</button>
+                    <button className="gold-button" type="button" onClick={() => { setAdminEditCategoryIndex(index); setAdminEditItemIndex(0); setActivePage('AdminCategoryEditor'); }}>Edit</button>
                     <button className="dark-button" type="button" onClick={() => setDeleteTarget({ type: 'category', categoryIndex: index })}>Delete</button>
                   </div>
                 </div>
               </article>
             ))}
           </div>
-          {selectedCategory && (
+          {false && selectedCategory && (
             <div className="admin-group-editor">
               <div className="admin-section-head">
                 <div>
@@ -1130,6 +1148,175 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
               </div>
             </div>
           )}
+        </section>
+      </div>
+    </section>
+  );
+}
+
+function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEditCategoryIndex, setAdminEditCategoryIndex, setAdminEditItemIndex }) {
+  const categoryIndex = Math.min(adminEditCategoryIndex, Math.max(content.categories.length - 1, 0));
+  const category = content.categories[categoryIndex] || content.categories[0];
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
+  const updateCategory = (field, value) => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((item, index) => index === categoryIndex ? { ...item, [field]: value } : item),
+    }));
+  };
+
+  const toggleCategory = (field, checked) => updateCategory(field, checked);
+
+  const addGroupItem = () => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((item, index) => {
+        if (index !== categoryIndex) return item;
+        const title = `New Style Container ${item.items.length + 1}`;
+        return {
+          ...item,
+          items: [...item.items, normalizeStyleItem({ title, text: item.text, frontImage: item.frontImage, backImage: item.backImage }, item, item.items.length)],
+        };
+      }),
+    }));
+  };
+
+  const removeGroupItem = (itemIndex) => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((item, index) => index === categoryIndex ? { ...item, items: item.items.filter((_, currentIndex) => currentIndex !== itemIndex) } : item),
+    }));
+    setDeleteTarget(null);
+  };
+
+  if (!category) return null;
+
+  return (
+    <section className="admin-page admin-dashboard page-enter" style={{ '--admin-bg': `url(${background})` }}>
+      <div className="container">
+        {deleteTarget !== null && (
+          <div className="admin-modal" role="dialog" aria-modal="true">
+            <div className="admin-modal-card">
+              <h2>Confirm Delete</h2>
+              <p>Are you sure you want to delete this image container?</p>
+              <div className="admin-actions">
+                <button className="dark-button" type="button" onClick={() => setDeleteTarget(null)}>Cancel</button>
+                <button className="gold-button" type="button" onClick={() => removeGroupItem(deleteTarget)}>Delete</button>
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="admin-topbar">
+          <div><span>Category Editor</span><h1>{category.title}</h1></div>
+          <div className="admin-actions">
+            <button className="dark-button" type="button" onClick={() => setActivePage('AdminDashboard')}>Back Dashboard</button>
+            <button className="gold-button" type="button" onClick={addGroupItem}>Add New Container</button>
+          </div>
+        </div>
+        <section className="admin-panel admin-wide">
+          <div className="admin-edit-focus">
+            <h3>Edit Category</h3>
+            <div className="form-two">
+              <label>T-shirt / Category Name<input value={category.title} onChange={(event) => updateCategory('title', event.target.value)} /></label>
+              <label>Brand / Badge Name<input value={category.badge} onChange={(event) => updateCategory('badge', event.target.value)} /></label>
+            </div>
+            <label>Description<textarea rows="3" value={category.text} onChange={(event) => updateCategory('text', event.target.value)} /></label>
+            <div className="form-two">
+              <label>Cloth Count<input value={category.count} onChange={(event) => updateCategory('count', event.target.value)} /></label>
+              <label>Rating / Rate<input value={category.rate} onChange={(event) => updateCategory('rate', event.target.value)} /></label>
+            </div>
+            <div className="form-two">
+              <ImageUploadField label="Front Image File" value={category.frontImage} onChange={(value) => updateCategory('frontImage', value)} />
+              <ImageUploadField label="Back Image File" value={category.backImage} onChange={(value) => updateCategory('backImage', value)} />
+            </div>
+            <div className="admin-checks">
+              <label><input type="checkbox" checked={category.showOnHome !== false} onChange={(event) => toggleCategory('showOnHome', event.target.checked)} /> Show on Home page</label>
+              <label><input type="checkbox" checked={category.showOnServices !== false} onChange={(event) => toggleCategory('showOnServices', event.target.checked)} /> Show on Services category page</label>
+            </div>
+          </div>
+          <div className="admin-section-head">
+            <div><h2>{category.title} Containers</h2><p>Edit containers shown inside this category group page.</p></div>
+          </div>
+          <div className="admin-category-list admin-scroll-row">
+            {category.items.map((item, itemIndex) => {
+              const style = normalizeStyleItem(item, category, itemIndex);
+              return (
+                <article className="admin-category-card" key={style.id}>
+                  <div className="admin-category-preview"><img src={style.frontImage} alt="" /><img src={style.backImage} alt="" /></div>
+                  <div className="admin-category-fields">
+                    <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
+                    <div className="admin-actions">
+                      <button className="gold-button" type="button" onClick={() => { setAdminEditCategoryIndex(categoryIndex); setAdminEditItemIndex(itemIndex); setActivePage('AdminContainerEditor'); }}>Edit</button>
+                      <button className="dark-button" type="button" onClick={() => setDeleteTarget(itemIndex)}>Delete</button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      </div>
+    </section>
+  );
+}
+
+function AdminContainerEditorPage({ content, setContent, setActivePage, adminEditCategoryIndex, adminEditItemIndex, setAdminEditItemIndex }) {
+  const category = content.categories[adminEditCategoryIndex] || content.categories[0];
+  const itemIndex = Math.min(adminEditItemIndex, Math.max((category?.items.length || 1) - 1, 0));
+  const selectedItem = category ? normalizeStyleItem(category.items[itemIndex], category, itemIndex) : null;
+
+  const updateGroupItem = (field, value) => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((item, categoryIndex) => {
+        if (categoryIndex !== adminEditCategoryIndex) return item;
+        return { ...item, items: item.items.map((group, groupIndex) => groupIndex === itemIndex ? { ...normalizeStyleItem(group, item, itemIndex), [field]: value } : group) };
+      }),
+    }));
+  };
+
+  if (!category || !selectedItem) return null;
+
+  return (
+    <section className="admin-page admin-dashboard page-enter" style={{ '--admin-bg': `url(${background})` }}>
+      <div className="container">
+        <div className="admin-topbar">
+          <div><span>Container Editor</span><h1>{selectedItem.title}</h1></div>
+          <button className="dark-button" type="button" onClick={() => setActivePage('AdminCategoryEditor')}>Back Category</button>
+        </div>
+        <section className="admin-panel admin-wide">
+          <div className="admin-edit-focus">
+            <h3>Edit Image Container</h3>
+            <div className="form-two">
+              <label>Cloth Name<input value={selectedItem.title} onChange={(event) => updateGroupItem('title', event.target.value)} /></label>
+              <label>Rating<input value={selectedItem.rating} onChange={(event) => updateGroupItem('rating', event.target.value)} /></label>
+            </div>
+            <label>Description<textarea rows="3" value={selectedItem.text} onChange={(event) => updateGroupItem('text', event.target.value)} /></label>
+            <div className="form-two">
+              <ImageUploadField label="Front Image File" value={selectedItem.frontImage} onChange={(value) => updateGroupItem('frontImage', value)} />
+              <ImageUploadField label="Back Image File" value={selectedItem.backImage} onChange={(value) => updateGroupItem('backImage', value)} />
+            </div>
+            <div className="form-two">
+              <label>Cloth Style<input value={selectedItem.clothStyle} onChange={(event) => updateGroupItem('clothStyle', event.target.value)} /></label>
+              <label>Rate<input value={selectedItem.rate} onChange={(event) => updateGroupItem('rate', event.target.value)} /></label>
+            </div>
+          </div>
+          <div className="admin-section-head"><div><h2>{category.title} Containers</h2><p>Select another container to edit it.</p></div></div>
+          <div className="admin-category-list admin-scroll-row">
+            {category.items.map((item, index) => {
+              const style = normalizeStyleItem(item, category, index);
+              return (
+                <article className={index === itemIndex ? 'admin-category-card selected' : 'admin-category-card'} key={style.id}>
+                  <div className="admin-category-preview"><img src={style.frontImage} alt="" /><img src={style.backImage} alt="" /></div>
+                  <div className="admin-category-fields">
+                    <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
+                    <button className="gold-button" type="button" onClick={() => setAdminEditItemIndex(index)}>Edit</button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </section>
       </div>
     </section>
@@ -1196,6 +1383,8 @@ function App() {
   const [serviceFocus, setServiceFocus] = useState(initialRoute.serviceFocus);
   const [content, setContent] = useState(loadAdminContent);
   const [isAdminAuthed, setIsAdminAuthed] = useState(() => localStorage.getItem(authKey) === 'true');
+  const [adminEditCategoryIndex, setAdminEditCategoryIndex] = useState(0);
+  const [adminEditItemIndex, setAdminEditItemIndex] = useState(0);
   const CurrentPage = useMemo(() => ({
     Home: HomePage,
     About: AboutPage,
@@ -1204,6 +1393,8 @@ function App() {
     Contact: ContactPage,
     AdminLogin: AdminLoginPage,
     AdminDashboard: AdminDashboardPage,
+    AdminCategoryEditor: AdminCategoryEditorPage,
+    AdminContainerEditor: AdminContainerEditorPage,
   })[activePage] || HomePage, [activePage]);
   const navActivePage = activePage === 'ServiceDetail' ? 'Services' : activePage;
   useRevealOnScroll(activePage);
@@ -1223,7 +1414,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (activePage === 'AdminDashboard' && !isAdminAuthed) {
+    if ((activePage === 'AdminDashboard' || activePage === 'AdminCategoryEditor' || activePage === 'AdminContainerEditor') && !isAdminAuthed) {
       setActivePage('AdminLogin');
     }
   }, [activePage, isAdminAuthed]);
@@ -1247,7 +1438,7 @@ function App() {
     }
   }, [activePage, serviceFocus, content.categories]);
 
-  const isAdminPage = activePage === 'AdminLogin' || activePage === 'AdminDashboard';
+  const isAdminPage = activePage === 'AdminLogin' || activePage === 'AdminDashboard' || activePage === 'AdminCategoryEditor' || activePage === 'AdminContainerEditor';
 
   return (
     <>
@@ -1262,6 +1453,10 @@ function App() {
           content={content}
           categories={content.categories}
           setContent={setContent}
+          adminEditCategoryIndex={adminEditCategoryIndex}
+          setAdminEditCategoryIndex={setAdminEditCategoryIndex}
+          adminEditItemIndex={adminEditItemIndex}
+          setAdminEditItemIndex={setAdminEditItemIndex}
           setActivePage={setActivePage}
           serviceFocus={serviceFocus}
           setServiceFocus={setServiceFocus}

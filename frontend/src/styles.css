@@ -1581,8 +1581,8 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
   min-height: 100vh;
   padding: 4rem 0;
   background:
-    radial-gradient(circle at 50% 8%, rgba(209, 163, 71, 0.16), transparent 26rem),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.62)),
+    radial-gradient(circle at 50% 8%, rgba(209, 163, 71, 0.22), transparent 26rem),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.26)),
     var(--admin-bg) center / cover fixed;
 }
 
@@ -1591,8 +1591,8 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
 .admin-category-card {
   border: 1px solid rgba(209, 163, 71, 0.24);
   border-radius: 14px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.035));
-  backdrop-filter: blur(18px);
+  background: linear-gradient(145deg, rgba(32, 27, 17, 0.76), rgba(8, 8, 8, 0.48));
+  backdrop-filter: none;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 46px rgba(0, 0, 0, 0.34);
 }
 
@@ -1753,6 +1753,18 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
 
 .admin-checks input {
   width: auto;
+}
+
+.image-upload-field input {
+  padding: 0.85rem;
+}
+
+.image-upload-field span {
+  color: var(--soft-silver);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .admin-edit-focus {

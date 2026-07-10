@@ -10,7 +10,7 @@ const lifestyleImage = assetPath('background.jpg');
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 const navItems = ['Home', 'About', 'Services', 'Contact'];
-const pageToPath = { Home: '/', About: '/about', Services: '/services', Contact: '/contacts', AdminLogin: '/admin-login', AdminDashboard: '/admin-dashboard', AdminCategoryEditor: '/admin-dashboard/category', AdminContainerEditor: '/admin-dashboard/container' };
+const pageToPath = { Home: '/', About: '/about', Services: '/services', Contact: '/contacts', AdminLogin: '/admin-login', AdminDashboard: '/admin-dashboard', AdminCategoryEditor: '/admin-dashboard/category', AdminContainerEditor: '/admin-dashboard/container', NotFound: '/404' };
 const pathToPage = { '/': 'Home', '/home': 'Home', '/about': 'About', '/services': 'Services', '/contact': 'Contact', '/contacts': 'Contact', '/admin-login': 'AdminLogin', '/admin-dashboard': 'AdminDashboard', '/admin-dashboard/category': 'AdminCategoryEditor', '/admin-dashboard/container': 'AdminContainerEditor' };
 const adminEmail = 'liyansvastra@brillaris.pro';
 const adminPassword = 'Brillaris$12';
@@ -26,6 +26,12 @@ const shirtFrontImage2 = assetPath('t-shirt-model/sample_frontside2.png');
 const shirtBackImage2 = assetPath('t-shirt-model/sample_backside2.png');
 const personImage1 = assetPath('t-shirt-model/sample_person1.png');
 const personImage2 = assetPath('t-shirt-model/sample_person2.png');
+const animationOptions = [
+  ['royal-zoom-right', 'Single image zoom/right'],
+  ['front-back-display', 'Front and back display'],
+  ['hover-right-pair', 'Hover right-side pair'],
+  ['royal-float', 'Royal floating zoom'],
+];
 
 const defaultServiceCategories = [
   {
@@ -112,17 +118,20 @@ function getPageFromLocation() {
   if (pathname.startsWith('/service/group-services/')) return { page: 'ServiceDetail', serviceFocus: pathname.split('/').filter(Boolean)[2] || '' };
   if (pathname === '/service/group-services') return { page: 'ServiceDetail', serviceFocus: '' };
   if (pathname.startsWith('/services/')) return { page: 'ServiceDetail', serviceFocus: pathname.split('/').filter(Boolean)[1] || '' };
-  return { page: pathToPage[pathname] || 'Home', serviceFocus: '' };
+  return { page: pathToPage[pathname] || 'NotFound', serviceFocus: '' };
 }
 
 function normalizeStyleItem(item, category, index = 0) {
   const title = typeof item === 'string' ? item : item?.title || `Style ${index + 1}`;
+  const frontImage = typeof item === 'object' && item?.frontImage ? item.frontImage : category.frontImage;
+  const backImage = typeof item === 'object' && item?.backImage ? item.backImage : category.backImage;
   return {
     id: typeof item === 'object' && item?.id ? item.id : slugify(`${category.id}-${title}-${index}`),
     title,
     text: typeof item === 'object' && item?.text ? item.text : `${category.text} This group sample can be replaced with the final client image set later.`,
-    frontImage: typeof item === 'object' && item?.frontImage ? item.frontImage : category.frontImage,
-    backImage: typeof item === 'object' && item?.backImage ? item.backImage : category.backImage,
+    frontImage,
+    backImage,
+    animationType: typeof item === 'object' && item?.animationType ? item.animationType : category.animationType || (backImage ? 'front-back-display' : 'royal-zoom-right'),
     clothStyle: typeof item === 'object' && item?.clothStyle ? item.clothStyle : ['Round Neck', 'Logo Placement', 'Custom Color'][index] || 'Premium Tee',
     fabric: typeof item === 'object' && item?.fabric ? item.fabric : index === 1 ? '220 GSM Cotton' : 'Premium Cotton',
     fit: typeof item === 'object' && item?.fit ? item.fit : index === 2 ? 'Custom Fit' : 'Regular Comfort Fit',
@@ -273,6 +282,16 @@ function FeatureCard({ title, text, icon, centered = false }) {
 }
 
 function ProductCard({ category, onSelect }) {
+  const hasBackImage = Boolean(category.backImage);
+  const animationType = category.animationType || (hasBackImage ? 'front-back-display' : 'royal-zoom-right');
+  const visualClass = [
+    'shirt-visual',
+    !hasBackImage ? 'single-visual' : '',
+    animationType === 'hover-right-pair' || category.visualType === 'person-pair' ? 'person-visual pair-hover-visual' : '',
+    animationType === 'royal-float' ? 'royal-float-visual' : '',
+    animationType,
+  ].filter(Boolean).join(' ');
+
   const handleSelect = () => {
     onSelect(category.id);
   };
@@ -291,8 +310,8 @@ function ProductCard({ category, onSelect }) {
       tabIndex="0"
       onKeyDown={handleKeyDown}
     >
-      <div className={category.visualType === 'person-pair' ? 'shirt-visual person-visual' : 'shirt-visual'} aria-hidden="true">
-        <img className="shirt-image back" src={category.backImage} alt="" loading="lazy" decoding="async" />
+      <div className={visualClass} aria-hidden="true">
+        {hasBackImage && <img className="shirt-image back" src={category.backImage} alt="" loading="lazy" decoding="async" />}
         <img className="shirt-image front" src={category.frontImage} alt="" loading="lazy" decoding="async" />
         <div className="shirt-caption" aria-hidden="true">
           <strong>{category.title}</strong>
@@ -313,11 +332,21 @@ function ProductCard({ category, onSelect }) {
 }
 
 function GroupStyleCard({ style, index }) {
+  const hasBackImage = Boolean(style.backImage);
+  const animationType = style.animationType || (hasBackImage ? 'front-back-display' : 'royal-zoom-right');
+  const visualClass = [
+    'group-style-image',
+    !hasBackImage ? 'single-group-image' : '',
+    animationType === 'hover-right-pair' || style.visualType === 'person-pair' ? 'person-group-image pair-hover-group' : '',
+    animationType === 'royal-float' ? 'royal-float-group' : '',
+    animationType,
+  ].filter(Boolean).join(' ');
+
   return (
     <article className="group-style-card" data-reveal>
       <div className="group-style-media">
-        <div className={style.visualType === 'person-pair' ? 'group-style-image person-group-image' : 'group-style-image'}>
-          <img className="group-shirt back" src={style.backImage} alt="" loading="lazy" decoding="async" />
+        <div className={visualClass}>
+          {hasBackImage && <img className="group-shirt back" src={style.backImage} alt="" loading="lazy" decoding="async" />}
           <img className="group-shirt front" src={style.frontImage} alt={`${style.title} T-shirt style`} loading="lazy" decoding="async" />
           <div className="shirt-caption group-caption">
             <strong>{style.title}</strong>
@@ -830,7 +859,7 @@ function AdminLoginPage({ setActivePage, setIsAdminAuthed }) {
   );
 }
 
-function ImageUploadField({ label, value, onChange }) {
+function ImageUploadField({ label, value, onChange, required = false, allowClear = false }) {
   const handleFile = (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -841,9 +870,21 @@ function ImageUploadField({ label, value, onChange }) {
 
   return (
     <label className="image-upload-field">
-      {label}
+      <span className="upload-label-row">
+        {label}
+        {required && <small>Required</small>}
+      </span>
       <input type="file" accept="image/*" onChange={handleFile} />
-      <span>{value?.startsWith('data:') ? 'Uploaded image selected' : 'Using current project image'}</span>
+      <span className="upload-note">
+        {required
+          ? (value ? 'Front image selected' : 'Front image is required')
+          : (value ? (value.startsWith('data:') ? 'Uploaded image selected' : 'Using current project image') : 'Optional - no back image')}
+      </span>
+      {allowClear && value && (
+        <button className="dark-button upload-clear" type="button" onClick={() => onChange('')}>
+          Remove Back Image
+        </button>
+      )}
     </label>
   );
 }
@@ -932,7 +973,8 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
           count: '0 styles',
           rate: 'Quote Based',
           frontImage: shirtFrontImage,
-          backImage: shirtBackImage,
+          backImage: '',
+          animationType: 'royal-zoom-right',
           showOnHome: true,
           showOnServices: true,
           items: ['New Style Group'],
@@ -965,6 +1007,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
               text: category.text,
               frontImage: category.frontImage,
               backImage: category.backImage,
+              animationType: category.animationType || (category.backImage ? 'front-back-display' : 'royal-zoom-right'),
               clothStyle: 'Premium Tee',
               fabric: 'Premium Cotton',
               fit: 'Regular Comfort Fit',
@@ -1186,7 +1229,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
         const title = `New Style Container ${item.items.length + 1}`;
         return {
           ...item,
-          items: [...item.items, normalizeStyleItem({ title, text: item.text, frontImage: item.frontImage, backImage: item.backImage }, item, item.items.length)],
+          items: [...item.items, normalizeStyleItem({ title, text: item.text, frontImage: item.frontImage, backImage: item.backImage, animationType: item.animationType || (item.backImage ? 'front-back-display' : 'royal-zoom-right') }, item, item.items.length)],
         };
       }),
     }));
@@ -1237,8 +1280,20 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
               <label>Rating / Rate<input value={category.rate} onChange={(event) => updateCategory('rate', event.target.value)} /></label>
             </div>
             <div className="form-two">
-              <ImageUploadField label="Front Image File" value={category.frontImage} onChange={(value) => updateCategory('frontImage', value)} />
-              <ImageUploadField label="Back Image File" value={category.backImage} onChange={(value) => updateCategory('backImage', value)} />
+              <ImageUploadField label="Front Image File" value={category.frontImage} required onChange={(value) => updateCategory('frontImage', value)} />
+              <ImageUploadField label="Back Image File" value={category.backImage} allowClear onChange={(value) => updateCategory('backImage', value)} />
+            </div>
+            <div className="form-two">
+              <label>
+                Animation Style
+                <select value={category.animationType || (category.backImage ? 'front-back-display' : 'royal-zoom-right')} onChange={(event) => updateCategory('animationType', event.target.value)}>
+                  {animationOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>
+              </label>
+              <label>
+                Animation Note
+                <input value={category.backImage ? 'Back image enabled: dual animation options are available.' : 'Front-only: zoom/right movement is recommended.'} readOnly />
+              </label>
             </div>
             <div className="admin-checks">
               <label><input type="checkbox" checked={category.showOnHome !== false} onChange={(event) => toggleCategory('showOnHome', event.target.checked)} /> Show on Home page</label>
@@ -1254,7 +1309,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
               const style = normalizeStyleItem(item, category, itemIndex);
               return (
                 <article className="admin-category-card" key={style.id}>
-                  <div className="admin-category-preview"><img src={style.frontImage} alt="" /><img src={style.backImage} alt="" /></div>
+                  <div className="admin-category-preview"><img src={style.frontImage} alt="" />{style.backImage && <img src={style.backImage} alt="" />}</div>
                   <div className="admin-category-fields">
                     <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
                     <div className="admin-actions">
@@ -1331,8 +1386,20 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
             </div>
             <label>Description<textarea rows="3" value={selectedItem.text} onChange={(event) => updateGroupItem('text', event.target.value)} /></label>
             <div className="form-two">
-              <ImageUploadField label="Front Image File" value={selectedItem.frontImage} onChange={(value) => updateGroupItem('frontImage', value)} />
-              <ImageUploadField label="Back Image File" value={selectedItem.backImage} onChange={(value) => updateGroupItem('backImage', value)} />
+              <ImageUploadField label="Front Image File" value={selectedItem.frontImage} required onChange={(value) => updateGroupItem('frontImage', value)} />
+              <ImageUploadField label="Back Image File" value={selectedItem.backImage} allowClear onChange={(value) => updateGroupItem('backImage', value)} />
+            </div>
+            <div className="form-two">
+              <label>
+                Animation Style
+                <select value={selectedItem.animationType || (selectedItem.backImage ? 'front-back-display' : 'royal-zoom-right')} onChange={(event) => updateGroupItem('animationType', event.target.value)}>
+                  {animationOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>
+              </label>
+              <label>
+                Animation Note
+                <input value={selectedItem.backImage ? 'Choose front/back or right-side pair movement.' : 'Backside is optional. Front image will zoom and move right.'} readOnly />
+              </label>
             </div>
             <div className="form-two">
               <label>Cloth Style<input value={selectedItem.clothStyle} onChange={(event) => updateGroupItem('clothStyle', event.target.value)} /></label>
@@ -1346,7 +1413,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
               const style = normalizeStyleItem(item, category, index);
               return (
                 <article className={index === itemIndex ? 'admin-category-card selected' : 'admin-category-card'} key={style.id}>
-                  <div className="admin-category-preview"><img src={style.frontImage} alt="" /><img src={style.backImage} alt="" /></div>
+                  <div className="admin-category-preview"><img src={style.frontImage} alt="" />{style.backImage && <img src={style.backImage} alt="" />}</div>
                   <div className="admin-category-fields">
                     <strong>{style.title}</strong><span>{category.badge}</span><small>{style.rating} / {style.rate}</small>
                     <div className="admin-actions">
@@ -1359,6 +1426,25 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
             })}
           </div>
         </section>
+      </div>
+    </section>
+  );
+}
+
+function NotFoundPage({ setActivePage }) {
+  return (
+    <section className="not-found-page page-enter">
+      <div className="container">
+        <div className="not-found-card" data-reveal>
+          <img src={logo} alt={brand} />
+          <span>Royal Route Not Found</span>
+          <h1>404</h1>
+          <p>The page you opened is not available. Return to the LIYAN'S VASTRA showcase or explore the service styles.</p>
+          <div className="not-found-actions">
+            <button className="gold-button" type="button" onClick={() => setActivePage('Home')}>Go Home</button>
+            <button className="dark-button" type="button" onClick={() => setActivePage('Services')}>View Services</button>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -1433,6 +1519,7 @@ function App() {
     Services: ServicesPage,
     ServiceDetail: ServiceDetailPage,
     Contact: ContactPage,
+    NotFound: NotFoundPage,
     AdminLogin: AdminLoginPage,
     AdminDashboard: AdminDashboardPage,
     AdminCategoryEditor: AdminCategoryEditorPage,

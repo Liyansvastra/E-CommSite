@@ -58,7 +58,7 @@ body::after {
   animation: backgroundDrift 22s ease-in-out infinite alternate;
 }
 
-button, input, textarea { font: inherit; }
+button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
 a {
   color: inherit;
@@ -755,6 +755,26 @@ main,
   transform: translateX(28%) scale(1);
 }
 
+.single-visual .shirt-image.front {
+  width: min(74%, 292px);
+  transform: translateX(0) scale(1);
+}
+
+.shirt-card:hover .single-visual .shirt-image.front,
+.shirt-card:focus-visible .single-visual .shirt-image.front {
+  transform: translateX(16%) rotate(1deg) scale(1.08);
+  filter: drop-shadow(0 24px 36px rgba(0, 0, 0, 0.34)) saturate(1.05);
+}
+
+.royal-float-visual .shirt-image.front {
+  animation: shirtRoyalFloat 4.8s ease-in-out infinite;
+}
+
+.shirt-card:hover .royal-float-visual .shirt-image.front,
+.shirt-card:focus-visible .royal-float-visual .shirt-image.front {
+  transform: translateX(10%) translateY(-5px) scale(1.08);
+}
+
 .product-card h3,
 .testimonial-card h3 {
   margin: 0;
@@ -1191,6 +1211,24 @@ main,
   transform: translateX(8%) scale(0.98);
 }
 
+.single-group-image .group-shirt.front {
+  left: 17%;
+  width: 68%;
+  transform: translateX(0) scale(1);
+}
+
+.group-style-card:hover .single-group-image .group-shirt.front {
+  transform: translateX(12%) rotate(1deg) scale(1.06);
+}
+
+.royal-float-group .group-shirt.front {
+  animation: shirtRoyalFloat 4.8s ease-in-out infinite;
+}
+
+.group-style-card:hover .royal-float-group .group-shirt.front {
+  transform: translateX(10%) translateY(-5px) scale(1.06);
+}
+
 .group-style-details {
   display: grid;
   align-content: center;
@@ -1519,7 +1557,7 @@ label {
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
-input, textarea {
+input, textarea, select {
   width: 100%;
   color: #edeaf0;
   border: 1px solid rgba(214, 178, 75, 0.22);
@@ -1529,7 +1567,19 @@ input, textarea {
   outline: none;
   resize: vertical;
 }
-input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
+select {
+  cursor: pointer;
+  appearance: none;
+  background:
+    linear-gradient(45deg, transparent 50%, #d1a347 50%) calc(100% - 18px) 50% / 8px 8px no-repeat,
+    linear-gradient(135deg, #d1a347 50%, transparent 50%) calc(100% - 13px) 50% / 8px 8px no-repeat,
+    rgba(255, 255, 255, 0.055);
+}
+select option {
+  color: #1a1307;
+  background: #eadfbd;
+}
+input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.65); }
 
 .form-status {
   margin: 0 0 1rem;
@@ -1575,6 +1625,69 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
 .inline-whatsapp {
   display: inline-grid;
   place-items: center;
+}
+
+.not-found-page {
+  min-height: calc(100vh - 92px);
+  display: grid;
+  place-items: center;
+  padding: 5rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 201, 0, 0.16), transparent 24rem),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.74));
+}
+
+.not-found-card {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem);
+  text-align: center;
+  border: 1px solid rgba(255, 201, 0, 0.32);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 201, 0, 0.16), transparent 18rem),
+    linear-gradient(145deg, rgba(36, 28, 12, 0.58), rgba(0, 0, 0, 0.54));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 30px 90px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(18px) saturate(1.1);
+}
+
+.not-found-card img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+.not-found-card span {
+  color: var(--gold-light);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.not-found-card h1 {
+  margin: 0.5rem 0;
+  color: rgb(209, 163, 71);
+  font-size: clamp(5rem, 15vw, 10rem);
+  line-height: 0.9;
+  text-shadow: 0 0 28px rgba(209, 163, 71, 0.2);
+}
+
+.not-found-card p {
+  width: min(520px, 100%);
+  margin: 0 auto;
+  color: var(--soft-silver);
+  line-height: 1.62;
+}
+
+.not-found-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.9rem;
+  margin-top: 1.6rem;
 }
 
 .admin-page {
@@ -1715,7 +1828,7 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
   z-index: 2;
 }
 
-.admin-category-preview img:last-child {
+.admin-category-preview img:nth-child(2) {
   right: 4%;
   opacity: 0.72;
 }
@@ -1757,16 +1870,63 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
   width: auto;
 }
 
-.image-upload-field input {
-  padding: 0.85rem;
+.image-upload-field input[type="file"] {
+  padding: 0.68rem;
+  color: #f6e8b7;
+  border-color: rgba(255, 201, 0, 0.38);
+  background:
+    radial-gradient(circle at 12% 50%, rgba(255, 201, 0, 0.16), transparent 11rem),
+    rgba(24, 18, 8, 0.62);
 }
 
-.image-upload-field span {
+.image-upload-field input[type="file"]::file-selector-button,
+.image-upload-field input[type="file"]::-webkit-file-upload-button {
+  margin-right: 0.85rem;
+  padding: 0.62rem 0.9rem;
+  color: #171004;
+  border: 1px solid rgba(255, 201, 0, 0.64);
+  border-radius: 5px;
+  background: linear-gradient(135deg, #ffc900, #d5ad18 58%, #b4872e);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42), 0 8px 18px rgba(0, 0, 0, 0.24);
+  cursor: pointer;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.image-upload-field input[type="file"]:hover::file-selector-button,
+.image-upload-field input[type="file"]:hover::-webkit-file-upload-button {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.upload-label-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.upload-label-row small {
+  padding: 0.16rem 0.42rem;
+  color: #171004;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffc900, #d5ad18);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.image-upload-field .upload-note {
   color: var(--soft-silver);
   font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
+}
+
+.upload-clear {
+  width: fit-content;
+  min-height: 40px;
+  padding: 0.54rem 0.85rem;
 }
 
 .admin-save-bar {
@@ -1893,6 +2053,15 @@ input:focus, textarea:focus { border-color: rgba(214, 178, 75, 0.65); }
   }
   50% {
     transform: translateY(-8px);
+  }
+}
+
+@keyframes shirtRoyalFloat {
+  0%, 100% {
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  50% {
+    transform: translateX(4%) translateY(-7px) scale(1.035);
   }
 }
 

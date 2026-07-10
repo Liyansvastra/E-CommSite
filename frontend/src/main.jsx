@@ -109,8 +109,26 @@ function loadAdminContent() {
 
 function getPageFromLocation() {
   const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+  if (pathname.startsWith('/service/group-services/')) return { page: 'ServiceDetail', serviceFocus: pathname.split('/').filter(Boolean)[2] || '' };
+  if (pathname === '/service/group-services') return { page: 'ServiceDetail', serviceFocus: '' };
   if (pathname.startsWith('/services/')) return { page: 'ServiceDetail', serviceFocus: pathname.split('/').filter(Boolean)[1] || '' };
   return { page: pathToPage[pathname] || 'Home', serviceFocus: '' };
+}
+
+function normalizeStyleItem(item, category, index = 0) {
+  const title = typeof item === 'string' ? item : item?.title || `Style ${index + 1}`;
+  return {
+    id: typeof item === 'object' && item?.id ? item.id : slugify(`${category.id}-${title}-${index}`),
+    title,
+    text: typeof item === 'object' && item?.text ? item.text : `${category.text} This group sample can be replaced with the final client image set later.`,
+    frontImage: typeof item === 'object' && item?.frontImage ? item.frontImage : category.frontImage,
+    backImage: typeof item === 'object' && item?.backImage ? item.backImage : category.backImage,
+    clothStyle: typeof item === 'object' && item?.clothStyle ? item.clothStyle : ['Round Neck', 'Logo Placement', 'Custom Color'][index] || 'Premium Tee',
+    fabric: typeof item === 'object' && item?.fabric ? item.fabric : index === 1 ? '220 GSM Cotton' : 'Premium Cotton',
+    fit: typeof item === 'object' && item?.fit ? item.fit : index === 2 ? 'Custom Fit' : 'Regular Comfort Fit',
+    rating: typeof item === 'object' && item?.rating ? item.rating : ['4.8 / 5', '4.7 / 5', '4.9 / 5'][index] || '4.8 / 5',
+    rate: typeof item === 'object' && item?.rate ? item.rate : category.rate,
+  };
 }
 
 const serviceHeroSlides = [
@@ -617,13 +635,16 @@ function ServicesPage({ categories, serviceFocus, setServiceFocus, setActivePage
               <p>{category.text}</p>
             </div>
             <div className="service-shirt-grid">
-              {category.items.map((item) => (
+              {category.items.map((item, itemIndex) => {
+                const style = normalizeStyleItem(item, category, itemIndex);
+                return (
                 <ProductCard
-                  key={item}
-                  category={{ ...category, title: item, text: category.text }}
+                  key={style.id}
+                  category={{ ...category, ...style, badge: category.badge, count: category.count }}
                   onSelect={() => openCategoryPage(category.id)}
                 />
-              ))}
+                );
+              })}
             </div>
           </section>
         ))}
@@ -636,14 +657,9 @@ function ServiceDetailPage({ categories, serviceFocus, setActivePage, setService
   const category = findServiceCategory(categories, serviceFocus);
   const groupStyles = category.items.map((item, index) => ({
     ...category,
+    ...normalizeStyleItem(item, category, index),
     id: `${category.id}-${index}`,
-    title: item,
-    text: `${category.text} This group sample can be replaced with the final client image set later.`,
     count: `${index + 1} sample`,
-    clothStyle: ['Round Neck', 'Logo Placement', 'Custom Color'][index] || 'Premium Tee',
-    fabric: index === 1 ? '220 GSM Cotton' : 'Premium Cotton',
-    fit: index === 2 ? 'Custom Fit' : 'Regular Comfort Fit',
-    rating: ['4.8 / 5', '4.7 / 5', '4.9 / 5'][index] || '4.8 / 5',
   }));
 
   const backToServices = () => {
@@ -800,7 +816,7 @@ function AdminLoginPage({ setActivePage, setIsAdminAuthed }) {
   };
 
   return (
-    <section className="admin-page page-enter">
+    <section className="admin-page page-enter" style={{ '--admin-bg': `url(${background})` }}>
       <form className="admin-login-card" onSubmit={handleLogin}>
         <img src={logo} alt={brand} />
         <h1>Admin Login</h1>
@@ -815,6 +831,12 @@ function AdminLoginPage({ setActivePage, setIsAdminAuthed }) {
 }
 
 function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuthed }) {
+  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const selectedCategory = content.categories[selectedCategoryIndex] || content.categories[0];
+  const selectedItem = selectedCategory ? normalizeStyleItem(selectedCategory.items[selectedItemIndex], selectedCategory, selectedItemIndex) : null;
+
   const updateSite = (field, value) => {
     setContent((current) => ({ ...current, site: { ...current.site, [field]: value } }));
   };
@@ -845,8 +867,27 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
     setContent((current) => ({
       ...current,
       categories: current.categories.map((category, categoryIndex) => (
-        categoryIndex === index ? { ...category, items: value.split('\n').filter((line) => line.trim()) } : category
+        categoryIndex === index ? {
+          ...category,
+          items: value.split('\n').filter((line) => line.trim()).map((title, itemIndex) => normalizeStyleItem(title, category, itemIndex)),
+        } : category
       )),
+    }));
+  };
+
+  const updateGroupItem = (categoryIndex, itemIndex, field, value) => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((category, currentCategoryIndex) => {
+        if (currentCategoryIndex !== categoryIndex) return category;
+        return {
+          ...category,
+          items: category.items.map((item, currentItemIndex) => {
+            if (currentItemIndex !== itemIndex) return item;
+            return { ...normalizeStyleItem(item, category, itemIndex), [field]: value };
+          }),
+        };
+      }),
     }));
   };
 
@@ -871,10 +912,55 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
         },
       ],
     }));
+    setSelectedCategoryIndex(content.categories.length);
+    setSelectedItemIndex(0);
   };
 
   const removeCategory = (index) => {
     setContent((current) => ({ ...current, categories: current.categories.filter((_, categoryIndex) => categoryIndex !== index) }));
+    setSelectedCategoryIndex(0);
+    setSelectedItemIndex(0);
+  };
+
+  const addGroupItem = (categoryIndex) => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((category, currentCategoryIndex) => {
+        if (currentCategoryIndex !== categoryIndex) return category;
+        const title = `New Style Container ${category.items.length + 1}`;
+        return {
+          ...category,
+          items: [
+            ...category.items,
+            normalizeStyleItem({
+              id: slugify(`${category.id}-${title}`),
+              title,
+              text: category.text,
+              frontImage: category.frontImage,
+              backImage: category.backImage,
+              clothStyle: 'Premium Tee',
+              fabric: 'Premium Cotton',
+              fit: 'Regular Comfort Fit',
+              rating: '4.8 / 5',
+              rate: category.rate,
+            }, category, category.items.length),
+          ],
+        };
+      }),
+    }));
+    setSelectedItemIndex(selectedCategory?.items.length || 0);
+  };
+
+  const removeGroupItem = (categoryIndex, itemIndex) => {
+    setContent((current) => ({
+      ...current,
+      categories: current.categories.map((category, currentCategoryIndex) => (
+        currentCategoryIndex === categoryIndex
+          ? { ...category, items: category.items.filter((_, currentItemIndex) => currentItemIndex !== itemIndex) }
+          : category
+      )),
+    }));
+    setSelectedItemIndex(0);
   };
 
   const resetContent = () => {
@@ -888,8 +974,30 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
   };
 
   return (
-    <section className="admin-page admin-dashboard page-enter">
+    <section className="admin-page admin-dashboard page-enter" style={{ '--admin-bg': `url(${background})` }}>
       <div className="container">
+        {deleteTarget && (
+          <div className="admin-modal" role="dialog" aria-modal="true">
+            <div className="admin-modal-card">
+              <h2>Confirm Delete</h2>
+              <p>Are you sure you want to delete this {deleteTarget.type === 'category' ? 'category' : 'image container'}?</p>
+              <div className="admin-actions">
+                <button className="dark-button" type="button" onClick={() => setDeleteTarget(null)}>Cancel</button>
+                <button
+                  className="gold-button"
+                  type="button"
+                  onClick={() => {
+                    if (deleteTarget.type === 'category') removeCategory(deleteTarget.categoryIndex);
+                    if (deleteTarget.type === 'item') removeGroupItem(deleteTarget.categoryIndex, deleteTarget.itemIndex);
+                    setDeleteTarget(null);
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="admin-topbar">
           <div>
             <span>Private Admin</span>
@@ -923,44 +1031,105 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
           <div className="admin-section-head">
             <div>
               <h2>Image Containers & Service Categories</h2>
-              <p>Edit cards used on the Home style showcase, Services categories, and group detail pages.</p>
+              <p>Select a category to edit it at the top, then manage its image containers below.</p>
             </div>
             <div className="admin-actions">
-              <button className="gold-button" type="button" onClick={addCategory}>Add New Category</button>
+              <button className="gold-button" type="button" onClick={addCategory}>Add Category On Home Page</button>
               <button className="dark-button" type="button" onClick={resetContent}>Reset Default</button>
             </div>
           </div>
-          <div className="admin-category-list">
+          {selectedCategory && (
+            <div className="admin-edit-focus">
+              <h3>Edit Selected Category</h3>
+              <div className="form-two">
+                <label>T-shirt / Category Name<input value={selectedCategory.title} onChange={(event) => updateCategory(selectedCategoryIndex, 'title', event.target.value)} /></label>
+                <label>Brand / Badge Name<input value={selectedCategory.badge} onChange={(event) => updateCategory(selectedCategoryIndex, 'badge', event.target.value)} /></label>
+              </div>
+              <label>Description<textarea rows="3" value={selectedCategory.text} onChange={(event) => updateCategory(selectedCategoryIndex, 'text', event.target.value)} /></label>
+              <div className="form-two">
+                <label>Cloth Count<input value={selectedCategory.count} onChange={(event) => updateCategory(selectedCategoryIndex, 'count', event.target.value)} /></label>
+                <label>Rating / Rate<input value={selectedCategory.rate} onChange={(event) => updateCategory(selectedCategoryIndex, 'rate', event.target.value)} /></label>
+              </div>
+              <div className="form-two">
+                <label>Front Image URL<input value={selectedCategory.frontImage} onChange={(event) => updateCategory(selectedCategoryIndex, 'frontImage', event.target.value)} /></label>
+                <label>Back Image URL<input value={selectedCategory.backImage} onChange={(event) => updateCategory(selectedCategoryIndex, 'backImage', event.target.value)} /></label>
+              </div>
+              <div className="admin-checks">
+                <label><input type="checkbox" checked={selectedCategory.showOnHome !== false} onChange={(event) => toggleCategory(selectedCategoryIndex, 'showOnHome', event.target.checked)} /> Show on Home page</label>
+                <label><input type="checkbox" checked={selectedCategory.showOnServices !== false} onChange={(event) => toggleCategory(selectedCategoryIndex, 'showOnServices', event.target.checked)} /> Show on Services category page</label>
+              </div>
+            </div>
+          )}
+          <div className="admin-category-list admin-scroll-row">
             {content.categories.map((category, index) => (
-              <article className="admin-category-card" key={`${category.id}-${index}`}>
+              <article className={selectedCategoryIndex === index ? 'admin-category-card selected' : 'admin-category-card'} key={`${category.id}-${index}`}>
                 <div className="admin-category-preview">
                   <img src={category.frontImage} alt="" />
                   <img src={category.backImage} alt="" />
                 </div>
                 <div className="admin-category-fields">
-                  <div className="form-two">
-                    <label>T-shirt / Category Name<input value={category.title} onChange={(event) => updateCategory(index, 'title', event.target.value)} /></label>
-                    <label>Brand / Badge Name<input value={category.badge} onChange={(event) => updateCategory(index, 'badge', event.target.value)} /></label>
+                  <strong>{category.title}</strong>
+                  <span>{category.badge}</span>
+                  <small>{category.count} / {category.rate}</small>
+                  <div className="admin-actions">
+                    <button className="gold-button" type="button" onClick={() => { setSelectedCategoryIndex(index); setSelectedItemIndex(0); }}>Edit</button>
+                    <button className="dark-button" type="button" onClick={() => setDeleteTarget({ type: 'category', categoryIndex: index })}>Delete</button>
                   </div>
-                  <label>Description<textarea rows="3" value={category.text} onChange={(event) => updateCategory(index, 'text', event.target.value)} /></label>
-                  <div className="form-two">
-                    <label>Cloth Count<input value={category.count} onChange={(event) => updateCategory(index, 'count', event.target.value)} /></label>
-                    <label>Rating / Rate<input value={category.rate} onChange={(event) => updateCategory(index, 'rate', event.target.value)} /></label>
-                  </div>
-                  <div className="form-two">
-                    <label>Front Image URL<input value={category.frontImage} onChange={(event) => updateCategory(index, 'frontImage', event.target.value)} /></label>
-                    <label>Back Image URL<input value={category.backImage} onChange={(event) => updateCategory(index, 'backImage', event.target.value)} /></label>
-                  </div>
-                  <div className="admin-checks">
-                    <label><input type="checkbox" checked={category.showOnHome !== false} onChange={(event) => toggleCategory(index, 'showOnHome', event.target.checked)} /> Show on Home page</label>
-                    <label><input type="checkbox" checked={category.showOnServices !== false} onChange={(event) => toggleCategory(index, 'showOnServices', event.target.checked)} /> Show on Services category page</label>
-                  </div>
-                  <label>Group Page Style Names<textarea rows="4" value={category.items.join('\n')} onChange={(event) => updateCategoryItems(index, event.target.value)} /></label>
-                  <button className="dark-button" type="button" onClick={() => removeCategory(index)}>Remove Category</button>
                 </div>
               </article>
             ))}
           </div>
+          {selectedCategory && (
+            <div className="admin-group-editor">
+              <div className="admin-section-head">
+                <div>
+                  <h2>{selectedCategory.title} Containers</h2>
+                  <p>Edit containers shown inside this category group page.</p>
+                </div>
+                <button className="gold-button" type="button" onClick={() => addGroupItem(selectedCategoryIndex)}>Add New Container</button>
+              </div>
+              {selectedItem && (
+                <div className="admin-edit-focus">
+                  <h3>Edit Selected Image Container</h3>
+                  <div className="form-two">
+                    <label>Cloth Name<input value={selectedItem.title} onChange={(event) => updateGroupItem(selectedCategoryIndex, selectedItemIndex, 'title', event.target.value)} /></label>
+                    <label>Rating<input value={selectedItem.rating} onChange={(event) => updateGroupItem(selectedCategoryIndex, selectedItemIndex, 'rating', event.target.value)} /></label>
+                  </div>
+                  <label>Description<textarea rows="3" value={selectedItem.text} onChange={(event) => updateGroupItem(selectedCategoryIndex, selectedItemIndex, 'text', event.target.value)} /></label>
+                  <div className="form-two">
+                    <label>Front Image URL<input value={selectedItem.frontImage} onChange={(event) => updateGroupItem(selectedCategoryIndex, selectedItemIndex, 'frontImage', event.target.value)} /></label>
+                    <label>Back Image URL<input value={selectedItem.backImage} onChange={(event) => updateGroupItem(selectedCategoryIndex, selectedItemIndex, 'backImage', event.target.value)} /></label>
+                  </div>
+                  <div className="form-two">
+                    <label>Cloth Style<input value={selectedItem.clothStyle} onChange={(event) => updateGroupItem(selectedCategoryIndex, selectedItemIndex, 'clothStyle', event.target.value)} /></label>
+                    <label>Rate<input value={selectedItem.rate} onChange={(event) => updateGroupItem(selectedCategoryIndex, selectedItemIndex, 'rate', event.target.value)} /></label>
+                  </div>
+                </div>
+              )}
+              <div className="admin-category-list admin-scroll-row">
+                {selectedCategory.items.map((item, itemIndex) => {
+                  const style = normalizeStyleItem(item, selectedCategory, itemIndex);
+                  return (
+                    <article className={selectedItemIndex === itemIndex ? 'admin-category-card selected' : 'admin-category-card'} key={style.id}>
+                      <div className="admin-category-preview">
+                        <img src={style.frontImage} alt="" />
+                        <img src={style.backImage} alt="" />
+                      </div>
+                      <div className="admin-category-fields">
+                        <strong>{style.title}</strong>
+                        <span>{selectedCategory.badge}</span>
+                        <small>{style.rating} / {style.rate}</small>
+                        <div className="admin-actions">
+                          <button className="gold-button" type="button" onClick={() => setSelectedItemIndex(itemIndex)}>Edit</button>
+                          <button className="dark-button" type="button" onClick={() => setDeleteTarget({ type: 'item', categoryIndex: selectedCategoryIndex, itemIndex })}>Delete</button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </section>
       </div>
     </section>
@@ -1061,7 +1230,7 @@ function App() {
 
   const setActivePage = (page) => {
     const nextPath = page === 'ServiceDetail'
-      ? `/services/${serviceFocus || content.categories[0]?.id || ''}`
+      ? `/service/group-services/${serviceFocus || content.categories[0]?.id || ''}`
       : pageToPath[page] || '/';
     if (window.location.pathname !== nextPath) {
       window.history.pushState({}, '', nextPath);
@@ -1071,7 +1240,7 @@ function App() {
 
   useEffect(() => {
     const nextPath = activePage === 'ServiceDetail'
-      ? `/services/${serviceFocus || content.categories[0]?.id || ''}`
+      ? `/service/group-services/${serviceFocus || content.categories[0]?.id || ''}`
       : pageToPath[activePage] || '/';
     if (window.location.pathname !== nextPath) {
       window.history.replaceState({}, '', nextPath);

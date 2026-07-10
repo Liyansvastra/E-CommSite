@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
@@ -390,8 +390,120 @@ function SectionTitle({ eyebrow, title, subtitle }) {
   );
 }
 
-function GoldIcon({ children }) {
-  return <div className="gold-icon">{children}</div>;
+const materialIconPaths = {
+  fabric: (
+    <>
+      <path d="M6 3h12l2 4-3 3v11H7V10L4 7l2-4Z" />
+      <path d="M9 3c0 2 1.3 3 3 3s3-1 3-3" />
+    </>
+  ),
+  fit: (
+    <>
+      <path d="M8 4 4 7l3 4 2-1v10h6V10l2 1 3-4-4-3" />
+      <path d="M9 4c.5 1.5 1.5 2 3 2s2.5-.5 3-2" />
+    </>
+  ),
+  group: (
+    <>
+      <circle cx="8" cy="7" r="3" />
+      <circle cx="16" cy="7" r="3" />
+      <path d="M3 20c0-4 2-7 5-7s5 3 5 7" />
+      <path d="M11 20c0-4 2-7 5-7s5 3 5 7" />
+    </>
+  ),
+  design: (
+    <>
+      <path d="M4 20 16 8" />
+      <path d="m14 6 4 4" />
+      <path d="M17 3 21 7 8 20H4v-4L17 3Z" />
+      <path d="M12 8 16 12" />
+    </>
+  ),
+  chat: (
+    <>
+      <path d="M21 11.5a8.5 8.5 0 0 1-9 8.5 9 9 0 0 1-4-.9L3 21l1.7-4.4A8.5 8.5 0 1 1 21 11.5Z" />
+      <path d="M8 10h8" />
+      <path d="M8 14h5" />
+    </>
+  ),
+  delivery: (
+    <>
+      <path d="M3 7h11v10H3Z" />
+      <path d="M14 10h4l3 3v4h-7Z" />
+      <circle cx="7" cy="18" r="2" />
+      <circle cx="18" cy="18" r="2" />
+    </>
+  ),
+  quality: (
+    <>
+      <path d="m12 3 2.7 5.5 6.1.9-4.4 4.2 1 6-5.4-2.9-5.4 2.9 1-6-4.4-4.2 6.1-.9L12 3Z" />
+      <path d="m9.5 12 1.7 1.7 3.5-3.7" />
+    </>
+  ),
+  care: (
+    <>
+      <path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.7A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z" />
+      <path d="M9 12h6" />
+    </>
+  ),
+  transparent: (
+    <>
+      <path d="M12 3 4 7v5c0 5 3.4 8.5 8 9 4.6-.5 8-4 8-9V7l-8-4Z" />
+      <path d="M9 12h6" />
+      <path d="M9 16h4" />
+    </>
+  ),
+  inclusive: (
+    <>
+      <circle cx="12" cy="7" r="3" />
+      <path d="M5 21c0-4.4 3.1-8 7-8s7 3.6 7 8" />
+      <path d="M4 11h4" />
+      <path d="M16 11h4" />
+    </>
+  ),
+  location: (
+    <>
+      <path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </>
+  ),
+  phone: (
+    <>
+      <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.7.6 2.5a2 2 0 0 1-.4 2.1L8 9.6a16 16 0 0 0 6.4 6.4l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.6.5 2.5.6a2 2 0 0 1 1.7 2Z" />
+    </>
+  ),
+  email: (
+    <>
+      <path d="M4 5h16v14H4Z" />
+      <path d="m4 7 8 6 8-6" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
+  category: (
+    <>
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+    </>
+  ),
+};
+
+function MaterialIcon({ name }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      {materialIconPaths[name] || materialIconPaths.quality}
+    </svg>
+  );
+}
+
+function GoldIcon({ icon, children }) {
+  return <div className="gold-icon">{icon ? <MaterialIcon name={icon} /> : children}</div>;
 }
 
 function Stat({ value, label }) {
@@ -406,9 +518,13 @@ function Stat({ value, label }) {
 function FeatureCard({ title, text, icon, centered = false }) {
   return (
     <article className={centered ? 'feature-card centered' : 'feature-card'} data-reveal>
-      <GoldIcon>{icon}</GoldIcon>
-      <h3>{title}</h3>
-      <p>{text}</p>
+      <GoldIcon icon={icon} />
+      <div className="feature-card-content">
+        <h3>{title}</h3>
+        <div className="card-small-line" aria-hidden="true" />
+        <p>{text}</p>
+        <span className="explore-link">Explore <b aria-hidden="true">-&gt;</b></span>
+      </div>
     </article>
   );
 }
@@ -681,12 +797,12 @@ function HomePage({ content, categories, setActivePage, setServiceFocus }) {
 
 function WhyChoose() {
   const cards = [
-    ['Premium Fabric Quality', '100% premium cotton with superior GSM for lasting comfort and durability.', 'PF'],
-    ['Comfortable Fit', 'Thoughtfully designed cuts that support clean everyday T-shirt styling.', 'CF'],
-    ['Unisex Designs', 'Versatile styles crafted for logo apparel, teams, and brand enquiries.', 'UD'],
-    ['Logo Customization', 'Logo placement and styling support for brand and team apparel enquiries.', 'LC'],
-    ['Easy Enquiry', 'Quick WhatsApp and email communication for custom T-shirt requirements.', 'EQ'],
-    ['Pan India Support', 'Delivery and support discussion available for customers across India.', 'PI'],
+    ['Premium Fabric Quality', '100% premium cotton with superior GSM for lasting comfort and durability.', 'fabric'],
+    ['Comfortable Fit', 'Thoughtfully designed cuts that support clean everyday T-shirt styling.', 'fit'],
+    ['Unisex Designs', 'Versatile styles crafted for logo apparel, teams, and brand enquiries.', 'group'],
+    ['Logo Customization', 'Logo placement and styling support for brand and team apparel enquiries.', 'design'],
+    ['Easy Enquiry', 'Quick WhatsApp and email communication for custom T-shirt requirements.', 'chat'],
+    ['Pan India Support', 'Delivery and support discussion available for customers across India.', 'delivery'],
   ];
 
   return (
@@ -750,10 +866,10 @@ function AboutPage({ content, setActivePage }) {
 
 function Values() {
   const values = [
-    ['Quality First', 'Premium fabrics and superior craftsmanship in every product we create.', '♙'],
-    ['Customer Care', 'Your satisfaction is our priority from purchase to delivery and beyond.', '♡'],
-    ['Transparency', 'Honest pricing, clear policies, and open communication at every step.', '◇'],
-    ['Inclusivity', 'Unisex designs crafted to flatter and fit people of all body types.', '◎'],
+    ['Quality First', 'Premium fabrics and superior craftsmanship in every product we create.', 'quality'],
+    ['Customer Care', 'Your satisfaction is our priority from purchase to delivery and beyond.', 'care'],
+    ['Transparency', 'Honest pricing, clear policies, and open communication at every step.', 'transparent'],
+    ['Inclusivity', 'Unisex designs crafted to flatter and fit people of all body types.', 'inclusive'],
   ];
   return (
     <section className="section-block values-section">
@@ -815,10 +931,12 @@ function ServicesPage({ categories, serviceFocus, setServiceFocus, setActivePage
         <SectionTitle eyebrow="What We Offer" title="Our Services" subtitle="Explore T-shirt style categories, sample groups, and enquiry-ready apparel directions." />
         <div className="service-jump-grid">
           {categories.filter((category) => category.showOnServices !== false).map((category, index) => (
-            <button className="service-jump-card" key={category.id} onClick={() => jumpToCategory(category.id)} data-reveal>
-              <span>{String(index + 1).padStart(2, '0')}</span>
+            <button className="service-jump-card royal-text-card" key={category.id} onClick={() => jumpToCategory(category.id)} data-reveal>
+              <GoldIcon icon="category" />
               <strong>{category.title}</strong>
+              <div className="card-small-line" aria-hidden="true" />
               <small>{category.count} / {category.rate}</small>
+              <span className="explore-link">View Styles <b aria-hidden="true">-&gt;</b></span>
             </button>
           ))}
         </div>
@@ -898,10 +1016,10 @@ function ContactPage({ content }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const contacts = [
-    ['Our Address', "LIYAN'S VASTRA\nNo 53 G1 Sudha Madhuri Homes\nNalluruhalli Main Road\nOpp. HP Petrol Pump, DNA Anantha Layout\nBengaluru - 560066, Karnataka", 'AD'],
-    ['Phone', `${displayPhone}\nMon - Sat: 10 AM - 6 PM IST`, 'PH'],
-    ['Email', `${emailAddress}\nWe reply within 24 hours`, 'EM'],
-    ['Business Hours', 'Monday - Saturday\n10:00 AM - 6:00 PM IST', 'HR'],
+    ['Our Address', "LIYAN'S VASTRA\nNo 53 G1 Sudha Madhuri Homes\nNalluruhalli Main Road\nOpp. HP Petrol Pump, DNA Anantha Layout\nBengaluru - 560066, Karnataka", 'location'],
+    ['Phone', `${displayPhone}\nMon - Sat: 10 AM - 6 PM IST`, 'phone'],
+    ['Email', `${emailAddress}\nWe reply within 24 hours`, 'email'],
+    ['Business Hours', 'Monday - Saturday\n10:00 AM - 6:00 PM IST', 'clock'],
   ];
   const renderContactText = (title, text) => {
     if (title === 'Phone') {
@@ -971,7 +1089,7 @@ function ContactPage({ content }) {
           <h2 className="contact-heading">Contact Information</h2>
           <div className="contact-list">
             {contacts.map(([title, text, icon]) => (
-              <article className="contact-card" key={title}><GoldIcon>{icon}</GoldIcon><div><h3>{title}</h3>{renderContactText(title, text)}</div></article>
+              <article className="contact-card royal-text-card" key={title}><GoldIcon icon={icon} /><div><h3>{title}</h3><div className="card-small-line" aria-hidden="true" />{renderContactText(title, text)}</div></article>
             ))}
           </div>
         </div>
@@ -1707,7 +1825,7 @@ function Footer({ setActivePage }) {
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>© 2026 {brand}. All rights reserved. A Proprietorship Business.</span>
+        <span>Â© 2026 {brand}. All rights reserved. A Proprietorship Business.</span>
         <span>Designed with care in India</span>
       </div>
     </footer>
@@ -1870,3 +1988,4 @@ function App() {
 }
 
 createRoot(document.getElementById('root')).render(<App />);
+

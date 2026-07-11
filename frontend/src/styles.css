@@ -1993,7 +1993,9 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
 }
 
 .compact-head {
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(209, 163, 71, 0.28);
 }
 
 .compact-head h3 {
@@ -2005,11 +2007,11 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
 .admin-text-card-editor {
   display: grid;
   gap: 0.9rem;
-  margin: 1.2rem 0;
-  padding: 1rem;
-  border: 1px solid rgba(209, 163, 71, 0.18);
-  border-radius: 14px;
-  background: rgba(10, 8, 4, 0.22);
+  margin: 1.4rem 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .admin-text-card-list {
@@ -2018,10 +2020,11 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
 }
 
 .admin-text-card-row {
-  padding: 1rem;
+  padding: 1.1rem;
   border: 1px solid rgba(209, 163, 71, 0.2);
   border-radius: 12px;
   background: linear-gradient(145deg, rgba(38, 30, 16, 0.34), rgba(8, 8, 8, 0.14));
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
 }
 
 .admin-grid {

@@ -1,0 +1,13 @@
+{
+  "generated_at": null,
+  "edit_label": "initial",
+  "tables": {
+    "site_content_current": [],
+    "site_content_backup": [],
+    "site_pages_current": [],
+    "site_pages_mirror": [],
+    "image_containers_current": [],
+    "image_containers_mirror": [],
+    "contact_email_messages": []
+  }
+}

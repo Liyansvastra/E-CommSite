@@ -4,6 +4,7 @@ import json
 import smtplib
 import urllib.error
 import urllib.request
+from datetime import datetime, timezone
 from email.message import EmailMessage
 from pathlib import Path
 from typing import Any, Dict, List
@@ -32,6 +33,8 @@ def _split_origins(value: str) -> List[str]:
 
 
 _load_local_env()
+
+LOCAL_TABLE_BACKUP_PATH = Path(__file__).parent / "data" / "supabase_tables_backup.json"
 
 DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -414,6 +417,35 @@ def _sync_structured_tables(content: Dict[str, Any], edit_label: str) -> None:
     )
 
 
+def _write_local_table_backup(content: Dict[str, Any], edit_label: str) -> None:
+    pages = _page_rows(content)
+    images = _image_rows(content)
+    contact_messages: List[Dict[str, Any]] = []
+    if _supabase_configured():
+        try:
+            contact_messages = _supabase_request("contact_email_messages?select=*&order=created_at.desc&limit=100") or []
+        except Exception:
+            contact_messages = []
+    backup = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "edit_label": edit_label,
+        "tables": {
+            "site_content_current": [{"id": "main", "content": content}],
+            "site_content_backup": [{"source_id": "main", "action": edit_label, "content": content}],
+            "site_pages_current": pages,
+            "site_pages_mirror": [{"edit_label": edit_label, **row} for row in pages],
+            "image_containers_current": images,
+            "image_containers_mirror": [
+                {"edit_label": edit_label, "container_id": row["id"], **{key: value for key, value in row.items() if key != "id"}}
+                for row in images
+            ],
+            "contact_email_messages": contact_messages,
+        },
+    }
+    LOCAL_TABLE_BACKUP_PATH.parent.mkdir(parents=True, exist_ok=True)
+    LOCAL_TABLE_BACKUP_PATH.write_text(json.dumps(backup, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
 def _store_contact_message(payload: ContactMessage, status: str, provider: str, error_message: str = "") -> None:
     if not _supabase_configured():
         return
@@ -513,6 +545,7 @@ def save_admin_content(
             extra_headers={"Prefer": "resolution=merge-duplicates,return=minimal"},
         )
         _sync_structured_tables(payload.content, edit_label)
+        _write_local_table_backup(payload.content, edit_label)
         backup_row = [{"source_id": "main", "action": edit_label, "content": payload.content}]
         _supabase_request(
             "site_content_backup",

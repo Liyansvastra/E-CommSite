@@ -639,11 +639,12 @@ function GroupStyleCard({ style, index }) {
   );
 }
 
-function ServicesHeroShowcase({ categories }) {
+function ServicesHeroShowcase({ categories, onSelect }) {
   const storedSlides = categories.flatMap((category) => {
     const categorySlides = [
       {
         id: `${category.id}-category`,
+        categoryId: category.id,
         title: category.title,
         text: category.text,
         frontImage: category.frontImage,
@@ -655,6 +656,7 @@ function ServicesHeroShowcase({ categories }) {
       const style = normalizeStyleItem(item, category, index);
       return {
         id: style.id,
+        categoryId: category.id,
         title: style.title,
         text: style.text,
         frontImage: style.frontImage,
@@ -667,6 +669,7 @@ function ServicesHeroShowcase({ categories }) {
 
   const fallbackSlides = serviceHeroSlides.map(([title, text], index) => ({
     id: `fallback-${index}`,
+    categoryId: categories[index % Math.max(categories.length, 1)]?.id || '',
     title,
     text,
     frontImage: shirtFrontImage,
@@ -683,10 +686,10 @@ function ServicesHeroShowcase({ categories }) {
         <h2>Sample Style Movement</h2>
         <p>Auto-moving sample display for logo T-shirts, premium cotton, and custom apparel categories.</p>
       </div>
-      <div className="showcase-track-wrap" aria-hidden="true">
+      <div className="showcase-track-wrap">
         <div className="showcase-track">
           {slides.map((slide, index) => (
-            <article className="showcase-slide" key={`${slide.id}-${index}`}>
+            <button className="showcase-slide" type="button" key={`${slide.id}-${index}`} onClick={() => onSelect(slide.categoryId)}>
               <div className="showcase-shirt-stage" style={{ '--card-bg': slide.cardGradient || defaultGradient }}>
                 {slide.backImage && <img className="showcase-shirt back" src={slide.backImage} alt="" loading="lazy" decoding="async" />}
                 <img className={slide.backImage ? 'showcase-shirt front' : 'showcase-shirt front single'} src={slide.frontImage} alt="" loading="lazy" decoding="async" />
@@ -698,7 +701,7 @@ function ServicesHeroShowcase({ categories }) {
               <div>
                 <small>{slide.text}</small>
               </div>
-            </article>
+            </button>
           ))}
         </div>
       </div>
@@ -1001,7 +1004,7 @@ function ServicesPage({ categories, serviceFocus, setServiceFocus, setActivePage
   return (
     <section className="section-block services-page page-enter" style={{ '--service-page-bg': `url(${background})` }}>
       <div className="container">
-        <ServicesHeroShowcase categories={categories.filter((category) => category.showOnServices !== false)} />
+        <ServicesHeroShowcase categories={categories.filter((category) => category.showOnServices !== false)} onSelect={openCategoryPage} />
         <SectionTitle eyebrow="What We Offer" title="Our Services" subtitle="Explore T-shirt style categories, sample groups, and enquiry-ready apparel directions." />
         <div className="service-jump-grid">
           {categories.filter((category) => category.showOnServices !== false).map((category, index) => (
@@ -1354,7 +1357,7 @@ function RoyalVisualControls({ item, updateField }) {
 function AdminSaveBar({ status, onSave }) {
   return (
     <div className="admin-save-bar">
-      <button className="gold-button" type="button" onClick={onSave}>Save</button>
+      <button className="gold-button" type="button" onClick={() => onSave()}>Save</button>
       {status?.message && <span className={status.type === 'success' ? 'success' : 'error'}>{status.message}</span>}
     </div>
   );

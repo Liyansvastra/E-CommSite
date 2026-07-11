@@ -1386,7 +1386,7 @@ main,
   border: 1px solid var(--line);
   border-radius: 14px;
   background: linear-gradient(145deg, var(--glass), rgba(255, 255, 255, 0.03));
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 14px 34px rgba(0, 0, 0, 0.24);
   transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
 }
@@ -1898,6 +1898,7 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
   padding: 4rem 0;
   background-color: #050505;
   background-image: none !important;
+  overflow: hidden auto;
 }
 
 .admin-page::before {
@@ -1906,9 +1907,10 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
   inset: 0;
   z-index: -1;
   background-image: var(--admin-bg);
-  background-size: contain;
+  background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  transform: translateZ(0);
   pointer-events: none;
 }
 
@@ -1918,8 +1920,8 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
   border: 1px solid rgba(209, 163, 71, 0.24);
   border-radius: 14px;
   background: linear-gradient(145deg, rgba(48, 39, 24, 0.48), rgba(8, 8, 8, 0.16));
-  backdrop-filter: blur(8px) saturate(1.05);
-  -webkit-backdrop-filter: blur(8px) saturate(1.05);
+  backdrop-filter: blur(3px) saturate(1.02);
+  -webkit-backdrop-filter: blur(3px) saturate(1.02);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 46px rgba(0, 0, 0, 0.18);
 }
 
@@ -1928,8 +1930,8 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
   margin: 0 auto;
   padding: 2rem;
   background: linear-gradient(145deg, rgba(48, 39, 24, 0.38), rgba(8, 8, 8, 0.12));
-  backdrop-filter: blur(4px) saturate(1.02);
-  -webkit-backdrop-filter: blur(4px) saturate(1.02);
+  backdrop-filter: blur(2px) saturate(1.01);
+  -webkit-backdrop-filter: blur(2px) saturate(1.01);
 }
 
 .admin-login-card img {
@@ -2385,8 +2387,8 @@ input[type="range"] {
   border: 1px solid rgba(255, 201, 0, 0.22);
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.24);
-  backdrop-filter: blur(8px) saturate(1.06);
-  -webkit-backdrop-filter: blur(8px) saturate(1.06);
+  backdrop-filter: blur(3px) saturate(1.02);
+  -webkit-backdrop-filter: blur(3px) saturate(1.02);
 }
 
 .admin-save-bar span {
@@ -2411,8 +2413,8 @@ input[type="range"] {
   background:
     radial-gradient(circle at 88% 16%, rgba(255, 201, 0, 0.12), transparent 18rem),
     rgba(0, 0, 0, 0.24);
-  backdrop-filter: blur(8px) saturate(1.06);
-  -webkit-backdrop-filter: blur(8px) saturate(1.06);
+  backdrop-filter: blur(3px) saturate(1.02);
+  -webkit-backdrop-filter: blur(3px) saturate(1.02);
 }
 
 .admin-edit-focus h3 {

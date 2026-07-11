@@ -1414,7 +1414,7 @@ function AdminSaveBar({ status, onSave }) {
   );
 }
 
-function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuthed, setAdminEditCategoryIndex, setAdminEditItemIndex, onSaveContent, adminSaveStatus }) {
+function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, setActivePage, setIsAdminAuthed, setAdminEditCategoryIndex, setAdminEditItemIndex, onSaveContent, adminSaveStatus }) {
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -1576,6 +1576,20 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
     setActivePage('AdminLogin');
   };
 
+  const sectionTitles = {
+    dashboard: 'Website Content Dashboard',
+    home: 'Home Page Settings',
+    about: 'About Page Settings',
+    services: 'Services Page Settings',
+    contact: 'Contact Page Settings',
+  };
+
+  const isDashboard = adminSection === 'dashboard';
+  const showHomeEditor = adminSection === 'home';
+  const showAboutEditor = adminSection === 'about';
+  const showServicesEditor = adminSection === 'services';
+  const showContactEditor = adminSection === 'contact';
+
   return (
     <section className="admin-page admin-dashboard page-enter" style={{ backgroundImage: `url(${background})` }}>
       <div className="container">
@@ -1604,7 +1618,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
         <div className="admin-topbar">
           <div>
             <span>Private Admin</span>
-            <h1>Website Content Dashboard</h1>
+            <h1>{sectionTitles[adminSection] || sectionTitles.dashboard}</h1>
           </div>
           <div className="admin-actions">
             <button className="dark-button" type="button" onClick={() => setActivePage('Home')}>View Site</button>
@@ -1612,13 +1626,24 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
           </div>
         </div>
         <div className="admin-page-tabs">
-          <button className="gold-button" type="button" onClick={() => document.getElementById('admin-home-editor')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>Home Edit</button>
-          <button className="gold-button" type="button" onClick={() => document.getElementById('admin-about-editor')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>About Edit</button>
-          <button className="gold-button" type="button" onClick={() => document.getElementById('admin-services-editor')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>Services Edit</button>
-          <button className="gold-button" type="button" onClick={() => document.getElementById('admin-contact-editor')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>Contact Edit</button>
+          <button className="gold-button" type="button" onClick={() => setActivePage('AdminHomeSettings')}>Home Settings</button>
+          <button className="gold-button" type="button" onClick={() => setActivePage('AdminAboutSettings')}>About Settings</button>
+          <button className="gold-button" type="button" onClick={() => setActivePage('AdminServicesSettings')}>Services Settings</button>
+          <button className="gold-button" type="button" onClick={() => setActivePage('AdminContactSettings')}>Contact Settings</button>
+          {!isDashboard && <button className="dark-button" type="button" onClick={() => setActivePage('AdminDashboard')}>Back Admin Home</button>}
         </div>
+        {isDashboard && (
+          <section className="admin-panel admin-wide">
+            <div className="admin-section-head">
+              <div>
+                <h2>Select Settings Page</h2>
+                <p>Open a separate admin settings page for Home, About, Services, or Contact.</p>
+              </div>
+            </div>
+          </section>
+        )}
         <div className="admin-grid">
-          <section className="admin-panel" id="admin-home-editor">
+          {showHomeEditor && <section className="admin-panel" id="admin-home-editor">
             <h2>Home Page</h2>
             <label>Hero Title<input value={content.site.heroTitle} onChange={(event) => updateSite('heroTitle', event.target.value)} /></label>
             <label>Hero Text<textarea rows="4" value={content.site.heroText} onChange={(event) => updateSite('heroText', event.target.value)} /></label>
@@ -1627,21 +1652,25 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
             <label>Why Choose Text Containers<textarea rows="7" value={serializeTextCards(content.site.whyChooseCards || defaultSiteContent.whyChooseCards)} onChange={(event) => updateTextCards('whyChooseCards', event.target.value)} /></label>
             <label>Testimonials<textarea rows="4" value={serializeTextCards(content.site.testimonials || defaultSiteContent.testimonials, false)} onChange={(event) => updateTextCards('testimonials', event.target.value, false)} /></label>
             <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
-          </section>
+          </section>}
 
-          <section className="admin-panel" id="admin-about-editor">
-            <h2>About & Contact Pages</h2>
+          {showAboutEditor && <section className="admin-panel" id="admin-about-editor">
+            <h2>About Page</h2>
             <label>About Subtitle<input value={content.site.aboutSubtitle} onChange={(event) => updateSite('aboutSubtitle', event.target.value)} /></label>
             <label>Journey Paragraphs<textarea rows="6" value={content.site.aboutJourney.join('\n')} onChange={(event) => updateTextList('aboutJourney', event.target.value)} /></label>
             <label>Our Values Text Containers<textarea rows="6" value={serializeTextCards(content.site.valueCards || defaultSiteContent.valueCards)} onChange={(event) => updateTextCards('valueCards', event.target.value)} /></label>
-            <div id="admin-contact-editor" />
+            <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
+          </section>}
+
+          {showContactEditor && <section className="admin-panel" id="admin-contact-editor">
+            <h2>Contact Page</h2>
             <label>Contact Form Title<input value={content.site.contactTitle} onChange={(event) => updateSite('contactTitle', event.target.value)} /></label>
             <label>Contact Form Subtitle<input value={content.site.contactSubtitle} onChange={(event) => updateSite('contactSubtitle', event.target.value)} /></label>
             <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
-          </section>
+          </section>}
         </div>
 
-        <section className="admin-panel admin-wide" id="admin-services-editor">
+        {showServicesEditor && <section className="admin-panel admin-wide" id="admin-services-editor">
           <div className="admin-section-head">
             <div>
               <h2>Image Containers & Service Categories</h2>
@@ -1745,7 +1774,7 @@ function AdminDashboardPage({ content, setContent, setActivePage, setIsAdminAuth
               </ScrollArrowRow>
             </div>
           )}
-        </section>
+        </section>}
       </div>
     </section>
   );
@@ -2165,6 +2194,10 @@ function App() {
     NotFound: NotFoundPage,
     AdminLogin: AdminLoginPage,
     AdminDashboard: AdminDashboardPage,
+    AdminHomeSettings: (props) => <AdminDashboardPage {...props} adminSection="home" />,
+    AdminAboutSettings: (props) => <AdminDashboardPage {...props} adminSection="about" />,
+    AdminServicesSettings: (props) => <AdminDashboardPage {...props} adminSection="services" />,
+    AdminContactSettings: (props) => <AdminDashboardPage {...props} adminSection="contact" />,
     AdminCategoryEditor: AdminCategoryEditorPage,
     AdminContainerEditor: AdminContainerEditorPage,
   })[activePage] || HomePage, [activePage]);
@@ -2204,7 +2237,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if ((activePage === 'AdminDashboard' || activePage === 'AdminCategoryEditor' || activePage === 'AdminContainerEditor') && !isAdminAuthed) {
+    if ((activePage === 'AdminDashboard' || activePage === 'AdminHomeSettings' || activePage === 'AdminAboutSettings' || activePage === 'AdminServicesSettings' || activePage === 'AdminContactSettings' || activePage === 'AdminCategoryEditor' || activePage === 'AdminContainerEditor') && !isAdminAuthed) {
       setActivePage('AdminLogin');
     }
   }, [activePage, isAdminAuthed]);
@@ -2252,7 +2285,7 @@ function App() {
     }
   }, [activePage, serviceFocus, content.categories, adminEditCategoryIndex, adminEditItemIndex]);
 
-  const isAdminPage = activePage === 'AdminLogin' || activePage === 'AdminDashboard' || activePage === 'AdminCategoryEditor' || activePage === 'AdminContainerEditor';
+  const isAdminPage = activePage === 'AdminLogin' || activePage === 'AdminDashboard' || activePage === 'AdminHomeSettings' || activePage === 'AdminAboutSettings' || activePage === 'AdminServicesSettings' || activePage === 'AdminContactSettings' || activePage === 'AdminCategoryEditor' || activePage === 'AdminContainerEditor';
 
   return (
     <>

@@ -1271,7 +1271,7 @@ function AdminLoginPage({ setActivePage, setIsAdminAuthed }) {
   };
 
   return (
-    <section className="admin-page page-enter" style={{ backgroundImage: `url(${background})` }}>
+    <section className="admin-page page-enter" style={{ '--admin-bg': `url(${background})` }}>
       <form className="admin-login-card" onSubmit={handleLogin}>
         <img src={logo} alt={brand} />
         <h1>Admin Login</h1>
@@ -1640,7 +1640,7 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
   const showContactEditor = adminSection === 'contact';
 
   return (
-    <section className="admin-page admin-dashboard page-enter" style={{ backgroundImage: `url(${background})` }}>
+    <section className="admin-page admin-dashboard page-enter" style={{ '--admin-bg': `url(${background})` }}>
       <div className="container">
         {deleteTarget && (
           <div className="admin-modal" role="dialog" aria-modal="true">
@@ -1928,7 +1928,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
   if (!category) return null;
 
   return (
-    <section className="admin-page admin-dashboard page-enter" style={{ backgroundImage: `url(${background})` }}>
+    <section className="admin-page admin-dashboard page-enter" style={{ '--admin-bg': `url(${background})` }}>
       <div className="container">
         {deleteTarget !== null && (
           <div className="admin-modal" role="dialog" aria-modal="true">
@@ -2088,7 +2088,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
   if (!category || !selectedItem) return null;
 
   return (
-    <section className="admin-page admin-dashboard page-enter" style={{ backgroundImage: `url(${background})` }}>
+    <section className="admin-page admin-dashboard page-enter" style={{ '--admin-bg': `url(${background})` }}>
       <div className="container">
         {deleteTarget !== null && (
           <div className="admin-modal" role="dialog" aria-modal="true">

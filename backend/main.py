@@ -34,7 +34,8 @@ def _split_origins(value: str) -> List[str]:
 
 _load_local_env()
 
-LOCAL_TABLE_BACKUP_PATH = Path(__file__).parent / "data" / "supabase_tables_backup.json"
+LOCAL_TABLE_BACKUP_DIR = Path(__file__).parent / "data"
+LOCAL_TABLE_BACKUP_PATH = LOCAL_TABLE_BACKUP_DIR / "supabase_tables_backup.json"
 
 DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -426,24 +427,40 @@ def _write_local_table_backup(content: Dict[str, Any], edit_label: str) -> None:
             contact_messages = _supabase_request("contact_email_messages?select=*&order=created_at.desc&limit=100") or []
         except Exception:
             contact_messages = []
+    tables = {
+        "site_content_current": [{"id": "main", "content": content}],
+        "site_content_backup": [{"source_id": "main", "action": edit_label, "content": content}],
+        "site_pages_current": pages,
+        "site_pages_mirror": [{"edit_label": edit_label, **row} for row in pages],
+        "image_containers_current": images,
+        "image_containers_mirror": [
+            {"edit_label": edit_label, "container_id": row["id"], **{key: value for key, value in row.items() if key != "id"}}
+            for row in images
+        ],
+        "contact_email_messages": contact_messages,
+    }
     backup = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "edit_label": edit_label,
-        "tables": {
-            "site_content_current": [{"id": "main", "content": content}],
-            "site_content_backup": [{"source_id": "main", "action": edit_label, "content": content}],
-            "site_pages_current": pages,
-            "site_pages_mirror": [{"edit_label": edit_label, **row} for row in pages],
-            "image_containers_current": images,
-            "image_containers_mirror": [
-                {"edit_label": edit_label, "container_id": row["id"], **{key: value for key, value in row.items() if key != "id"}}
-                for row in images
-            ],
-            "contact_email_messages": contact_messages,
-        },
+        "tables": tables,
     }
-    LOCAL_TABLE_BACKUP_PATH.parent.mkdir(parents=True, exist_ok=True)
+    LOCAL_TABLE_BACKUP_DIR.mkdir(parents=True, exist_ok=True)
     LOCAL_TABLE_BACKUP_PATH.write_text(json.dumps(backup, indent=2, ensure_ascii=False), encoding="utf-8")
+    for table_name, rows in tables.items():
+        table_path = LOCAL_TABLE_BACKUP_DIR / f"{table_name}.json"
+        table_path.write_text(
+            json.dumps(
+                {
+                    "generated_at": backup["generated_at"],
+                    "edit_label": edit_label,
+                    "table": table_name,
+                    "rows": rows,
+                },
+                indent=2,
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
 
 
 def _store_contact_message(payload: ContactMessage, status: str, provider: str, error_message: str = "") -> None:
@@ -512,6 +529,11 @@ def get_admin_content():
             "message": "Unable to load website content.",
         }
     content = rows[0]["content"] if rows else None
+    if content:
+        try:
+            _write_local_table_backup(content, "db-fetch")
+        except Exception:
+            pass
     return {
         "ok": True,
         "content": content,

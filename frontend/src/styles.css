@@ -1917,6 +1917,9 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
   width: min(440px, calc(100% - 32px));
   margin: 0 auto;
   padding: 2rem;
+  background: linear-gradient(145deg, rgba(48, 39, 24, 0.38), rgba(8, 8, 8, 0.12));
+  backdrop-filter: blur(10px) saturate(1.05);
+  -webkit-backdrop-filter: blur(10px) saturate(1.05);
 }
 
 .admin-login-card img {
@@ -1973,6 +1976,38 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
   border-radius: 14px;
   background: rgba(10, 8, 4, 0.28);
   backdrop-filter: blur(12px);
+}
+
+.compact-head {
+  margin-bottom: 0.8rem;
+}
+
+.compact-head h3 {
+  margin: 0;
+  color: var(--gold-light);
+  font-size: 1rem;
+}
+
+.admin-text-card-editor {
+  display: grid;
+  gap: 0.9rem;
+  margin: 1.2rem 0;
+  padding: 1rem;
+  border: 1px solid rgba(209, 163, 71, 0.18);
+  border-radius: 14px;
+  background: rgba(10, 8, 4, 0.22);
+}
+
+.admin-text-card-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.admin-text-card-row {
+  padding: 1rem;
+  border: 1px solid rgba(209, 163, 71, 0.2);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(38, 30, 16, 0.34), rgba(8, 8, 8, 0.14));
 }
 
 .admin-grid {

@@ -112,6 +112,14 @@ const defaultSiteContent = {
     { title: 'Fast support', text: 'Quick response, clear updates, and smooth delivery experience.' },
     { title: 'Great quality', text: 'The fabric weight and stitching made the product feel premium.' },
   ],
+  contactDetails: {
+    address: "LIYAN'S VASTRA\nNo 53 G1 Sudha Madhuri Homes\nNalluruhalli Main Road\nOpp. HP Petrol Pump, DNA Anantha Layout\nBengaluru - 560066, Karnataka",
+    phoneNumber,
+    displayPhone,
+    email: emailAddress,
+    hours: 'Monday - Saturday\n10:00 AM - 6:00 PM IST',
+    replyText: 'We reply within 24 hours',
+  },
   contactTitle: 'Get In Touch',
   contactSubtitle: 'Tell us about your logo T-shirt or custom apparel requirement.',
 };
@@ -261,6 +269,9 @@ const parseTextCards = (value, fallback = [], includeMeta = true) => {
     .filter((card) => card.title && card.text);
   return cards.length ? cards : fallback;
 };
+
+const visibleCards = (cards = []) => cards.filter((card) => card.show !== false);
+const getContactDetails = (content) => ({ ...defaultSiteContent.contactDetails, ...(content.site.contactDetails || {}) });
 
 function goTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -789,7 +800,7 @@ function FeaturedProducts({ categories, setActivePage, setServiceFocus }) {
 }
 
 function Testimonials({ content }) {
-  const reviews = content.site.testimonials || defaultSiteContent.testimonials;
+  const reviews = visibleCards(content.site.testimonials || defaultSiteContent.testimonials);
   return (
     <section className="section-block compact-section">
       <div className="container">
@@ -863,7 +874,7 @@ function HomePage({ content, categories, setActivePage, setServiceFocus }) {
 }
 
 function WhyChoose({ content, setActivePage, setServiceFocus }) {
-  const cards = content.site.whyChooseCards || defaultSiteContent.whyChooseCards;
+  const cards = visibleCards(content.site.whyChooseCards || defaultSiteContent.whyChooseCards);
 
   const openCard = (target) => {
     if (target === 'contact') {
@@ -973,7 +984,7 @@ function AboutPage({ content, setActivePage, setServiceFocus }) {
 }
 
 function Values({ content, setActivePage, setServiceFocus }) {
-  const values = content.site.valueCards || defaultSiteContent.valueCards;
+  const values = visibleCards(content.site.valueCards || defaultSiteContent.valueCards);
 
   const openValue = (target) => {
     if (target === 'contact') {
@@ -1132,6 +1143,7 @@ function ServiceDetailPage({ categories, serviceFocus, setActivePage, setService
   );
 }
 function ContactPage({ content }) {
+  const contact = getContactDetails(content);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -1142,28 +1154,28 @@ function ContactPage({ content }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const contacts = [
-    ['Our Address', "LIYAN'S VASTRA\nNo 53 G1 Sudha Madhuri Homes\nNalluruhalli Main Road\nOpp. HP Petrol Pump, DNA Anantha Layout\nBengaluru - 560066, Karnataka", 'location'],
-    ['Phone', `${displayPhone}\nMon - Sat: 10 AM - 6 PM IST`, 'phone'],
-    ['Email', `${emailAddress}\nWe reply within 24 hours`, 'email'],
-    ['Business Hours', 'Monday - Saturday\n10:00 AM - 6:00 PM IST', 'clock'],
+    ['Our Address', contact.address, 'location'],
+    ['Phone', `${contact.displayPhone}\nMon - Sat: 10 AM - 6 PM IST`, 'phone'],
+    ['Email', `${contact.email}\n${contact.replyText}`, 'email'],
+    ['Business Hours', contact.hours, 'clock'],
   ];
   const renderContactText = (title, text) => {
     if (title === 'Phone') {
-      return <p><a href={`tel:${phoneNumber}`}>{displayPhone}</a><br />Mon - Sat: 10 AM - 6 PM IST</p>;
+      return <p><a href={`tel:${contact.phoneNumber}`}>{contact.displayPhone}</a><br />Mon - Sat: 10 AM - 6 PM IST</p>;
     }
     if (title === 'Email') {
-      return <p><a href={`mailto:${emailAddress}`}>{emailAddress}</a><br />We reply within 24 hours</p>;
+      return <p><a href={`mailto:${contact.email}`}>{contact.email}</a><br />{contact.replyText}</p>;
     }
     return <p>{text}</p>;
   };
 
   const openContactCard = (title) => {
     if (title === 'Phone') {
-      window.location.href = `tel:${phoneNumber}`;
+      window.location.href = `tel:${contact.phoneNumber}`;
       return;
     }
     if (title === 'Email') {
-      window.location.href = `mailto:${emailAddress}`;
+      window.location.href = `mailto:${contact.email}`;
       return;
     }
     document.querySelector('.message-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1414,6 +1426,43 @@ function AdminSaveBar({ status, onSave }) {
   );
 }
 
+function AdminTextCardEditor({ title, cards, includeMeta = true, onAdd, onUpdate, onDelete }) {
+  return (
+    <div className="admin-text-card-editor">
+      <div className="admin-section-head compact-head">
+        <div>
+          <h3>{title}</h3>
+          <p>Add, edit, delete, and choose which text containers display on the user page.</p>
+        </div>
+        <button className="gold-button" type="button" onClick={onAdd}>Add Text Container</button>
+      </div>
+      <div className="admin-text-card-list">
+        {cards.map((card, index) => (
+          <div className="admin-text-card-row" key={`${card.title}-${index}`}>
+            <div className="admin-checks compact-checks">
+              <label><input type="checkbox" checked={card.show !== false} onChange={(event) => onUpdate(index, 'show', event.target.checked)} /> Display on page</label>
+            </div>
+            <div className="form-two">
+              <label>Title<input value={card.title || ''} onChange={(event) => onUpdate(index, 'title', event.target.value)} /></label>
+              {includeMeta && <label>Icon<input value={card.icon || 'category'} onChange={(event) => onUpdate(index, 'icon', event.target.value)} /></label>}
+            </div>
+            <label>Text<textarea rows="3" value={card.text || ''} onChange={(event) => onUpdate(index, 'text', event.target.value)} /></label>
+            {includeMeta && (
+              <div className="form-two">
+                <label>Target<input value={card.target || ''} onChange={(event) => onUpdate(index, 'target', event.target.value)} /></label>
+                <label>Action Label<input value={card.actionLabel || 'Explore'} onChange={(event) => onUpdate(index, 'actionLabel', event.target.value)} /></label>
+              </div>
+            )}
+            <div className="admin-actions">
+              <button className="dark-button" type="button" onClick={() => onDelete(index)}>Delete</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, setActivePage, setIsAdminAuthed, setAdminEditCategoryIndex, setAdminEditItemIndex, onSaveContent, adminSaveStatus }) {
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
@@ -1431,6 +1480,35 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
 
   const updateTextCards = (field, value, includeMeta = true) => {
     updateSite(field, parseTextCards(value, defaultSiteContent[field] || [], includeMeta));
+  };
+
+  const updateCardList = (field, index, key, value) => {
+    setContent((current) => {
+      const cards = [...(current.site[field] || defaultSiteContent[field] || [])];
+      cards[index] = { ...cards[index], [key]: value };
+      return { ...current, site: { ...current.site, [field]: cards } };
+    });
+  };
+
+  const addCard = (field, includeMeta = true) => {
+    const card = includeMeta
+      ? { title: 'New Text Container', text: 'Add text here.', icon: 'category', target: '', actionLabel: 'Explore', show: true }
+      : { title: 'New Review', text: 'Add testimonial text here.', show: true };
+    setContent((current) => ({ ...current, site: { ...current.site, [field]: [...(current.site[field] || defaultSiteContent[field] || []), card] } }));
+  };
+
+  const deleteCard = (field, index) => {
+    setContent((current) => ({ ...current, site: { ...current.site, [field]: (current.site[field] || defaultSiteContent[field] || []).filter((_, itemIndex) => itemIndex !== index) } }));
+  };
+
+  const updateContactDetail = (field, value) => {
+    setContent((current) => ({
+      ...current,
+      site: {
+        ...current.site,
+        contactDetails: { ...defaultSiteContent.contactDetails, ...(current.site.contactDetails || {}), [field]: value },
+      },
+    }));
   };
 
   const updateCategory = (index, field, value) => {
@@ -1585,7 +1663,7 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
   };
 
   const isDashboard = adminSection === 'dashboard';
-  const showHomeEditor = adminSection === 'home';
+  const showHomeEditor = adminSection === 'home' || isDashboard;
   const showAboutEditor = adminSection === 'about';
   const showServicesEditor = adminSection === 'services';
   const showContactEditor = adminSection === 'contact';
@@ -1632,16 +1710,6 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
           <button className="gold-button" type="button" onClick={() => setActivePage('AdminContactSettings')}>Contact Settings</button>
           {!isDashboard && <button className="dark-button" type="button" onClick={() => setActivePage('AdminDashboard')}>Back Admin Home</button>}
         </div>
-        {isDashboard && (
-          <section className="admin-panel admin-wide">
-            <div className="admin-section-head">
-              <div>
-                <h2>Select Settings Page</h2>
-                <p>Open a separate admin settings page for Home, About, Services, or Contact.</p>
-              </div>
-            </div>
-          </section>
-        )}
         <div className="admin-grid">
           {showHomeEditor && <section className="admin-panel" id="admin-home-editor">
             <h2>Home Page</h2>
@@ -1649,8 +1717,21 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
             <label>Hero Text<textarea rows="4" value={content.site.heroText} onChange={(event) => updateSite('heroText', event.target.value)} /></label>
             <label>Our Story Title<input value={content.site.storyTitle} onChange={(event) => updateSite('storyTitle', event.target.value)} /></label>
             <label>Our Story Paragraphs<textarea rows="7" value={content.site.storyParagraphs.join('\n')} onChange={(event) => updateTextList('storyParagraphs', event.target.value)} /></label>
-            <label>Why Choose Text Containers<textarea rows="7" value={serializeTextCards(content.site.whyChooseCards || defaultSiteContent.whyChooseCards)} onChange={(event) => updateTextCards('whyChooseCards', event.target.value)} /></label>
-            <label>Testimonials<textarea rows="4" value={serializeTextCards(content.site.testimonials || defaultSiteContent.testimonials, false)} onChange={(event) => updateTextCards('testimonials', event.target.value, false)} /></label>
+            <AdminTextCardEditor
+              title="Why Choose Text Containers"
+              cards={content.site.whyChooseCards || defaultSiteContent.whyChooseCards}
+              onAdd={() => addCard('whyChooseCards')}
+              onUpdate={(index, key, value) => updateCardList('whyChooseCards', index, key, value)}
+              onDelete={(index) => deleteCard('whyChooseCards', index)}
+            />
+            <AdminTextCardEditor
+              title="Testimonials"
+              includeMeta={false}
+              cards={content.site.testimonials || defaultSiteContent.testimonials}
+              onAdd={() => addCard('testimonials', false)}
+              onUpdate={(index, key, value) => updateCardList('testimonials', index, key, value)}
+              onDelete={(index) => deleteCard('testimonials', index)}
+            />
             <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </section>}
 
@@ -1658,12 +1739,28 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
             <h2>About Page</h2>
             <label>About Subtitle<input value={content.site.aboutSubtitle} onChange={(event) => updateSite('aboutSubtitle', event.target.value)} /></label>
             <label>Journey Paragraphs<textarea rows="6" value={content.site.aboutJourney.join('\n')} onChange={(event) => updateTextList('aboutJourney', event.target.value)} /></label>
-            <label>Our Values Text Containers<textarea rows="6" value={serializeTextCards(content.site.valueCards || defaultSiteContent.valueCards)} onChange={(event) => updateTextCards('valueCards', event.target.value)} /></label>
+            <AdminTextCardEditor
+              title="Our Values Text Containers"
+              cards={content.site.valueCards || defaultSiteContent.valueCards}
+              onAdd={() => addCard('valueCards')}
+              onUpdate={(index, key, value) => updateCardList('valueCards', index, key, value)}
+              onDelete={(index) => deleteCard('valueCards', index)}
+            />
             <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </section>}
 
           {showContactEditor && <section className="admin-panel" id="admin-contact-editor">
             <h2>Contact Page</h2>
+            <label>Address<textarea rows="5" value={getContactDetails(content).address} onChange={(event) => updateContactDetail('address', event.target.value)} /></label>
+            <div className="form-two">
+              <label>Phone Number<input value={getContactDetails(content).phoneNumber} onChange={(event) => updateContactDetail('phoneNumber', event.target.value)} /></label>
+              <label>Display Phone<input value={getContactDetails(content).displayPhone} onChange={(event) => updateContactDetail('displayPhone', event.target.value)} /></label>
+            </div>
+            <div className="form-two">
+              <label>Email<input value={getContactDetails(content).email} onChange={(event) => updateContactDetail('email', event.target.value)} /></label>
+              <label>Reply Text<input value={getContactDetails(content).replyText} onChange={(event) => updateContactDetail('replyText', event.target.value)} /></label>
+            </div>
+            <label>Business Hours<textarea rows="3" value={getContactDetails(content).hours} onChange={(event) => updateContactDetail('hours', event.target.value)} /></label>
             <label>Contact Form Title<input value={content.site.contactTitle} onChange={(event) => updateSite('contactTitle', event.target.value)} /></label>
             <label>Contact Form Subtitle<input value={content.site.contactSubtitle} onChange={(event) => updateSite('contactSubtitle', event.target.value)} /></label>
             <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
@@ -2122,7 +2219,8 @@ function NotFoundPage({ setActivePage }) {
   );
 }
 
-function Footer({ setActivePage }) {
+function Footer({ content, setActivePage }) {
+  const contact = getContactDetails(content);
   const linkClick = (page) => {
     setActivePage(page);
     goTop();
@@ -2134,9 +2232,9 @@ function Footer({ setActivePage }) {
           <p>Premium quality textiles crafted for everyday elegance. Where comfort meets style in every thread.</p>
           <div className="footer-contact">
             <p><b>{brand}</b><span>Proprietor: Kishoreraaj Robert</span></p>
-            <p><b>Address</b><span>No 53 G1 Sudha Madhuri Homes, Bengaluru - 560066, Karnataka</span></p>
-            <p><b>Phone</b><a href={`tel:${phoneNumber}`}>{displayPhone}</a></p>
-            <p><b>Email</b><a href={`mailto:${emailAddress}`}>{emailAddress}</a></p>
+            <p><b>Address</b><span>{contact.address.split('\n').join(', ')}</span></p>
+            <p><b>Phone</b><a href={`tel:${contact.phoneNumber}`}>{contact.displayPhone}</a></p>
+            <p><b>Email</b><a href={`mailto:${contact.email}`}>{contact.email}</a></p>
             <p><b>GST</b><span>29AXTPK6839P1Z5</span></p>
           </div>
         </div>
@@ -2312,7 +2410,7 @@ function App() {
           setIsAdminAuthed={setIsAdminAuthed}
         />
       </main>
-      {!isAdminPage && <Footer setActivePage={setActivePage} />}
+      {!isAdminPage && <Footer content={content} setActivePage={setActivePage} />}
       {!isAdminPage && <FloatingActions />}
     </>
   );

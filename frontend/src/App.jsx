@@ -1635,7 +1635,7 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
 
   const isDashboard = adminSection === 'dashboard';
   const showHomeEditor = adminSection === 'home' || isDashboard;
-  const showAboutEditor = adminSection === 'about';
+  const showAboutEditor = false;
   const showServicesEditor = adminSection === 'services';
   const showContactEditor = adminSection === 'contact';
 
@@ -1676,18 +1676,13 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
         </div>
         <div className="admin-page-tabs">
           <button className="gold-button" type="button" onClick={() => setActivePage('AdminHomeSettings')}>Home Settings</button>
-          <button className="gold-button" type="button" onClick={() => setActivePage('AdminAboutSettings')}>About Settings</button>
           <button className="gold-button" type="button" onClick={() => setActivePage('AdminServicesSettings')}>Services Settings</button>
           <button className="gold-button" type="button" onClick={() => setActivePage('AdminContactSettings')}>Contact Settings</button>
           {!isDashboard && <button className="dark-button" type="button" onClick={() => setActivePage('AdminDashboard')}>Back Admin Home</button>}
         </div>
         <div className="admin-grid">
-          {showHomeEditor && <section className="admin-panel" id="admin-home-editor">
+          {showHomeEditor && <section className="admin-panel admin-flat-panel" id="admin-home-editor">
             <h2>Home Page</h2>
-            <label>Hero Title<input value={content.site.heroTitle} onChange={(event) => updateSite('heroTitle', event.target.value)} /></label>
-            <label>Hero Text<textarea rows="4" value={content.site.heroText} onChange={(event) => updateSite('heroText', event.target.value)} /></label>
-            <label>Our Story Title<input value={content.site.storyTitle} onChange={(event) => updateSite('storyTitle', event.target.value)} /></label>
-            <label>Our Story Paragraphs<textarea rows="7" value={content.site.storyParagraphs.join('\n')} onChange={(event) => updateTextList('storyParagraphs', event.target.value)} /></label>
             <AdminTextCardEditor
               title="Why Choose Text Containers"
               cards={content.site.whyChooseCards || defaultSiteContent.whyChooseCards}
@@ -1706,7 +1701,7 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
             <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </section>}
 
-          {showAboutEditor && <section className="admin-panel" id="admin-about-editor">
+          {showAboutEditor && <section className="admin-panel admin-flat-panel" id="admin-about-editor">
             <h2>About Page</h2>
             <label>About Subtitle<input value={content.site.aboutSubtitle} onChange={(event) => updateSite('aboutSubtitle', event.target.value)} /></label>
             <label>Journey Paragraphs<textarea rows="6" value={content.site.aboutJourney.join('\n')} onChange={(event) => updateTextList('aboutJourney', event.target.value)} /></label>
@@ -1720,7 +1715,7 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
             <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </section>}
 
-          {showContactEditor && <section className="admin-panel" id="admin-contact-editor">
+          {showContactEditor && <section className="admin-panel admin-flat-panel" id="admin-contact-editor">
             <h2>Contact Page</h2>
             <label>Address<textarea rows="5" value={getContactDetails(content).address} onChange={(event) => updateContactDetail('address', event.target.value)} /></label>
             <div className="form-two">
@@ -2274,7 +2269,7 @@ function App() {
     AdminLogin: AdminLoginPage,
     AdminDashboard: AdminDashboardPage,
     AdminHomeSettings: (props) => <AdminDashboardPage {...props} adminSection="home" />,
-    AdminAboutSettings: (props) => <AdminDashboardPage {...props} adminSection="about" />,
+    AdminAboutSettings: (props) => <AdminDashboardPage {...props} adminSection="home" />,
     AdminServicesSettings: (props) => <AdminDashboardPage {...props} adminSection="services" />,
     AdminContactSettings: (props) => <AdminDashboardPage {...props} adminSection="contact" />,
     AdminCategoryEditor: AdminCategoryEditorPage,
@@ -2373,6 +2368,13 @@ function App() {
         style={{ backgroundImage: `url(${background})` }}
         aria-hidden="true"
       />
+      {isAdminPage && (
+        <div
+          className="admin-fixed-background"
+          style={{ backgroundImage: `url(${background})` }}
+          aria-hidden="true"
+        />
+      )}
       {!isAdminPage && <Header activePage={navActivePage} setActivePage={setActivePage} />}
       <main key={activePage}>
         <CurrentPage

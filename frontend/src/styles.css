@@ -585,16 +585,16 @@ main,
 
 .product-grid .product-card,
 .service-shirt-grid .product-card {
-  flex: 0 0 min(386px, 88vw);
+  flex: 0 0 min(340px, 84vw);
   scroll-snap-align: start;
 }
 
 .product-card {
   position: relative;
-  min-height: 330px;
+  min-height: 300px;
   padding: 1rem;
   display: grid;
-  grid-template-rows: minmax(222px, 1fr);
+  grid-template-rows: minmax(205px, 1fr);
   align-items: stretch;
   overflow: hidden;
   cursor: pointer;
@@ -631,7 +631,7 @@ main,
 
 .shirt-visual {
   position: relative;
-  min-height: 222px;
+  min-height: 205px;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -654,7 +654,7 @@ main,
 
 .product-card:hover,
 .product-card:focus-visible {
-  transform: translateY(-10px) scale(1.025);
+  transform: translateY(-12px) scale(1.085);
   z-index: 4;
 }
 
@@ -1683,7 +1683,7 @@ main,
   z-index: -2;
   background-image: var(--service-page-bg);
   background-position: center top;
-  background-size: cover;
+  background-size: 100% 100%;
   background-attachment: fixed;
   opacity: 0.48;
 }
@@ -1893,13 +1893,27 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
 }
 
 .admin-page {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
   padding: 4rem 0;
   background-color: transparent;
-  background-position: center;
-  background-size: cover;
+  background-position: center top;
+  background-size: 100% 100%;
   background-repeat: no-repeat;
   background-attachment: fixed;
+}
+
+.admin-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: inherit;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 .admin-login-card,
@@ -2012,12 +2026,13 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
 
 .admin-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.25rem;
 }
 
 .admin-panel {
   padding: 1.45rem;
+  width: 100%;
 }
 
 .admin-wide {
@@ -2589,6 +2604,40 @@ input[type="range"] {
   text-align: left;
 }
 .footer-column button:hover { color: var(--gold); }
+
+.footer-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.8rem;
+}
+
+.footer-socials a {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(209, 163, 71, 0.55);
+  border-radius: 50%;
+  color: rgb(209, 163, 71);
+  background: transparent;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.footer-socials a:hover,
+.footer-socials a:focus-visible {
+  transform: translateY(-3px);
+  border-color: #ffc900;
+  box-shadow: 0 0 18px rgba(255, 201, 0, 0.16);
+  outline: none;
+}
+
+.footer-socials svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
 .footer-bottom {
   display: flex;
   justify-content: space-between;

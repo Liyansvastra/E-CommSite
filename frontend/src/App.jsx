@@ -925,22 +925,6 @@ function PageHero({ eyebrow, title, subtitle }) {
 }
 
 function AboutPage({ content, setActivePage, setServiceFocus }) {
-  const aboutCategories = content.categories.filter((category) => (
-    category.showOnServices !== false && (
-      category.showOnAbout !== false
-      || (category.items || []).some((item, index) => normalizeStyleItem(item, category, index).showOnAbout === true)
-    )
-  )).map((category) => ({
-    ...category,
-    items: (category.items || []).filter((item, index) => normalizeStyleItem(item, category, index).showOnAbout === true),
-  }));
-
-  const openAboutShowcase = (categoryId) => {
-    setServiceFocus(categoryId);
-    setActivePage('ServiceDetail');
-    goTop();
-  };
-
   return (
     <>
       <PageHero eyebrow="Our Story" title={`About ${brand}`} subtitle={content.site.aboutSubtitle} />
@@ -957,19 +941,6 @@ function AboutPage({ content, setActivePage, setServiceFocus }) {
             <Stat value="Pan India" label="Delivery" />
             <Stat value="GST" label="Registered" />
           </div>
-        </div>
-      </section>
-      <section className="section-block compact-section about-running-showcase">
-        <div className="container">
-          <ServicesHeroShowcase
-            categories={aboutCategories}
-            onSelect={openAboutShowcase}
-            copy={{
-              eyebrow: 'Selected Styles',
-              title: 'About Showcase Gallery',
-              subtitle: 'Admin-selected image containers that represent LIYAN\'S VASTRA quality, models, and logo apparel work.',
-            }}
-          />
         </div>
       </section>
       <Values content={content} setActivePage={setActivePage} setServiceFocus={setServiceFocus} />
@@ -1797,7 +1768,6 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
               <div className="admin-checks">
                 <label><input type="checkbox" checked={selectedCategory.showOnHome !== false} onChange={(event) => toggleCategory(selectedCategoryIndex, 'showOnHome', event.target.checked)} /> Show on Home page</label>
                 <label><input type="checkbox" checked={selectedCategory.showOnServices !== false} onChange={(event) => toggleCategory(selectedCategoryIndex, 'showOnServices', event.target.checked)} /> Show on Services category page</label>
-                <label><input type="checkbox" checked={selectedCategory.showOnAbout !== false} onChange={(event) => toggleCategory(selectedCategoryIndex, 'showOnAbout', event.target.checked)} /> Run on About page</label>
               </div>
             </div>
           )}
@@ -1999,7 +1969,6 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
             <div className="admin-checks">
               <label><input type="checkbox" checked={category.showOnHome !== false} onChange={(event) => toggleCategory('showOnHome', event.target.checked)} /> Show on Home page</label>
               <label><input type="checkbox" checked={category.showOnServices !== false} onChange={(event) => toggleCategory('showOnServices', event.target.checked)} /> Show on Services category page</label>
-              <label><input type="checkbox" checked={category.showOnAbout !== false} onChange={(event) => toggleCategory('showOnAbout', event.target.checked)} /> Run on About page</label>
             </div>
             <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </div>
@@ -2031,7 +2000,6 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
                     <div className="admin-checks compact-checks">
                       <label><input type="checkbox" checked={style.showOnHome === true} onChange={(event) => toggleGroupItem(itemIndex, 'showOnHome', event.target.checked)} /> Show on Home page</label>
                       <label><input type="checkbox" checked={style.showOnServices !== false} onChange={(event) => toggleGroupItem(itemIndex, 'showOnServices', event.target.checked)} /> Show on Services category page</label>
-                      <label><input type="checkbox" checked={style.showOnAbout === true} onChange={(event) => toggleGroupItem(itemIndex, 'showOnAbout', event.target.checked)} /> Run on About page</label>
                     </div>
                     <div className="admin-actions">
                       <button className="gold-button" type="button" onClick={() => { goTop(); setActivePage('AdminContainerEditor', { categoryIndex, itemIndex }); }}>Edit</button>
@@ -2154,7 +2122,6 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
             <div className="admin-checks">
               <label><input type="checkbox" checked={selectedItem.showOnHome === true} onChange={(event) => toggleGroupItem('showOnHome', event.target.checked)} /> Show on Home page</label>
               <label><input type="checkbox" checked={selectedItem.showOnServices !== false} onChange={(event) => toggleGroupItem('showOnServices', event.target.checked)} /> Show on Services category page</label>
-              <label><input type="checkbox" checked={selectedItem.showOnAbout === true} onChange={(event) => toggleGroupItem('showOnAbout', event.target.checked)} /> Run on About page</label>
             </div>
             <div className="form-two">
               <label>Cloth Style<input value={selectedItem.clothStyle} onChange={(event) => updateGroupItem('clothStyle', event.target.value)} /></label>
@@ -2221,6 +2188,13 @@ function NotFoundPage({ setActivePage }) {
 
 function Footer({ content, setActivePage }) {
   const contact = getContactDetails(content);
+  const socialLinks = [
+    ['WhatsApp', whatsappUrl, 'whatsapp'],
+    ['Facebook', '#', 'facebook'],
+    ['X', '#', 'x'],
+    ['LinkedIn', '#', 'linkedin'],
+    ['Instagram', '#', 'instagram'],
+  ];
   const linkClick = (page) => {
     setActivePage(page);
     goTop();
@@ -2247,6 +2221,13 @@ function Footer({ content, setActivePage }) {
         <div className="footer-column">
           <h3>Legal</h3>
           <span>Privacy Policy</span><span>Terms & Conditions</span><span>Shipping Policy</span><span>Return & Refund Policy</span>
+          <div className="footer-socials" aria-label="Social links">
+            {socialLinks.map(([label, href, icon]) => (
+              <a key={label} href={href} target={href === '#' ? undefined : '_blank'} rel={href === '#' ? undefined : 'noreferrer'} aria-label={label}>
+                <SocialIcon icon={icon} />
+              </a>
+            ))}
+          </div>
         </div>
       </div>
       <div className="container footer-bottom">
@@ -2414,6 +2395,16 @@ function App() {
       {!isAdminPage && <FloatingActions />}
     </>
   );
+}
+
+function SocialIcon({ icon }) {
+  if (icon === 'whatsapp') {
+    return <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.02 3.2A12.68 12.68 0 0 0 5.27 22.6L4 29l6.56-1.22A12.7 12.7 0 1 0 16.02 3.2Zm0 22.9a10.3 10.3 0 0 1-5.24-1.44l-.38-.23-3.88.72.74-3.78-.25-.39a10.29 10.29 0 1 1 9.01 5.12Zm5.64-7.72c-.31-.16-1.83-.9-2.11-1-.28-.1-.49-.16-.7.16-.2.31-.8 1-.98 1.2-.18.2-.36.23-.67.08-.31-.16-1.31-.48-2.5-1.54-.92-.82-1.55-1.84-1.73-2.15-.18-.31-.02-.48.14-.64.14-.14.31-.36.47-.54.16-.18.2-.31.31-.52.1-.2.05-.39-.03-.54-.08-.16-.7-1.68-.96-2.3-.25-.6-.51-.52-.7-.53h-.59c-.2 0-.54.08-.82.39-.28.31-1.08 1.05-1.08 2.57 0 1.52 1.1 2.98 1.26 3.19.16.2 2.17 3.31 5.25 4.64.73.32 1.3.5 1.75.64.74.23 1.41.2 1.94.12.59-.09 1.83-.75 2.09-1.47.26-.72.26-1.34.18-1.47-.08-.13-.28-.2-.59-.36Z" /></svg>;
+  }
+  if (icon === 'facebook') return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.4V6.8c0-.8.2-1.2 1.3-1.2h1.5V3h-2.4C11.8 3 10.7 4.3 10.7 6.5v1.9H8.8v2.8h1.9V21H14v-9.8h2.4l.4-2.8H14Z" /></svg>;
+  if (icon === 'x') return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.8 10.5 20.8 3h-2.1l-5.8 6.2L8.2 3H3l7.4 9.7L3 21h2.1l6.2-6.8 5.2 6.8H22l-8.2-10.5Zm-2.2 2.4-.7-.9L5.5 4.6h1.7l4.6 6.3.7.9 5.8 7.8h-1.7l-5-6.7Z" /></svg>;
+  if (icon === 'linkedin') return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.7 8.9H3.6V21h3.1V8.9ZM5.2 3A1.8 1.8 0 1 0 5.1 6.6 1.8 1.8 0 0 0 5.2 3Zm15.2 11.1c0-3.2-1.7-5.4-4.4-5.4-1.7 0-2.8.9-3.3 1.8V8.9h-3V21h3.1v-6.1c0-1.9.9-3.2 2.4-3.2 1.4 0 2.1 1 2.1 3V21h3.1v-6.9Z" /></svg>;
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.8 2.8h8.4a5 5 0 0 1 5 5v8.4a5 5 0 0 1-5 5H7.8a5 5 0 0 1-5-5V7.8a5 5 0 0 1 5-5Zm0 2.1a2.9 2.9 0 0 0-2.9 2.9v8.4a2.9 2.9 0 0 0 2.9 2.9h8.4a2.9 2.9 0 0 0 2.9-2.9V7.8a2.9 2.9 0 0 0-2.9-2.9H7.8Zm4.2 3.2a3.9 3.9 0 1 1 0 7.8 3.9 3.9 0 0 1 0-7.8Zm0 2.1a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6Zm4.2-2.6a1 1 0 1 1 0 2.1 1 1 0 0 1 0-2.1Z" /></svg>;
 }
 
 export default App;

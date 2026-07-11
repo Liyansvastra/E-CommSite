@@ -2012,20 +2012,20 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
 
 .admin-text-card-list {
   display: grid;
-  gap: 1.45rem;
+  gap: 2rem;
 }
 
 .admin-text-card-row {
-  padding: 1.15rem;
-  border: 1px solid rgba(209, 163, 71, 0.22);
-  border-radius: 14px;
-  background: linear-gradient(145deg, rgba(30, 24, 14, 0.5), rgba(8, 8, 8, 0.18));
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .admin-text-card-row:last-child {
-  border-bottom: 1px solid rgba(209, 163, 71, 0.22);
-  padding-bottom: 1.15rem;
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .admin-grid {

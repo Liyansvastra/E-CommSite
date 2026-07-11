@@ -379,7 +379,7 @@ main,
   border: 1px solid rgba(210, 169, 53, 0.22);
   border-radius: 14px 14px 0 0;
   background: transparent;
-  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
 }
 
 .story-showcase::before {
@@ -404,7 +404,7 @@ main,
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0, 0, 0.08);
   pointer-events: none;
 }
 
@@ -598,6 +598,7 @@ main,
   align-items: stretch;
   overflow: hidden;
   cursor: pointer;
+  transform-origin: center;
 }
 
 .shirt-card {
@@ -649,6 +650,23 @@ main,
   object-fit: contain;
   filter: drop-shadow(0 16px 26px rgba(0, 0, 0, 0.28));
   transition: transform 520ms cubic-bezier(.2,.8,.2,1), opacity 360ms ease, filter 360ms ease;
+}
+
+.product-card:hover,
+.product-card:focus-visible {
+  transform: translateY(-10px) scale(1.025);
+  z-index: 4;
+}
+
+.product-card:hover .shirt-visual,
+.product-card:focus-visible .shirt-visual {
+  border-color: rgba(255, 201, 0, 0.62);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28), inset 0 0 0 1px rgba(255, 201, 0, 0.12);
+}
+
+.product-card:hover .shirt-image.front,
+.product-card:focus-visible .shirt-image.front {
+  transform: translate(calc(-3% + var(--front-x, 0%)), var(--front-y, 0%)) rotate(-1deg) scale(calc(var(--front-zoom, 1) * 1.08));
 }
 
 .shirt-image.front {
@@ -1390,7 +1408,6 @@ main,
 .contact-card:hover,
 .business-card:hover,
 .message-card:hover,
-.product-card:hover,
 .testimonial-card:hover {
   transform: translateY(-6px);
   border-color: var(--line-strong);
@@ -1944,6 +1961,18 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+.admin-page-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0 0 1.25rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(209, 163, 71, 0.2);
+  border-radius: 14px;
+  background: rgba(10, 8, 4, 0.28);
+  backdrop-filter: blur(12px);
 }
 
 .admin-grid {

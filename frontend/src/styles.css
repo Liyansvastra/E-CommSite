@@ -1896,9 +1896,9 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
   isolation: isolate;
   min-height: 100vh;
   padding: 4rem 0;
-  background-color: transparent;
+  background-color: #050505;
   background-position: center top;
-  background-size: min(1240px, 100vw) auto;
+  background-size: 0 0;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
@@ -1909,9 +1909,10 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
   inset: 0;
   z-index: -1;
   background: inherit;
-  background-size: min(1240px, 100vw) auto;
+  background-size: contain;
   background-position: center top;
   background-repeat: no-repeat;
+  background-attachment: fixed;
   pointer-events: none;
 }
 
@@ -2015,15 +2016,21 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
 
 .admin-text-card-list {
   display: grid;
-  gap: 0.9rem;
+  gap: 1.6rem;
 }
 
 .admin-text-card-row {
-  padding: 1.1rem;
-  border: 1px solid rgba(209, 163, 71, 0.2);
-  border-radius: 12px;
-  background: linear-gradient(145deg, rgba(38, 30, 16, 0.34), rgba(8, 8, 8, 0.14));
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+  padding: 1.15rem 0 1.6rem;
+  border: 0;
+  border-bottom: 1px solid rgba(209, 163, 71, 0.22);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.admin-text-card-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .admin-grid {

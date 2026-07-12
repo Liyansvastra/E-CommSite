@@ -90,18 +90,12 @@ main,
 }
 
 main.service-no-image-main {
-  background: #020202 !important;
+  background: transparent !important;
 }
 
 main.service-no-image-main::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(213, 173, 24, 0.08), transparent 28rem),
-    #020202;
-  pointer-events: none;
+  content: none;
+  display: none;
 }
 
 .header-inner {
@@ -1697,9 +1691,7 @@ main.service-no-image-main::before {
   isolation: isolate;
   z-index: 1;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(213, 173, 24, 0.08), transparent 28rem),
-    #020202 !important;
+  background: transparent !important;
 }
 
 .services-page::before,
@@ -1935,6 +1927,20 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  transform: translateZ(0);
+  pointer-events: none;
+}
+
+.service-fixed-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-color: #020202;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  filter: none;
+  opacity: 1;
   transform: translateZ(0);
   pointer-events: none;
 }

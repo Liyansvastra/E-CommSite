@@ -159,6 +159,13 @@ function App() {
           aria-hidden="true"
         />
       )}
+      {isServicePage && (
+        <div
+          className="service-fixed-background"
+          style={{ backgroundImage: `url(${background})` }}
+          aria-hidden="true"
+        />
+      )}
       {!isAdminPage && <Header activePage={navActivePage} setActivePage={setActivePage} />}
       <main key={activePage} className={isServicePage ? 'service-no-image-main' : ''}>
         <CurrentPage

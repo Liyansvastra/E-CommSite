@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import { defaultGradient, findServiceCategory, goTop, normalizeStyleItem, serviceHeroSlides, shirtBackImage, shirtFrontImage, getVisualStyleVars, SectionTitle, GoldIcon, ProductCard, ScrollArrowRow } from '../pageLibrary.jsx';
+import { defaultGradient, findServiceCategory, goTop, normalizeStyleItem, serviceHeroSlides, shirtBackImage, shirtFrontImage, getCaptionTextStyles, getVisualStyleVars, SectionTitle, GoldIcon, ProductCard, ScrollArrowRow } from '../pageLibrary.jsx';
 
 
 
 function GroupStyleCard({ style, index }) {
   const hasBackImage = Boolean(style.backImage);
   const animationType = style.animationType || (hasBackImage ? 'front-back-display' : 'royal-zoom-right');
+  const captionStyles = getCaptionTextStyles(style);
   const visualClass = [
     'group-style-image',
     !hasBackImage ? 'single-group-image' : '',
@@ -21,8 +22,8 @@ function GroupStyleCard({ style, index }) {
           {hasBackImage && <img className="group-shirt back" src={style.backImage} alt="" loading="lazy" decoding="async" />}
           <img className="group-shirt front" src={style.frontImage} alt={`${style.title} T-shirt style`} loading="lazy" decoding="async" />
           <div className="shirt-caption group-caption">
-            <strong>{style.title}</strong>
-            <span>LIYAN'S VASTRA</span>
+            <strong style={captionStyles.title}>{style.title}</strong>
+            <span style={captionStyles.brand}>LIYAN'S VASTRA</span>
           </div>
         </div>
       </div>
@@ -53,6 +54,8 @@ function ServicesHeroShowcase({ categories, onSelect, copy = {} }) {
         frontImage: category.frontImage,
         backImage: category.backImage,
         cardGradient: category.cardGradient,
+        captionTitleColor: category.captionTitleColor,
+        captionBrandColor: category.captionBrandColor,
       },
     ];
     const itemSlides = (category.items || []).map((item, index) => {
@@ -65,6 +68,8 @@ function ServicesHeroShowcase({ categories, onSelect, copy = {} }) {
         frontImage: style.frontImage,
         backImage: style.backImage,
         cardGradient: style.cardGradient,
+        captionTitleColor: style.captionTitleColor,
+        captionBrandColor: style.captionBrandColor,
       };
     });
     return [...categorySlides, ...itemSlides];
@@ -97,8 +102,8 @@ function ServicesHeroShowcase({ categories, onSelect, copy = {} }) {
                 {slide.backImage && <img className="showcase-shirt back" src={slide.backImage} alt="" loading="lazy" decoding="async" />}
                 <img className={slide.backImage ? 'showcase-shirt front' : 'showcase-shirt front single'} src={slide.frontImage} alt="" loading="lazy" decoding="async" />
                 <div className="shirt-caption showcase-caption">
-                  <strong>{slide.title}</strong>
-                  <span>LIYAN'S VASTRA</span>
+                  <strong style={getCaptionTextStyles(slide).title}>{slide.title}</strong>
+                  <span style={getCaptionTextStyles(slide).brand}>LIYAN'S VASTRA</span>
                 </div>
               </div>
               <div>

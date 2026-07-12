@@ -365,6 +365,13 @@ function getVisualStyleVars(item = {}) {
   };
 }
 
+function getCaptionTextStyles(item = {}) {
+  return {
+    title: { color: item.captionTitleColor || '#ffc900' },
+    brand: { color: item.captionBrandColor || '#d5ad18' },
+  };
+}
+
 function ScrollArrowRow({ children, className = '' }) {
   const rowRef = useRef(null);
   const [scrollState, setScrollState] = useState({ canLeft: false, canRight: false });
@@ -774,6 +781,7 @@ function FeatureCard({ title, text, icon, centered = false, onSelect, actionLabe
 function ProductCard({ category, onSelect }) {
   const hasBackImage = Boolean(category.backImage);
   const animationType = category.animationType || (hasBackImage ? 'front-back-display' : 'royal-zoom-right');
+  const captionStyles = getCaptionTextStyles(category);
   const visualClass = [
     'shirt-visual',
     !hasBackImage ? 'single-visual' : '',
@@ -804,8 +812,8 @@ function ProductCard({ category, onSelect }) {
         {hasBackImage && <img className="shirt-image back" src={category.backImage} alt="" loading="lazy" decoding="async" />}
         <img className="shirt-image front" src={category.frontImage} alt="" loading="lazy" decoding="async" />
         <div className="shirt-caption" aria-hidden="true">
-          <strong>{category.title}</strong>
-          <span>LIYAN'S VASTRA</span>
+          <strong style={captionStyles.title}>{category.title}</strong>
+          <span style={captionStyles.brand}>LIYAN'S VASTRA</span>
         </div>
       </div>
       <div className="shirt-details">
@@ -962,6 +970,7 @@ export {
   visibleCards,
   getContactDetails,
   goTop,
+  getCaptionTextStyles,
   getVisualStyleVars,
   ScrollArrowRow,
   useRevealOnScroll,

@@ -26,12 +26,14 @@
 html {
   scroll-behavior: smooth;
   background: #2d2c31;
+  overflow-x: hidden;
 }
 
 body {
   position: relative;
   margin: 0;
   min-width: 320px;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 82% 28%, rgba(210, 169, 53, 0.11), transparent 22rem),
     linear-gradient(180deg, #020202 0%, #050505 58%, #030303 100%);
@@ -549,20 +551,25 @@ main.service-no-image-main::before {
   display: flex;
   gap: 1.2rem;
   overflow-x: auto;
+  overflow-y: hidden;
   overscroll-behavior-inline: contain;
   scroll-snap-type: inline mandatory;
   scrollbar-width: none;
-  padding-bottom: 0.4rem;
+  max-width: 100%;
+  padding: 0.85rem 3.2rem;
 }
 
 .scroll-arrow-shell {
   position: relative;
+  max-width: 100%;
+  min-width: 0;
+  isolation: isolate;
 }
 
 .scroll-arrow {
   position: absolute;
   top: 50%;
-  z-index: 8;
+  z-index: 70;
   width: 42px;
   height: 42px;
   display: grid;
@@ -585,8 +592,8 @@ main.service-no-image-main::before {
   transform: translateY(-50%) scale(1.06);
 }
 
-.scroll-arrow-left { left: -0.8rem; }
-.scroll-arrow-right { right: -0.8rem; }
+.scroll-arrow-left { left: 0.45rem; }
+.scroll-arrow-right { right: 0.45rem; }
 
 .product-grid::-webkit-scrollbar,
 .service-shirt-grid::-webkit-scrollbar,
@@ -612,8 +619,6 @@ main.service-no-image-main::before {
   transform-origin: center;
 }
 
-.product-grid,
-.service-shirt-grid,
 .service-detail-grid {
   overflow: visible;
 }
@@ -674,7 +679,7 @@ main.service-no-image-main::before {
 .product-card:hover,
 .product-card:focus-visible {
   transform: translateY(-12px);
-  z-index: 20;
+  z-index: 6;
 }
 
 .product-card:hover .shirt-visual,
@@ -3172,8 +3177,8 @@ input[type="range"] {
     height: 34px;
     font-size: 1.45rem;
   }
-  .scroll-arrow-left { left: -0.25rem; }
-  .scroll-arrow-right { right: -0.25rem; }
+  .scroll-arrow-left { left: 0.35rem; }
+  .scroll-arrow-right { right: 0.35rem; }
   .product-card {
     min-height: 300px;
   }

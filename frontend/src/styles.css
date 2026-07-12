@@ -729,7 +729,7 @@ main.service-no-image-main::before {
 }
 
 .shirt-caption strong {
-  color: #ffc900;
+  color: var(--caption-title-color, #ffc900);
   font-size: 0.95rem;
   line-height: 1.18;
   letter-spacing: 0.03em;
@@ -738,7 +738,7 @@ main.service-no-image-main::before {
 }
 
 .shirt-caption span {
-  color: #d5ad18;
+  color: var(--caption-brand-color, #d5ad18);
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.16em;
@@ -1235,8 +1235,8 @@ main.service-no-image-main::before {
 .group-style-card {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(180px, 0.48fr) minmax(0, 1.52fr);
-  gap: 1.2rem;
+  grid-template-columns: minmax(170px, 0.42fr) minmax(0, 1.58fr);
+  gap: 1.45rem;
   align-items: stretch;
   overflow: hidden;
   padding: 1rem;
@@ -1261,6 +1261,13 @@ main.service-no-image-main::before {
   display: grid;
   grid-template-rows: minmax(210px, 1fr);
   align-self: stretch;
+  min-width: 0;
+  transition: transform 340ms cubic-bezier(.2,.8,.2,1);
+}
+
+.group-style-card:hover .group-style-media,
+.group-style-card:focus-within .group-style-media {
+  transform: translateX(-0.55rem);
 }
 
 .group-style-image {
@@ -1278,7 +1285,7 @@ main.service-no-image-main::before {
 
 .group-style-card:hover .group-style-image,
 .group-style-card:focus-within .group-style-image {
-  transform: scale(1.12);
+  transform: scale(1.045);
   border-color: rgba(255, 201, 0, 0.62);
   box-shadow: 0 26px 70px rgba(0, 0, 0, 0.42), 0 0 34px rgba(255, 201, 0, 0.16);
 }
@@ -1375,7 +1382,14 @@ main.service-no-image-main::before {
 .group-style-details {
   display: grid;
   align-content: center;
-  padding: 0.55rem 0.75rem 0.55rem 0;
+  min-width: 0;
+  padding: 0.55rem 1rem 0.55rem 0;
+  transition: transform 340ms cubic-bezier(.2,.8,.2,1);
+}
+
+.group-style-card:hover .group-style-details,
+.group-style-card:focus-within .group-style-details {
+  transform: translateX(0.8rem);
 }
 
 .group-style-details > span {
@@ -2169,6 +2183,15 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
 
 .admin-contact-focus {
   margin-top: 1rem;
+}
+
+.admin-edit-focus .royal-visual-editor {
+  margin: 0.8rem 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .admin-category-list {

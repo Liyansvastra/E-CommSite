@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { apiBaseUrl, adminEmail, authKey, adminTokenKey, background, brand, logo, animationOptions, gradientOptions, clampIndex, defaultGradient, defaultSiteContent, getContactDetails, getVisualStyleVars, goTop, normalizeStyleItem, parseTextCards, reorderArray, serializeTextCards, slugify, visibleCards, adminEditorPath, ProductCard, ScrollArrowRow, MaterialIcon, materialIconOptions } from '../pageLibrary.jsx';
+import { apiBaseUrl, adminEmail, authKey, adminTokenKey, background, brand, logo, animationOptions, gradientOptions, textColorOptions, clampIndex, defaultGradient, defaultSiteContent, getContactDetails, getVisualStyleVars, goTop, normalizeStyleItem, parseTextCards, reorderArray, serializeTextCards, slugify, visibleCards, adminEditorPath, ProductCard, ScrollArrowRow, MaterialIcon, materialIconOptions } from '../pageLibrary.jsx';
 
 
 
@@ -146,6 +146,20 @@ function RoyalVisualControls({ item, updateField }) {
           Animation Style
           <select value={item.animationType || (item.backImage ? 'front-back-display' : 'royal-zoom-right')} onChange={(event) => updateField('animationType', event.target.value)}>
             {animationOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          </select>
+        </label>
+      </div>
+      <div className="form-two">
+        <label>
+          T-shirt Name Color
+          <select value={item.captionTitleColor || '#ffc900'} onChange={(event) => updateField('captionTitleColor', event.target.value)}>
+            {textColorOptions.map(([, label, value]) => <option key={label} value={value}>{label}</option>)}
+          </select>
+        </label>
+        <label>
+          Brand Name Color
+          <select value={item.captionBrandColor || '#d5ad18'} onChange={(event) => updateField('captionBrandColor', event.target.value)}>
+            {textColorOptions.map(([, label, value]) => <option key={label} value={value}>{label}</option>)}
           </select>
         </label>
       </div>
@@ -405,6 +419,8 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
           backImage: '',
           animationType: 'royal-zoom-right',
           cardGradient: defaultGradient,
+          captionTitleColor: '#ffc900',
+          captionBrandColor: '#d5ad18',
           frontZoom: 1,
           frontX: 0,
           frontY: 0,
@@ -447,6 +463,8 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
               frontImage: category.frontImage,
               backImage: category.backImage,
               animationType: category.animationType || (category.backImage ? 'front-back-display' : 'royal-zoom-right'),
+              captionTitleColor: category.captionTitleColor || '#ffc900',
+              captionBrandColor: category.captionBrandColor || '#d5ad18',
               clothStyle: 'Premium Tee',
               fabric: 'Premium Cotton',
               fit: 'Regular Comfort Fit',
@@ -750,7 +768,18 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
         const title = `New Style Container ${item.items.length + 1}`;
         return {
           ...item,
-          items: [...item.items, normalizeStyleItem({ title, text: item.text, frontImage: item.frontImage, backImage: item.backImage, animationType: item.animationType || (item.backImage ? 'front-back-display' : 'royal-zoom-right'), showOnHome: false, showOnServices: true, showOnAbout: false }, item, item.items.length)],
+          items: [...item.items, normalizeStyleItem({
+            title,
+            text: item.text,
+            frontImage: item.frontImage,
+            backImage: item.backImage,
+            animationType: item.animationType || (item.backImage ? 'front-back-display' : 'royal-zoom-right'),
+            captionTitleColor: item.captionTitleColor || '#ffc900',
+            captionBrandColor: item.captionBrandColor || '#d5ad18',
+            showOnHome: false,
+            showOnServices: true,
+            showOnAbout: false,
+          }, item, item.items.length)],
         };
       }),
     }));

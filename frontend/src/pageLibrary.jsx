@@ -36,6 +36,15 @@ const gradientOptions = [
   ['deep-maroon', 'Deep Maroon', 'radial-gradient(circle at 68% 18%, rgba(255, 201, 0, 0.2), transparent 11rem), linear-gradient(135deg, rgba(38, 8, 12, 0.96), rgba(11, 8, 6, 0.9))'],
 ];
 const defaultGradient = gradientOptions[0][2];
+const textColorOptions = [
+  ['gold-light', 'Bright Gold', '#ffc900'],
+  ['gold', 'Royal Gold', '#d5ad18'],
+  ['deep-gold', 'Antique Gold', '#b4872e'],
+  ['black', 'Royal Black', '#141006'],
+  ['charcoal', 'Charcoal', '#252525'],
+  ['white', 'Pearl White', '#f7f3e8'],
+  ['silver', 'Soft Silver', '#eaeaea'],
+];
 
 const defaultServiceCategories = [
   {
@@ -230,6 +239,8 @@ function normalizeStyleItem(item, category, index = 0) {
     backImage,
     animationType: typeof item === 'object' && item?.animationType ? item.animationType : category.animationType || (backImage ? 'front-back-display' : 'royal-zoom-right'),
     cardGradient: typeof item === 'object' && item?.cardGradient ? item.cardGradient : category.cardGradient || defaultGradient,
+    captionTitleColor: typeof item === 'object' && item?.captionTitleColor ? item.captionTitleColor : category.captionTitleColor || '#ffc900',
+    captionBrandColor: typeof item === 'object' && item?.captionBrandColor ? item.captionBrandColor : category.captionBrandColor || '#d5ad18',
     frontZoom: typeof item === 'object' && item?.frontZoom ? item.frontZoom : category.frontZoom || 1,
     frontX: typeof item === 'object' && item?.frontX ? item.frontX : category.frontX || 0,
     frontY: typeof item === 'object' && item?.frontY ? item.frontY : category.frontY || 0,
@@ -333,6 +344,8 @@ function getVisualStyleVars(item = {}) {
   const backZoom = Number(item.backZoom || 1);
   return {
     '--card-bg': item.cardGradient || defaultGradient,
+    '--caption-title-color': item.captionTitleColor || '#ffc900',
+    '--caption-brand-color': item.captionBrandColor || '#d5ad18',
     '--front-zoom': String(frontZoom),
     '--front-scale-096': String(frontZoom * 0.96),
     '--front-scale-098': String(frontZoom * 0.98),
@@ -929,6 +942,7 @@ export {
   shirtBackImage,
   animationOptions,
   gradientOptions,
+  textColorOptions,
   defaultGradient,
   defaultSiteContent,
   defaultAdminContent,

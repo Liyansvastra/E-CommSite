@@ -225,6 +225,21 @@ function IconPickerModal({ currentIcon, onSelect, onClose }) {
   ), document.body);
 }
 
+function ConfirmDeleteModal({ label = 'item', onCancel, onConfirm }) {
+  return createPortal((
+    <div className="admin-modal" role="dialog" aria-modal="true">
+      <div className="admin-modal-card">
+        <h2>Confirm Delete</h2>
+        <p>Are you sure you want to delete this {label}?</p>
+        <div className="admin-actions">
+          <button className="dark-button" type="button" onClick={onCancel}>Cancel</button>
+          <button className="gold-button" type="button" onClick={onConfirm}>Delete</button>
+        </div>
+      </div>
+    </div>
+  ), document.body);
+}
+
 function AdminTextCardEditor({ title, cards, includeMeta = true, targetOptions = staticTargetOptions, focusKey, onAdd, onUpdate, onDelete }) {
   const titleRefs = useRef({});
   const [iconPickerIndex, setIconPickerIndex] = useState(null);
@@ -360,7 +375,13 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
     setContent((current) => ({
       ...current,
       categories: current.categories.map((category, categoryIndex) => (
-        categoryIndex === index ? { ...category, [field]: value } : category
+        categoryIndex === index ? {
+          ...category,
+          [field]: value,
+          items: field === 'captionTitleColor' || field === 'captionBrandColor'
+            ? category.items.map((item, itemIndex) => ({ ...normalizeStyleItem(item, category, itemIndex), [field]: value }))
+            : category.items,
+        } : category
       )),
     }));
   };
@@ -523,27 +544,16 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
     <section className="admin-page admin-dashboard page-enter" style={{ '--admin-bg': `url(${background})` }}>
       <div className="container">
         {deleteTarget && (
-          <div className="admin-modal" role="dialog" aria-modal="true">
-            <div className="admin-modal-card">
-              <h2>Confirm Delete</h2>
-              <p>Are you sure you want to delete this {deleteTarget.type === 'category' ? 'category' : deleteTarget.type === 'text-card' ? 'text container' : 'image container'}?</p>
-              <div className="admin-actions">
-                <button className="dark-button" type="button" onClick={() => setDeleteTarget(null)}>Cancel</button>
-                <button
-                  className="gold-button"
-                  type="button"
-                  onClick={() => {
-                    if (deleteTarget.type === 'category') removeCategory(deleteTarget.categoryIndex);
-                    if (deleteTarget.type === 'item') removeGroupItem(deleteTarget.categoryIndex, deleteTarget.itemIndex);
-                    if (deleteTarget.type === 'text-card') deleteCard(deleteTarget.field, deleteTarget.index);
-                    setDeleteTarget(null);
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
+          <ConfirmDeleteModal
+            label={deleteTarget.type === 'category' ? 'category' : deleteTarget.type === 'text-card' ? 'text container' : 'image container'}
+            onCancel={() => setDeleteTarget(null)}
+            onConfirm={() => {
+              if (deleteTarget.type === 'category') removeCategory(deleteTarget.categoryIndex);
+              if (deleteTarget.type === 'item') removeGroupItem(deleteTarget.categoryIndex, deleteTarget.itemIndex);
+              if (deleteTarget.type === 'text-card') deleteCard(deleteTarget.field, deleteTarget.index);
+              setDeleteTarget(null);
+            }}
+          />
         )}
         <div className="admin-topbar">
           <div>
@@ -740,7 +750,13 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
   const updateCategory = (field, value) => {
     setContent((current) => ({
       ...current,
-      categories: current.categories.map((item, index) => index === categoryIndex ? { ...item, [field]: value } : item),
+      categories: current.categories.map((item, index) => index === categoryIndex ? {
+        ...item,
+        [field]: value,
+        items: field === 'captionTitleColor' || field === 'captionBrandColor'
+          ? item.items.map((group, itemIndex) => ({ ...normalizeStyleItem(group, item, itemIndex), [field]: value }))
+          : item.items,
+      } : item),
     }));
   };
 
@@ -826,16 +842,11 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
     <section className="admin-page admin-dashboard page-enter" style={{ '--admin-bg': `url(${background})` }}>
       <div className="container">
         {deleteTarget !== null && (
-          <div className="admin-modal" role="dialog" aria-modal="true">
-            <div className="admin-modal-card">
-              <h2>Confirm Delete</h2>
-              <p>Are you sure you want to delete this image container?</p>
-              <div className="admin-actions">
-                <button className="dark-button" type="button" onClick={() => setDeleteTarget(null)}>Cancel</button>
-                <button className="gold-button" type="button" onClick={() => removeGroupItem(deleteTarget)}>Delete</button>
-              </div>
-            </div>
-          </div>
+          <ConfirmDeleteModal
+            label="image container"
+            onCancel={() => setDeleteTarget(null)}
+            onConfirm={() => removeGroupItem(deleteTarget)}
+          />
         )}
         <div className="admin-topbar">
           <div><span>Category Editor</span><h1>{category.title}</h1></div>
@@ -986,16 +997,11 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
     <section className="admin-page admin-dashboard page-enter" style={{ '--admin-bg': `url(${background})` }}>
       <div className="container">
         {deleteTarget !== null && (
-          <div className="admin-modal" role="dialog" aria-modal="true">
-            <div className="admin-modal-card">
-              <h2>Confirm Delete</h2>
-              <p>Are you sure you want to delete this image container?</p>
-              <div className="admin-actions">
-                <button className="dark-button" type="button" onClick={() => setDeleteTarget(null)}>Cancel</button>
-                <button className="gold-button" type="button" onClick={() => removeGroupItem(deleteTarget)}>Delete</button>
-              </div>
-            </div>
-          </div>
+          <ConfirmDeleteModal
+            label="image container"
+            onCancel={() => setDeleteTarget(null)}
+            onConfirm={() => removeGroupItem(deleteTarget)}
+          />
         )}
         <div className="admin-topbar">
           <div><span>Container Editor</span><h1>{selectedItem.title}</h1></div>

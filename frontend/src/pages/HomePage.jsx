@@ -1,3 +1,4 @@
+import React from 'react';
 import { brand, logo, lifestyleImage, defaultSiteContent, goTop, normalizeStyleItem, visibleCards, Eyebrow, Stat, SectionTitle, FeatureCard, ProductCard, ScrollArrowRow } from '../pageLibrary.jsx';
 
 

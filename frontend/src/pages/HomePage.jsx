@@ -1,4 +1,4 @@
-import { brand, logo, defaultSiteContent, goTop, normalizeStyleItem, visibleCards, Eyebrow, Stat, SectionTitle, FeatureCard, ProductCard } from '../pageLibrary.jsx';
+import { brand, logo, lifestyleImage, defaultSiteContent, goTop, normalizeStyleItem, visibleCards, Eyebrow, Stat, SectionTitle, FeatureCard, ProductCard, ScrollArrowRow } from '../pageLibrary.jsx';
 
 
 

@@ -2410,7 +2410,7 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
 
 .royal-visual-editor {
   display: grid;
-  gap: 1rem;
+  gap: 1.15rem;
   margin: 1rem 0;
   padding: 1rem;
   border: 1px solid rgba(255, 201, 0, 0.22);
@@ -2423,14 +2423,16 @@ input:focus, textarea:focus, select:focus { border-color: rgba(214, 178, 75, 0.6
 .image-adjust-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 1.2rem;
+  padding-top: 0.2rem;
 }
 
 .image-adjust-card {
-  padding: 1rem;
-  border: 1px solid rgba(209, 163, 71, 0.22);
-  border-radius: 12px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025));
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .image-adjust-card.disabled {
@@ -2464,6 +2466,9 @@ input[type="range"] {
 .admin-visual-preview {
   display: grid;
   gap: 0.75rem;
+  justify-items: start;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(209, 163, 71, 0.24);
 }
 
 .admin-visual-preview > span {
@@ -2475,13 +2480,17 @@ input[type="range"] {
 }
 
 .admin-visual-preview .product-card {
-  width: min(420px, 100%);
-  min-height: 318px;
+  width: min(360px, 100%);
+  min-height: 260px;
   cursor: default;
 }
 
 .admin-visual-preview .product-card:hover {
   transform: none;
+}
+
+.admin-visual-preview .shirt-visual {
+  min-height: 210px;
 }
 
 .admin-save-bar {

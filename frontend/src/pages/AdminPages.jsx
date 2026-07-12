@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { apiBaseUrl, adminEmail, authKey, adminTokenKey, background, brand, logo, animationOptions, gradientOptions, clampIndex, defaultGradient, defaultSiteContent, getContactDetails, getVisualStyleVars, goTop, normalizeStyleItem, parseTextCards, reorderArray, serializeTextCards, slugify, visibleCards, adminEditorPath, ProductCard, ScrollArrowRow, MaterialIcon, materialIconOptions } from '../pageLibrary.jsx';
 
 
@@ -133,6 +134,7 @@ function RoyalVisualControls({ item, updateField }) {
   const selectedGradient = item.cardGradient || defaultGradient;
   return (
     <div className="royal-visual-editor">
+      <VisualPreview item={item} />
       <div className="form-two">
         <label>
           Container Gradient
@@ -151,7 +153,6 @@ function RoyalVisualControls({ item, updateField }) {
         <ImageAdjustmentControls title="Frontside Crop & Position" prefix="front" item={item} updateField={updateField} />
         <ImageAdjustmentControls title="Backside Crop & Position" prefix="back" item={item} updateField={updateField} disabled={!item.backImage} />
       </div>
-      <VisualPreview item={item} />
     </div>
   );
 }
@@ -177,7 +178,7 @@ const staticTargetOptions = [
 function IconPickerModal({ currentIcon, onSelect, onClose }) {
   const [selectedIcon, setSelectedIcon] = useState(currentIcon || 'category');
 
-  return (
+  return createPortal((
     <div className="admin-modal icon-picker-modal" role="dialog" aria-modal="true">
       <div className="admin-modal-card icon-picker-card">
         <div className="admin-section-head compact-head">
@@ -207,7 +208,7 @@ function IconPickerModal({ currentIcon, onSelect, onClose }) {
         </div>
       </div>
     </div>
-  );
+  ), document.body);
 }
 
 function AdminTextCardEditor({ title, cards, includeMeta = true, targetOptions = staticTargetOptions, focusKey, onAdd, onUpdate, onDelete }) {

@@ -2,10 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import './styles.css';
 import {
   apiBaseUrl,
-  adminEmail,
-  adminPassword,
   storageKey,
   authKey,
+  adminTokenKey,
   background,
   defaultAdminContent,
   normalizeAdminContent,
@@ -34,7 +33,8 @@ function App() {
   const [activePage, setActivePageState] = useState(initialRoute.page);
   const [serviceFocus, setServiceFocus] = useState(initialRoute.serviceFocus);
   const [content, setContent] = useState(loadAdminContent);
-  const [isAdminAuthed, setIsAdminAuthed] = useState(() => localStorage.getItem(authKey) === 'true');
+  const [adminToken, setAdminToken] = useState(() => localStorage.getItem(adminTokenKey) || '');
+  const [isAdminAuthed, setIsAdminAuthed] = useState(() => localStorage.getItem(authKey) === 'true' && Boolean(localStorage.getItem(adminTokenKey)));
   const [adminEditCategoryIndex, setAdminEditCategoryIndex] = useState(initialRoute.adminCategoryIndex || 0);
   const [adminEditItemIndex, setAdminEditItemIndex] = useState(initialRoute.adminItemIndex || 0);
   const [adminSaveStatus, setAdminSaveStatus] = useState({ type: '', message: '' });
@@ -63,7 +63,7 @@ function App() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`${apiBaseUrl}/api/admin/content`)
+    fetch(`${apiBaseUrl}/api/site/content`)
       .then((response) => response.json())
       .then((result) => {
         if (!cancelled && result?.ok && result.content?.site && Array.isArray(result.content?.categories)) {
@@ -113,12 +113,12 @@ function App() {
   const saveContentToSupabase = async (contentOverride = content) => {
     setAdminSaveStatus({ type: '', message: 'Saving content...' });
     try {
+      if (!adminToken) throw new Error('Admin login required.');
       const response = await fetch(`${apiBaseUrl}/api/admin/content`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-Admin-Email': adminEmail,
-          'X-Admin-Password': adminPassword,
+          'X-Admin-Token': adminToken,
         },
         body: JSON.stringify({ content: contentOverride }),
       });
@@ -182,6 +182,7 @@ function App() {
           serviceFocus={serviceFocus}
           setServiceFocus={setServiceFocus}
           setIsAdminAuthed={setIsAdminAuthed}
+          setAdminToken={setAdminToken}
         />
       </main>
       {!isAdminPage && <Footer content={content} setActivePage={setActivePage} />}

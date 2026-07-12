@@ -1,6 +1,9 @@
 import os
 import re
 import json
+import base64
+import hashlib
+import hmac
 import smtplib
 import urllib.error
 import urllib.request
@@ -59,7 +62,7 @@ app.add_middleware(
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=False,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "X-Admin-Email", "X-Admin-Password"],
+    allow_headers=["Content-Type", "X-Admin-Email", "X-Admin-Password", "X-Admin-Token"],
 )
 
 
@@ -91,6 +94,19 @@ class ContactMessage(BaseModel):
 
 class AdminContentPayload(BaseModel):
     content: Dict[str, Any]
+
+
+class AdminLoginPayload(BaseModel):
+    email: str = Field(..., min_length=5, max_length=254)
+    password: str = Field(..., min_length=8, max_length=128)
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, value: str) -> str:
+        value = value.strip().lower()
+        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", value):
+            raise ValueError("Invalid email address.")
+        return value
 
 
 def _clean(value: str) -> str:
@@ -236,10 +252,99 @@ def _supabase_request(path: str, method: str = "GET", body: Any | None = None, e
         return json.loads(raw)
 
 
-def _admin_authorized(email: str | None, password: str | None) -> bool:
-    expected_email = os.getenv("ADMIN_EMAIL", "liyansvastra@brillaris.pro")
-    expected_password = os.getenv("ADMIN_PASSWORD", "Brillaris$12")
-    return email == expected_email and password == expected_password
+def _b64url_encode(value: bytes) -> str:
+    return base64.urlsafe_b64encode(value).decode("utf-8").rstrip("=")
+
+
+def _b64url_decode(value: str) -> bytes:
+    padding = "=" * (-len(value) % 4)
+    return base64.urlsafe_b64decode(f"{value}{padding}".encode("utf-8"))
+
+
+def _hash_password(password: str, salt: str, iterations: int) -> str:
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), iterations)
+    return _b64url_encode(digest)
+
+
+def _admin_password_valid(password: str | None) -> bool:
+    if not password:
+        return False
+    stored_hash = os.getenv("ADMIN_PASSWORD_HASH", "")
+    if stored_hash:
+        try:
+            algorithm, iterations_text, salt, expected_hash = stored_hash.split("$", 3)
+            if algorithm != "pbkdf2_sha256":
+                return False
+            actual_hash = _hash_password(password, salt, int(iterations_text))
+            return hmac.compare_digest(actual_hash, expected_hash)
+        except Exception:
+            return False
+
+    # Legacy fallback only for local/dev environments not migrated to ADMIN_PASSWORD_HASH yet.
+    legacy_password = os.getenv("ADMIN_PASSWORD", "")
+    return bool(legacy_password) and hmac.compare_digest(password, legacy_password)
+
+
+def _admin_credentials_valid(email: str | None, password: str | None) -> bool:
+    expected_email = os.getenv("ADMIN_EMAIL", "liyansvastra@brillaris.pro").strip().lower()
+    return hmac.compare_digest((email or "").strip().lower(), expected_email) and _admin_password_valid(password)
+
+
+def _admin_token_secret() -> str:
+    return os.getenv("ADMIN_TOKEN_SECRET") or os.getenv("ADMIN_PASSWORD_HASH") or os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+
+
+def _sign_admin_token(email: str) -> str:
+    issued_at = int(datetime.now(timezone.utc).timestamp())
+    max_age_seconds = int(os.getenv("ADMIN_TOKEN_MAX_AGE_SECONDS", "28800"))
+    payload = {
+        "email": email.strip().lower(),
+        "iat": issued_at,
+        "exp": issued_at + max_age_seconds,
+    }
+    payload_part = _b64url_encode(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
+    secret = _admin_token_secret()
+    signature = hmac.new(secret.encode("utf-8"), payload_part.encode("utf-8"), hashlib.sha256).digest()
+    return f"{payload_part}.{_b64url_encode(signature)}"
+
+
+def _admin_token_valid(token: str | None) -> bool:
+    if not token or "." not in token or not _admin_token_secret():
+        return False
+    try:
+        payload_part, signature_part = token.split(".", 1)
+        expected_signature = hmac.new(
+            _admin_token_secret().encode("utf-8"),
+            payload_part.encode("utf-8"),
+            hashlib.sha256,
+        ).digest()
+        if not hmac.compare_digest(_b64url_encode(expected_signature), signature_part):
+            return False
+        payload = json.loads(_b64url_decode(payload_part))
+        expected_email = os.getenv("ADMIN_EMAIL", "liyansvastra@brillaris.pro").strip().lower()
+        now = int(datetime.now(timezone.utc).timestamp())
+        return (
+            hmac.compare_digest(str(payload.get("email", "")).strip().lower(), expected_email)
+            and int(payload.get("exp", 0)) > now
+        )
+    except Exception:
+        return False
+
+
+def _admin_authorized(token: str | None, email: str | None = None, password: str | None = None) -> bool:
+    if _admin_token_valid(token):
+        return True
+    return _admin_credentials_valid(email, password)
+
+
+def _admin_denied_response() -> JSONResponse:
+    return JSONResponse(
+        status_code=401,
+        content={
+            "ok": False,
+            "message": "Admin access denied.",
+        },
+    )
 
 
 def _as_list(value: Any) -> List[Any]:
@@ -512,8 +617,7 @@ def send_contact_email(payload: ContactMessage):
     }
 
 
-@app.get("/api/admin/content")
-def get_admin_content():
+def _load_site_content_response() -> Dict[str, Any]:
     if not _supabase_configured():
         return {
             "ok": False,
@@ -541,17 +645,50 @@ def get_admin_content():
     }
 
 
-@app.put("/api/admin/content")
-def save_admin_content(
-    payload: AdminContentPayload,
+@app.get("/api/site/content")
+def get_site_content():
+    return _load_site_content_response()
+
+
+@app.post("/api/admin/login")
+def admin_login(payload: AdminLoginPayload):
+    if not _admin_credentials_valid(payload.email, payload.password):
+        return _admin_denied_response()
+    if not _admin_token_secret():
+        return JSONResponse(
+            status_code=500,
+            content={
+                "ok": False,
+                "message": "Admin token settings are not configured.",
+            },
+        )
+    return {
+        "ok": True,
+        "token": _sign_admin_token(payload.email),
+        "message": "Admin login successful.",
+    }
+
+
+@app.get("/api/admin/content")
+def get_admin_content(
+    x_admin_token: str | None = Header(default=None),
     x_admin_email: str | None = Header(default=None),
     x_admin_password: str | None = Header(default=None),
 ):
-    if not _admin_authorized(x_admin_email, x_admin_password):
-        return {
-            "ok": False,
-            "message": "Admin access denied.",
-        }
+    if not _admin_authorized(x_admin_token, x_admin_email, x_admin_password):
+        return _admin_denied_response()
+    return _load_site_content_response()
+
+
+@app.put("/api/admin/content")
+def save_admin_content(
+    payload: AdminContentPayload,
+    x_admin_token: str | None = Header(default=None),
+    x_admin_email: str | None = Header(default=None),
+    x_admin_password: str | None = Header(default=None),
+):
+    if not _admin_authorized(x_admin_token, x_admin_email, x_admin_password):
+        return _admin_denied_response()
     if not _supabase_configured():
         return {
             "ok": False,

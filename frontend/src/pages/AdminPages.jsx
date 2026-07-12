@@ -1,21 +1,41 @@
 import React, { useState } from 'react';
-import { adminEmail, adminPassword, authKey, background, brand, logo, animationOptions, gradientOptions, clampIndex, defaultGradient, defaultSiteContent, getContactDetails, getVisualStyleVars, goTop, normalizeStyleItem, parseTextCards, reorderArray, serializeTextCards, slugify, visibleCards, adminEditorPath, ProductCard, ScrollArrowRow } from '../pageLibrary.jsx';
+import { apiBaseUrl, adminEmail, authKey, adminTokenKey, background, brand, logo, animationOptions, gradientOptions, clampIndex, defaultGradient, defaultSiteContent, getContactDetails, getVisualStyleVars, goTop, normalizeStyleItem, parseTextCards, reorderArray, serializeTextCards, slugify, visibleCards, adminEditorPath, ProductCard, ScrollArrowRow } from '../pageLibrary.jsx';
 
 
 
-function AdminLoginPage({ setActivePage, setIsAdminAuthed }) {
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
+function AdminLoginPage({ setActivePage, setIsAdminAuthed, setAdminToken }) {
+  const [credentials, setCredentials] = useState({ email: adminEmail, password: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
-    if (credentials.email.trim() === adminEmail && credentials.password === adminPassword) {
+    setError('');
+    setLoading(true);
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: credentials.email.trim(),
+          password: credentials.password,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.ok || !result.token) {
+        throw new Error(result?.message || 'Invalid admin email or password.');
+      }
+      localStorage.setItem(adminTokenKey, result.token);
       localStorage.setItem(authKey, 'true');
+      setAdminToken(result.token);
       setIsAdminAuthed(true);
       setActivePage('AdminDashboard');
       return;
+    } catch (error) {
+      setError('Invalid admin email or password.');
+    } finally {
+      setLoading(false);
     }
-    setError('Invalid admin email or password.');
   };
 
   return (
@@ -27,7 +47,7 @@ function AdminLoginPage({ setActivePage, setIsAdminAuthed }) {
         <label>Email<input type="email" value={credentials.email} onChange={(event) => setCredentials((current) => ({ ...current, email: event.target.value }))} /></label>
         <label>Password<input type="password" value={credentials.password} onChange={(event) => setCredentials((current) => ({ ...current, password: event.target.value }))} /></label>
         {error && <p className="form-status error">{error}</p>}
-        <button className="gold-button" type="submit">Login</button>
+        <button className="gold-button" type="submit" disabled={loading}>{loading ? 'Checking...' : 'Login'}</button>
       </form>
     </section>
   );
@@ -182,7 +202,7 @@ function AdminTextCardEditor({ title, cards, includeMeta = true, onAdd, onUpdate
   );
 }
 
-function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, setActivePage, setIsAdminAuthed, setAdminEditCategoryIndex, setAdminEditItemIndex, onSaveContent, adminSaveStatus }) {
+function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, setActivePage, setIsAdminAuthed, setAdminToken, setAdminEditCategoryIndex, setAdminEditItemIndex, onSaveContent, adminSaveStatus }) {
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -368,7 +388,9 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
   };
 
   const logout = () => {
+    localStorage.removeItem(adminTokenKey);
     localStorage.removeItem(authKey);
+    setAdminToken('');
     setIsAdminAuthed(false);
     setActivePage('AdminLogin');
   };

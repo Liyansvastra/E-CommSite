@@ -9,9 +9,9 @@ const lifestyleImage = assetPath('background.jpg');
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 const adminEmail = 'liyansvastra@brillaris.pro';
-const adminPassword = 'Brillaris$12';
 const storageKey = 'liyans_vastra_admin_content_v1';
 const authKey = 'liyans_vastra_admin_auth_v1';
+const adminTokenKey = 'liyans_vastra_admin_token_v1';
 const phoneNumber = '+917871357999';
 const displayPhone = '+91 7871357999';
 const emailAddress = 'liyansvastra@gmail.com';
@@ -778,9 +778,9 @@ export {
   lifestyleImage,
   apiBaseUrl,
   adminEmail,
-  adminPassword,
   storageKey,
   authKey,
+  adminTokenKey,
   phoneNumber,
   emailAddress,
   whatsappUrl,

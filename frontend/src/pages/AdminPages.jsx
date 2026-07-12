@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { apiBaseUrl, adminEmail, authKey, adminTokenKey, background, brand, logo, animationOptions, gradientOptions, clampIndex, defaultGradient, defaultSiteContent, getContactDetails, getVisualStyleVars, goTop, normalizeStyleItem, parseTextCards, reorderArray, serializeTextCards, slugify, visibleCards, adminEditorPath, ProductCard, ScrollArrowRow } from '../pageLibrary.jsx';
+import React, { useEffect, useRef, useState } from 'react';
+import { apiBaseUrl, adminEmail, authKey, adminTokenKey, background, brand, logo, animationOptions, gradientOptions, clampIndex, defaultGradient, defaultSiteContent, getContactDetails, getVisualStyleVars, goTop, normalizeStyleItem, parseTextCards, reorderArray, serializeTextCards, slugify, visibleCards, adminEditorPath, ProductCard, ScrollArrowRow, MaterialIcon, materialIconOptions } from '../pageLibrary.jsx';
 
 
 
@@ -165,9 +165,73 @@ function AdminSaveBar({ status, onSave }) {
   );
 }
 
-function AdminTextCardEditor({ title, cards, includeMeta = true, onAdd, onUpdate, onDelete }) {
+const staticTargetOptions = [
+  ['', 'Select target', 'Explore'],
+  ['contact', 'Contact Page', 'Contact'],
+  ['premium-cotton', 'Premium Cotton', 'View Cotton'],
+  ['logo-shirts', 'Logo T-shirt Styles', 'View Logo Styles'],
+  ['custom-models', 'Custom Model Showcase', 'View Models'],
+  ['business-information', 'Business Information', 'View Details'],
+];
+
+function IconPickerModal({ currentIcon, onSelect, onClose }) {
+  const [selectedIcon, setSelectedIcon] = useState(currentIcon || 'category');
+
+  return (
+    <div className="admin-modal icon-picker-modal" role="dialog" aria-modal="true">
+      <div className="admin-modal-card icon-picker-card">
+        <div className="admin-section-head compact-head">
+          <div>
+            <h2>Select Icon</h2>
+            <p>Choose one royal material icon for this text container.</p>
+          </div>
+        </div>
+        <div className="icon-picker-grid">
+          {materialIconOptions.map(([name, label]) => (
+            <button
+              key={name}
+              className={selectedIcon === name ? 'icon-picker-option selected' : 'icon-picker-option'}
+              type="button"
+              onClick={() => setSelectedIcon(name)}
+              aria-label={label}
+              title={label}
+            >
+              <MaterialIcon name={name} />
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+        <div className="admin-actions icon-picker-actions">
+          <button className="dark-button" type="button" onClick={onClose}>Cancel</button>
+          <button className="gold-button" type="button" onClick={() => onSelect(selectedIcon)}>OK</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdminTextCardEditor({ title, cards, includeMeta = true, targetOptions = staticTargetOptions, focusKey, onAdd, onUpdate, onDelete }) {
+  const titleRefs = useRef({});
+  const [iconPickerIndex, setIconPickerIndex] = useState(null);
+
+  useEffect(() => {
+    if (focusKey === title) {
+      window.setTimeout(() => titleRefs.current[0]?.focus(), 60);
+    }
+  }, [focusKey, title, cards.length]);
+
   return (
     <div className="admin-text-card-editor">
+      {iconPickerIndex !== null && (
+        <IconPickerModal
+          currentIcon={cards[iconPickerIndex]?.icon}
+          onClose={() => setIconPickerIndex(null)}
+          onSelect={(icon) => {
+            onUpdate(iconPickerIndex, 'icon', icon);
+            setIconPickerIndex(null);
+          }}
+        />
+      )}
       <div className="admin-section-head compact-head">
         <div>
           <h3>{title}</h3>
@@ -177,18 +241,31 @@ function AdminTextCardEditor({ title, cards, includeMeta = true, onAdd, onUpdate
       </div>
       <div className="admin-text-card-list">
         {cards.map((card, index) => (
-          <div className="admin-text-card-row" key={`${card.title}-${index}`}>
+          <div className="admin-text-card-row" key={`${title}-${index}`}>
             <div className="admin-checks compact-checks">
               <label><input type="checkbox" checked={card.show !== false} onChange={(event) => onUpdate(index, 'show', event.target.checked)} /> Display on page</label>
             </div>
             <div className="form-two">
-              <label>Title<input value={card.title || ''} onChange={(event) => onUpdate(index, 'title', event.target.value)} /></label>
-              {includeMeta && <label>Icon<input value={card.icon || 'category'} onChange={(event) => onUpdate(index, 'icon', event.target.value)} /></label>}
+              <label>Title<input ref={(node) => { titleRefs.current[index] = node; }} value={card.title || ''} onChange={(event) => onUpdate(index, 'title', event.target.value)} /></label>
+              {includeMeta && (
+                <label>
+                  Icon
+                  <button className="icon-select-button" type="button" onClick={() => setIconPickerIndex(index)}>
+                    <MaterialIcon name={card.icon || 'category'} />
+                    <span>{materialIconOptions.find(([name]) => name === (card.icon || 'category'))?.[1] || 'Category'}</span>
+                  </button>
+                </label>
+              )}
             </div>
             <label>Text<textarea rows="3" value={card.text || ''} onChange={(event) => onUpdate(index, 'text', event.target.value)} /></label>
             {includeMeta && (
               <div className="form-two">
-                <label>Target<input value={card.target || ''} onChange={(event) => onUpdate(index, 'target', event.target.value)} /></label>
+                <label>
+                  Target
+                  <select value={card.target || ''} onChange={(event) => onUpdate(index, 'target', event.target.value)}>
+                    {targetOptions.map(([value, label]) => <option key={value || 'empty'} value={value}>{label}</option>)}
+                  </select>
+                </label>
                 <label>Action Label<input value={card.actionLabel || 'Explore'} onChange={(event) => onUpdate(index, 'actionLabel', event.target.value)} /></label>
               </div>
             )}
@@ -206,8 +283,19 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [focusTextEditor, setFocusTextEditor] = useState('');
   const selectedCategory = content.categories[selectedCategoryIndex] || content.categories[0];
   const selectedItem = selectedCategory ? normalizeStyleItem(selectedCategory.items[selectedItemIndex], selectedCategory, selectedItemIndex) : null;
+  const targetOptions = [
+    ['', 'Select target', 'Explore'],
+    ...content.categories.map((category) => [category.id, category.title, category.rate?.toLowerCase().includes('cotton') ? 'View Cotton' : `View ${category.badge || 'Styles'}`]),
+    ['contact', 'Contact Page', 'Contact'],
+    ['business-information', 'Business Information', 'View Details'],
+  ];
+
+  const actionLabelForTarget = (target) => (
+    targetOptions.find(([value]) => value === target)?.[2] || 'Explore'
+  );
 
   const updateSite = (field, value) => {
     setContent((current) => ({ ...current, site: { ...current.site, [field]: value } }));
@@ -224,7 +312,9 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
   const updateCardList = (field, index, key, value) => {
     setContent((current) => {
       const cards = [...(current.site[field] || defaultSiteContent[field] || [])];
-      cards[index] = { ...cards[index], [key]: value };
+      cards[index] = key === 'target'
+        ? { ...cards[index], target: value, actionLabel: actionLabelForTarget(value) }
+        : { ...cards[index], [key]: value };
       return { ...current, site: { ...current.site, [field]: cards } };
     });
   };
@@ -233,7 +323,8 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
     const card = includeMeta
       ? { title: 'New Text Container', text: 'Add text here.', icon: 'category', target: '', actionLabel: 'Explore', show: true }
       : { title: 'New Review', text: 'Add testimonial text here.', show: true };
-    setContent((current) => ({ ...current, site: { ...current.site, [field]: [...(current.site[field] || defaultSiteContent[field] || []), card] } }));
+    setFocusTextEditor(field);
+    setContent((current) => ({ ...current, site: { ...current.site, [field]: [card, ...(current.site[field] || defaultSiteContent[field] || [])] } }));
   };
 
   const deleteCard = (field, index) => {
@@ -416,7 +507,7 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
           <div className="admin-modal" role="dialog" aria-modal="true">
             <div className="admin-modal-card">
               <h2>Confirm Delete</h2>
-              <p>Are you sure you want to delete this {deleteTarget.type === 'category' ? 'category' : 'image container'}?</p>
+              <p>Are you sure you want to delete this {deleteTarget.type === 'category' ? 'category' : deleteTarget.type === 'text-card' ? 'text container' : 'image container'}?</p>
               <div className="admin-actions">
                 <button className="dark-button" type="button" onClick={() => setDeleteTarget(null)}>Cancel</button>
                 <button
@@ -425,6 +516,7 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
                   onClick={() => {
                     if (deleteTarget.type === 'category') removeCategory(deleteTarget.categoryIndex);
                     if (deleteTarget.type === 'item') removeGroupItem(deleteTarget.categoryIndex, deleteTarget.itemIndex);
+                    if (deleteTarget.type === 'text-card') deleteCard(deleteTarget.field, deleteTarget.index);
                     setDeleteTarget(null);
                   }}
                 >
@@ -456,17 +548,20 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
             <AdminTextCardEditor
               title="Why Choose Text Containers"
               cards={content.site.whyChooseCards || defaultSiteContent.whyChooseCards}
+              targetOptions={targetOptions}
+              focusKey={focusTextEditor === 'whyChooseCards' ? 'Why Choose Text Containers' : ''}
               onAdd={() => addCard('whyChooseCards')}
               onUpdate={(index, key, value) => updateCardList('whyChooseCards', index, key, value)}
-              onDelete={(index) => deleteCard('whyChooseCards', index)}
+              onDelete={(index) => setDeleteTarget({ type: 'text-card', field: 'whyChooseCards', index })}
             />
             <AdminTextCardEditor
               title="Testimonials"
               includeMeta={false}
               cards={content.site.testimonials || defaultSiteContent.testimonials}
+              focusKey={focusTextEditor === 'testimonials' ? 'Testimonials' : ''}
               onAdd={() => addCard('testimonials', false)}
               onUpdate={(index, key, value) => updateCardList('testimonials', index, key, value)}
-              onDelete={(index) => deleteCard('testimonials', index)}
+              onDelete={(index) => setDeleteTarget({ type: 'text-card', field: 'testimonials', index })}
             />
             <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </section>}
@@ -478,9 +573,11 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
             <AdminTextCardEditor
               title="Our Values Text Containers"
               cards={content.site.valueCards || defaultSiteContent.valueCards}
+              targetOptions={targetOptions}
+              focusKey={focusTextEditor === 'valueCards' ? 'Our Values Text Containers' : ''}
               onAdd={() => addCard('valueCards')}
               onUpdate={(index, key, value) => updateCardList('valueCards', index, key, value)}
-              onDelete={(index) => deleteCard('valueCards', index)}
+              onDelete={(index) => setDeleteTarget({ type: 'text-card', field: 'valueCards', index })}
             />
             <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </section>}

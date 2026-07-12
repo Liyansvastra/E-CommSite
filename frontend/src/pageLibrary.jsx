@@ -291,6 +291,39 @@ const parseTextCards = (value, fallback = [], includeMeta = true) => {
 const visibleCards = (cards = []) => cards.filter((card) => card.show !== false);
 const getContactDetails = (content) => ({ ...defaultSiteContent.contactDetails, ...(content.site.contactDetails || {}) });
 
+const materialIconOptions = [
+  ['category', 'Category'],
+  ['fabric', 'Fabric'],
+  ['fit', 'Fit'],
+  ['group', 'Group'],
+  ['design', 'Design'],
+  ['chat', 'Chat'],
+  ['delivery', 'Delivery'],
+  ['quality', 'Quality'],
+  ['care', 'Care'],
+  ['transparent', 'Transparent'],
+  ['inclusive', 'Inclusive'],
+  ['location', 'Location'],
+  ['phone', 'Phone'],
+  ['email', 'Email'],
+  ['clock', 'Clock'],
+  ['download', 'Download'],
+  ['hexagon', 'Hexagon'],
+  ['nodes', 'Network'],
+  ['support', 'Support'],
+  ['megaphone', 'Megaphone'],
+  ['muted', 'Muted'],
+  ['mail-card', 'Mail Card'],
+  ['cube', 'Cube'],
+  ['message-panel', 'Message Panel'],
+  ['sparkle', 'Sparkle'],
+  ['shield', 'Shield'],
+  ['shirt', 'T-shirt'],
+  ['palette', 'Palette'],
+  ['package', 'Package'],
+  ['ruler', 'Ruler'],
+];
+
 function goTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -466,6 +499,114 @@ function SectionTitle({ eyebrow, title, subtitle }) {
 }
 
 const materialIconPaths = {
+  download: (
+    <>
+      <path d="M12 3v12" />
+      <path d="m7 10 5 5 5-5" />
+      <path d="M5 21h14" />
+    </>
+  ),
+  hexagon: (
+    <path d="M7 3.8h10L22 12l-5 8.2H7L2 12l5-8.2Z" />
+  ),
+  nodes: (
+    <>
+      <circle cx="7" cy="7" r="2.5" />
+      <circle cx="17" cy="7" r="2.5" />
+      <circle cx="12" cy="17" r="2.5" />
+      <path d="M9.1 8.5 11 14.7" />
+      <path d="m14.9 8.5-2 6.2" />
+      <path d="M9.5 7h5" />
+    </>
+  ),
+  support: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M7 12a5 5 0 0 1 10 0" />
+      <path d="M7 12v3" />
+      <path d="M17 12v3" />
+      <path d="M14 17h3" />
+    </>
+  ),
+  megaphone: (
+    <>
+      <path d="M4 13h4l10 5V6L8 11H4v2Z" />
+      <path d="M8 13v5" />
+    </>
+  ),
+  muted: (
+    <>
+      <path d="M4 13h4l6 5V6l-6 5H4v2Z" />
+      <path d="m18 9 4 6" />
+      <path d="m22 9-4 6" />
+    </>
+  ),
+  'mail-card': (
+    <>
+      <rect x="3" y="6" width="18" height="12" rx="1.5" />
+      <path d="m3 8 9 6 9-6" />
+      <path d="M7 18v3" />
+      <path d="M17 18v3" />
+    </>
+  ),
+  cube: (
+    <>
+      <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z" />
+      <path d="M4 7.5 12 12l8-4.5" />
+      <path d="M12 12v9" />
+    </>
+  ),
+  'message-panel': (
+    <>
+      <rect x="4" y="5" width="16" height="11" rx="1.5" />
+      <path d="M8 9h8" />
+      <path d="M8 12h5" />
+      <path d="m8 16-3 4" />
+    </>
+  ),
+  sparkle: (
+    <>
+      <path d="m12 3 1.6 5 5.4 1.2-4 3.4.5 5.4-3.5-2.8L8.5 18l.5-5.4-4-3.4L10.4 8 12 3Z" />
+      <path d="M20 3v4" />
+      <path d="M18 5h4" />
+    </>
+  ),
+  shield: (
+    <>
+      <path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z" />
+      <path d="m9 12 2 2 4-4" />
+    </>
+  ),
+  shirt: (
+    <>
+      <path d="M8 4 4 7l3 4 2-1v10h6V10l2 1 3-4-4-3" />
+      <path d="M9 4c.5 1.5 1.5 2 3 2s2.5-.5 3-2" />
+    </>
+  ),
+  palette: (
+    <>
+      <path d="M12 3a9 9 0 0 0 0 18h1.2a2 2 0 0 0 1.4-3.4 1.7 1.7 0 0 1 1.2-2.9H18a6 6 0 0 0 0-12h-6Z" />
+      <circle cx="8" cy="10" r="1" />
+      <circle cx="11" cy="7" r="1" />
+      <circle cx="15" cy="8" r="1" />
+    </>
+  ),
+  package: (
+    <>
+      <path d="m12 3 8 4v10l-8 4-8-4V7l8-4Z" />
+      <path d="M4 7l8 4 8-4" />
+      <path d="M12 11v10" />
+      <path d="m8 5 8 4" />
+    </>
+  ),
+  ruler: (
+    <>
+      <path d="M4 17 17 4l3 3L7 20l-3-3Z" />
+      <path d="m8 16-2-2" />
+      <path d="m11 13-2-2" />
+      <path d="m14 10-2-2" />
+    </>
+  ),
   fabric: (
     <>
       <path d="M6 3h12l2 4-3 3v11H7V10L4 7l2-4Z" />
@@ -814,6 +955,7 @@ export {
   Eyebrow,
   SectionTitle,
   MaterialIcon,
+  materialIconOptions,
   GoldIcon,
   Stat,
   FeatureCard,

@@ -16,6 +16,8 @@ function PageHero({ eyebrow, title, subtitle }) {
 }
 
 function AboutPage({ content, setActivePage, setServiceFocus }) {
+  const aboutJourney = Array.isArray(content.site.aboutJourney) ? content.site.aboutJourney : defaultSiteContent.aboutJourney;
+
   return (
     <>
       <PageHero eyebrow="Our Story" title={`About ${brand}`} subtitle={content.site.aboutSubtitle} />
@@ -23,7 +25,7 @@ function AboutPage({ content, setActivePage, setServiceFocus }) {
         <div className="container narrow">
           <SectionTitle eyebrow="Who We Are" title="Our Journey" />
           <div className="journey-copy" data-reveal>
-            {content.site.aboutJourney.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            {aboutJourney.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           </div>
           <div className="divider" data-reveal />
           <div className="metric-row">

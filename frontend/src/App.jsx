@@ -8,6 +8,7 @@ import {
   authKey,
   background,
   defaultAdminContent,
+  normalizeAdminContent,
   loadAdminContent,
   getPageFromLocation,
   adminEditorPath,
@@ -66,8 +67,9 @@ function App() {
       .then((response) => response.json())
       .then((result) => {
         if (!cancelled && result?.ok && result.content?.site && Array.isArray(result.content?.categories)) {
-          setContent(result.content);
-          localStorage.setItem(storageKey, JSON.stringify(result.content));
+          const normalizedContent = normalizeAdminContent(result.content);
+          setContent(normalizedContent);
+          localStorage.setItem(storageKey, JSON.stringify(normalizedContent));
         }
       })
       .catch(() => {});

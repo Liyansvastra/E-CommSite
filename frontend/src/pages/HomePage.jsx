@@ -64,6 +64,8 @@ function Testimonials({ content }) {
 }
 
 function HomePage({ content, categories, setActivePage, setServiceFocus }) {
+  const storyParagraphs = Array.isArray(content.site.storyParagraphs) ? content.site.storyParagraphs : defaultSiteContent.storyParagraphs;
+
   const openServicesTop = () => {
     setServiceFocus('');
     setActivePage('Services');
@@ -100,7 +102,7 @@ function HomePage({ content, categories, setActivePage, setServiceFocus }) {
         <div className="story-copy" data-reveal>
           <Eyebrow>Our Story</Eyebrow>
           <h2>{content.site.storyTitle}</h2>
-          {content.site.storyParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          {storyParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           <div className="mini-stat-grid">
             <Stat value="220 GSM" label="Premium Weight Fabric" />
             <Stat value="100%" label="Pure Cotton" />

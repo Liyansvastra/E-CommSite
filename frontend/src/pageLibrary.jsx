@@ -128,6 +128,28 @@ const defaultAdminContent = {
   categories: defaultServiceCategories,
 };
 
+function normalizeAdminContent(content) {
+  const site = {
+    ...defaultSiteContent,
+    ...(content?.site || {}),
+    contactDetails: {
+      ...defaultSiteContent.contactDetails,
+      ...(content?.site?.contactDetails || {}),
+    },
+  };
+  const categories = Array.isArray(content?.categories) && content.categories.length
+    ? content.categories.map((category, index) => {
+        const fallback = defaultServiceCategories[index % defaultServiceCategories.length];
+        return {
+          ...fallback,
+          ...(category || {}),
+          items: Array.isArray(category?.items) && category.items.length ? category.items : fallback.items,
+        };
+      })
+    : defaultServiceCategories;
+  return { site, categories };
+}
+
 const findServiceCategory = (categories, categoryId) => (
   categories.find((category) => category.id === categoryId) || categories[0]
 );
@@ -173,10 +195,7 @@ function loadAdminContent() {
   try {
     const stored = JSON.parse(localStorage.getItem(storageKey));
     if (!stored) return defaultAdminContent;
-    return {
-      site: { ...defaultSiteContent, ...(stored.site || {}) },
-      categories: Array.isArray(stored.categories) && stored.categories.length ? stored.categories : defaultServiceCategories,
-    };
+    return normalizeAdminContent(stored);
   } catch {
     return defaultAdminContent;
   }
@@ -769,6 +788,7 @@ export {
   defaultGradient,
   defaultSiteContent,
   defaultAdminContent,
+  normalizeAdminContent,
   findServiceCategory,
   slugify,
   clampIndex,

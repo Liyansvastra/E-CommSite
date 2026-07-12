@@ -585,19 +585,22 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
 
           {showContactEditor && <section className="admin-panel admin-flat-panel" id="admin-contact-editor">
             <h2>Contact Page</h2>
-            <label>Address<textarea rows="5" value={getContactDetails(content).address} onChange={(event) => updateContactDetail('address', event.target.value)} /></label>
-            <div className="form-two">
-              <label>Phone Number<input value={getContactDetails(content).phoneNumber} onChange={(event) => updateContactDetail('phoneNumber', event.target.value)} /></label>
-              <label>Display Phone<input value={getContactDetails(content).displayPhone} onChange={(event) => updateContactDetail('displayPhone', event.target.value)} /></label>
+            <div className="admin-edit-focus admin-contact-focus">
+              <h3>Edit Contact Text</h3>
+              <label>Address<textarea rows="5" value={getContactDetails(content).address} onChange={(event) => updateContactDetail('address', event.target.value)} /></label>
+              <div className="form-two">
+                <label>Phone Number<input value={getContactDetails(content).phoneNumber} onChange={(event) => updateContactDetail('phoneNumber', event.target.value)} /></label>
+                <label>Display Phone<input value={getContactDetails(content).displayPhone} onChange={(event) => updateContactDetail('displayPhone', event.target.value)} /></label>
+              </div>
+              <div className="form-two">
+                <label>Email<input value={getContactDetails(content).email} onChange={(event) => updateContactDetail('email', event.target.value)} /></label>
+                <label>Reply Text<input value={getContactDetails(content).replyText} onChange={(event) => updateContactDetail('replyText', event.target.value)} /></label>
+              </div>
+              <label>Business Hours<textarea rows="3" value={getContactDetails(content).hours} onChange={(event) => updateContactDetail('hours', event.target.value)} /></label>
+              <label>Contact Form Title<input value={content.site.contactTitle} onChange={(event) => updateSite('contactTitle', event.target.value)} /></label>
+              <label>Contact Form Subtitle<input value={content.site.contactSubtitle} onChange={(event) => updateSite('contactSubtitle', event.target.value)} /></label>
+              <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
             </div>
-            <div className="form-two">
-              <label>Email<input value={getContactDetails(content).email} onChange={(event) => updateContactDetail('email', event.target.value)} /></label>
-              <label>Reply Text<input value={getContactDetails(content).replyText} onChange={(event) => updateContactDetail('replyText', event.target.value)} /></label>
-            </div>
-            <label>Business Hours<textarea rows="3" value={getContactDetails(content).hours} onChange={(event) => updateContactDetail('hours', event.target.value)} /></label>
-            <label>Contact Form Title<input value={content.site.contactTitle} onChange={(event) => updateSite('contactTitle', event.target.value)} /></label>
-            <label>Contact Form Subtitle<input value={content.site.contactSubtitle} onChange={(event) => updateSite('contactSubtitle', event.target.value)} /></label>
-            <AdminSaveBar status={adminSaveStatus} onSave={onSaveContent} />
           </section>}
         </div>
 
@@ -812,7 +815,7 @@ function AdminCategoryEditorPage({ content, setContent, setActivePage, adminEdit
             <button className="gold-button" type="button" onClick={addGroupItem}>Add New Container</button>
           </div>
         </div>
-        <section className="admin-panel admin-wide">
+        <section className="admin-panel admin-wide admin-editor-flat-shell">
           <div className="admin-edit-focus">
             <h3>Edit Category</h3>
             <div className="form-two">
@@ -969,7 +972,7 @@ function AdminContainerEditorPage({ content, setContent, setActivePage, adminEdi
           <div><span>Container Editor</span><h1>{selectedItem.title}</h1></div>
           <button className="dark-button" type="button" onClick={() => setActivePage('AdminCategoryEditor', { categoryIndex: editorCategoryIndex, itemIndex: 0 })}>Back Category</button>
         </div>
-        <section className="admin-panel admin-wide">
+        <section className="admin-panel admin-wide admin-editor-flat-shell">
           <div className="admin-edit-focus">
             <h3>Edit Image Container</h3>
             <div className="form-two">

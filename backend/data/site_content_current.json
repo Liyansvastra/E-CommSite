@@ -1,6 +1,333 @@
 {
-  "generated_at": null,
-  "edit_label": "initial",
+  "generated_at": "2026-07-16T09:34:12.117221+00:00",
+  "edit_label": "db-fetch",
   "table": "site_content_current",
-  "rows": []
+  "rows": [
+    {
+      "id": "main",
+      "content": {
+        "site": {
+          "heroText": "We craft premium apparel for the discerning individual. From meticulously sourced fabrics to innovative designs, every piece reflects our commitment to excellence.",
+          "heroTitle": "Elevated Elegance in Every Thread",
+          "storyTitle": "About LIYAN'S VASTRA",
+          "valueCards": [
+            {
+              "icon": "quality",
+              "text": "Premium fabrics and superior craftsmanship in every product we create.",
+              "title": "Quality First",
+              "target": "premium-cotton",
+              "actionLabel": "View Quality"
+            },
+            {
+              "icon": "care",
+              "text": "Your satisfaction is our priority from purchase to delivery and beyond.",
+              "title": "Customer Care",
+              "target": "contact",
+              "actionLabel": "Contact"
+            },
+            {
+              "icon": "transparent",
+              "text": "Honest pricing, clear policies, and open communication at every step.",
+              "title": "Transparency",
+              "target": "business-information",
+              "actionLabel": "View Details"
+            },
+            {
+              "icon": "inclusive",
+              "text": "Unisex designs crafted to flatter and fit people of all body types.",
+              "title": "Inclusivity",
+              "target": "custom-models",
+              "actionLabel": "View Models"
+            }
+          ],
+          "aboutJourney": [
+            "LIYAN'S VASTRA was born from a simple belief: everyone deserves to wear clothing that makes them feel their best.",
+            "Every product is carefully crafted using premium cotton fabrics with superior GSM weights.",
+            "As a GST-registered proprietorship, we operate with full transparency and commitment to our customers."
+          ],
+          "contactTitle": "Get In Touch",
+          "testimonials": [
+            {
+              "text": "The cotton feels rich, comfortable, and made for daily use.",
+              "title": "Premium finish"
+            },
+            {
+              "text": "Quick response, clear updates, and smooth delivery experience.",
+              "title": "Fast support"
+            },
+            {
+              "text": "The fabric weight and stitching made the product feel premium.",
+              "title": "Great quality"
+            }
+          ],
+          "aboutSubtitle": "A premium textile brand born from passion for quality and timeless style.",
+          "contactDetails": {
+            "email": "liyansvastra@gmail.com",
+            "hours": "Monday - Saturday\n10:00 AM - 6:00 PM IST",
+            "address": "LIYAN'S VASTRA\nNo 53 G1 Sudha Madhuri Homes\nNalluruhalli Main Road\nOpp. HP Petrol Pump, DNA Anantha Layout\nBengaluru - 560066, Karnataka",
+            "replyText": "We reply within 24 hours",
+            "phoneNumber": "+917871357999",
+            "displayPhone": "+91 7871357999"
+          },
+          "whyChooseCards": [
+            {
+              "icon": "fabric",
+              "show": false,
+              "text": "100% premium cotton with superior GSM for lasting comfort and durability.",
+              "title": "Premium Fabric Quality",
+              "target": "premium-cotton",
+              "actionLabel": "View Cotton"
+            },
+            {
+              "icon": "fit",
+              "show": false,
+              "text": "Thoughtfully designed cuts that support clean everyday T-shirt styling.",
+              "title": "Comfortable Fit",
+              "target": "premium-cotton",
+              "actionLabel": "View Fits"
+            },
+            {
+              "icon": "group",
+              "show": false,
+              "text": "Versatile styles crafted for logo apparel, teams, and brand enquiries.",
+              "title": "Unisex Designs",
+              "target": "custom-models",
+              "actionLabel": "View Models"
+            },
+            {
+              "icon": "design",
+              "text": "Logo placement and styling support for brand and team apparel enquiries.",
+              "title": "Logo Customization",
+              "target": "logo-shirts",
+              "actionLabel": "View Logo Styles"
+            },
+            {
+              "icon": "chat",
+              "text": "Quick WhatsApp and email communication for custom T-shirt requirements.",
+              "title": "Easy Enquiry",
+              "target": "contact",
+              "actionLabel": "Contact"
+            },
+            {
+              "icon": "delivery",
+              "text": "Delivery and support discussion available for customers across India.",
+              "title": "Pan India Support",
+              "target": "contact",
+              "actionLabel": "Contact"
+            }
+          ],
+          "contactSubtitle": "Tell us about your logo T-shirt or custom apparel requirement.",
+          "storyParagraphs": [
+            "LIYAN'S VASTRA is a premium textile and apparel brand born from a passion for quality craftsmanship and timeless style.",
+            "Founded as a proprietorship, we take pride in our hands-on approach to quality. Every product is carefully sourced and crafted using premium cotton fabrics.",
+            "Our tagline, \"Elevated Elegance\", reflects our commitment to everyday premium fashion."
+          ]
+        },
+        "categories": [
+          {
+            "id": "logo-shirts",
+            "rate": "From Rs. 499",
+            "text": "Premium logo placement samples for teams, brands, events, and daily apparel enquiries.",
+            "badge": "Logo Style",
+            "count": "18 styles",
+            "items": [
+              {
+                "id": "pocket-logo-tee",
+                "fit": "Regular Comfort Fit",
+                "rate": "From Rs. 549",
+                "text": "Minimal pocket logo direction for daily premium apparel.",
+                "backX": 0,
+                "backY": 0,
+                "title": "Pocket Logo Tee",
+                "fabric": "220 GSM Cotton",
+                "frontX": 0,
+                "frontY": 0,
+                "rating": "4.7 / 5",
+                "backFit": "contain",
+                "backZoom": 1,
+                "frontFit": "contain",
+                "backImage": "/t-shirt-model/sample_backside2.png",
+                "frontZoom": 1.07,
+                "clothStyle": "Logo Placement",
+                "frontImage": "/t-shirt-model/sample_frontside2.png",
+                "showOnHome": false,
+                "showOnAbout": false,
+                "cardGradient": "radial-gradient(circle at 72% 22%, rgba(255, 201, 0, 0.2), transparent 11rem), linear-gradient(135deg, rgba(234, 234, 234, 0.96), rgba(204, 204, 204, 0.76))",
+                "animationType": "front-back-display",
+                "showOnServices": true,
+                "captionBrandColor": "#ffc900",
+                "captionTitleColor": "#b4872e"
+              },
+              {
+                "id": "chest-logo-tee",
+                "fit": "Regular Comfort Fit",
+                "rate": "From Rs. 499",
+                "text": "Clean chest-logo placement sample for teams and brands.",
+                "backX": 0,
+                "backY": 0,
+                "title": "Chest Logo Tee",
+                "fabric": "Premium Cotton",
+                "frontX": 0,
+                "frontY": 0,
+                "rating": "4.8 / 5",
+                "backFit": "contain",
+                "backZoom": 1,
+                "frontFit": "contain",
+                "backImage": "/t-shirt-model/sample_backside2.png",
+                "frontZoom": 1.07,
+                "clothStyle": "Round Neck",
+                "frontImage": "/t-shirt-model/sample_frontside2.png",
+                "showOnHome": true,
+                "showOnAbout": false,
+                "cardGradient": "radial-gradient(circle at 72% 22%, rgba(255, 201, 0, 0.2), transparent 11rem), linear-gradient(135deg, rgba(234, 234, 234, 0.96), rgba(204, 204, 204, 0.76))",
+                "animationType": "front-back-display",
+                "showOnServices": true,
+                "captionBrandColor": "#141006",
+                "captionTitleColor": "#eaeaea"
+              },
+              {
+                "id": "event-logo-tee",
+                "fit": "Custom Fit",
+                "rate": "Quote Based",
+                "text": "Bulk event T-shirt sample for campaigns and communities.",
+                "backX": 0,
+                "backY": 0,
+                "title": "Event Logo Tee",
+                "fabric": "Premium Cotton",
+                "frontX": 0,
+                "frontY": 0,
+                "rating": "4.9 / 5",
+                "backFit": "contain",
+                "backZoom": 1,
+                "frontFit": "contain",
+                "backImage": "/t-shirt-model/sample_backside2.png",
+                "frontZoom": 1.07,
+                "clothStyle": "Event Tee",
+                "frontImage": "/t-shirt-model/sample_frontside2.png",
+                "showOnHome": false,
+                "showOnAbout": false,
+                "cardGradient": "radial-gradient(circle at 72% 22%, rgba(255, 201, 0, 0.2), transparent 11rem), linear-gradient(135deg, rgba(234, 234, 234, 0.96), rgba(204, 204, 204, 0.76))",
+                "animationType": "front-back-display",
+                "showOnServices": true,
+                "captionBrandColor": "#141006",
+                "captionTitleColor": "#eaeaea"
+              }
+            ],
+            "title": "Logo T-shirt Styles",
+            "backImage": "/t-shirt-model/sample_backside2.png",
+            "frontZoom": 1.07,
+            "frontImage": "/t-shirt-model/sample_frontside2.png",
+            "showOnHome": true,
+            "showOnAbout": true,
+            "showOnServices": true,
+            "captionBrandColor": "#141006",
+            "captionTitleColor": "#eaeaea"
+          },
+          {
+            "id": "premium-cotton",
+            "rate": "From Rs. 599",
+            "text": "Soft cotton T-shirt styles with refined stitching, clean fit, and premium everyday finish.",
+            "badge": "Cotton Range",
+            "count": "12 styles",
+            "items": [
+              {
+                "id": "220-gsm-tee",
+                "fit": "Regular Comfort Fit",
+                "rate": "From Rs. 599",
+                "text": "Premium 220 GSM sample with clean everyday styling.",
+                "title": "220 GSM Tee",
+                "fabric": "220 GSM Cotton",
+                "rating": "4.8 / 5",
+                "backImage": "/t-shirt-model/sample_person2.png",
+                "clothStyle": "Crew Neck",
+                "frontImage": "/t-shirt-model/sample_person1.png"
+              },
+              {
+                "id": "classic-crew-neck",
+                "fit": "Comfort Fit",
+                "rate": "From Rs. 649",
+                "text": "Model showcase sample for classic cotton fits.",
+                "title": "Classic Crew Neck",
+                "fabric": "Premium Cotton",
+                "rating": "4.7 / 5",
+                "backImage": "/t-shirt-model/sample_person2.png",
+                "clothStyle": "Classic Tee",
+                "frontImage": "/t-shirt-model/sample_person1.png"
+              },
+              {
+                "id": "minimal-plain-tee",
+                "fit": "Custom Fit",
+                "rate": "Quote Based",
+                "text": "Simple and premium plain T-shirt sample direction.",
+                "title": "Minimal Plain Tee",
+                "fabric": "Premium Cotton",
+                "rating": "4.9 / 5",
+                "backImage": "/t-shirt-model/sample_person2.png",
+                "clothStyle": "Plain Tee",
+                "frontImage": "/t-shirt-model/sample_person1.png"
+              }
+            ],
+            "title": "Premium Cotton Range",
+            "backImage": "/t-shirt-model/sample_person2.png",
+            "frontImage": "/t-shirt-model/sample_person1.png",
+            "showOnHome": true,
+            "visualType": "person-pair",
+            "showOnAbout": true,
+            "showOnServices": true
+          },
+          {
+            "id": "custom-models",
+            "rate": "Quote Based",
+            "text": "Model, color, and layout directions for custom apparel before final client images are supplied.",
+            "badge": "Custom Model",
+            "count": "9 styles",
+            "items": [
+              {
+                "id": "brand-uniform-tee",
+                "fit": "Regular Comfort Fit",
+                "rate": "Quote Based",
+                "text": "Uniform-ready T-shirt sample for brand teams.",
+                "title": "Brand Uniform Tee",
+                "fabric": "Premium Cotton",
+                "rating": "4.8 / 5",
+                "backImage": "/t-shirt-model/sample_backside.png",
+                "clothStyle": "Uniform Tee",
+                "frontImage": "/t-shirt-model/sample_frontside.png"
+              },
+              {
+                "id": "team-style-set",
+                "fit": "Comfort Fit",
+                "rate": "Quote Based",
+                "text": "Team apparel sample with front and back movement.",
+                "title": "Team Style Set",
+                "fabric": "220 GSM Cotton",
+                "rating": "4.7 / 5",
+                "backImage": "/t-shirt-model/sample_backside.png",
+                "clothStyle": "Team Tee",
+                "frontImage": "/t-shirt-model/sample_frontside.png"
+              },
+              {
+                "id": "custom-color-set",
+                "fit": "Custom Fit",
+                "rate": "Quote Based",
+                "text": "Color and model showcase placeholder for custom enquiries.",
+                "title": "Custom Color Set",
+                "fabric": "Premium Cotton",
+                "rating": "4.9 / 5",
+                "backImage": "/t-shirt-model/sample_backside.png",
+                "clothStyle": "Custom Tee",
+                "frontImage": "/t-shirt-model/sample_frontside.png"
+              }
+            ],
+            "title": "Custom Model Showcase",
+            "backImage": "/t-shirt-model/sample_backside.png",
+            "frontImage": "/t-shirt-model/sample_frontside.png",
+            "showOnHome": true,
+            "showOnAbout": true,
+            "showOnServices": true
+          }
+        ]
+      }
+    }
+  ]
 }

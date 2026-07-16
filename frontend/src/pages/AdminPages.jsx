@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { apiBaseUrl, adminEmail, authKey, adminTokenKey, background, brand, logo, animationOptions, gradientOptions, textColorOptions, clampIndex, defaultGradient, defaultSiteContent, getContactDetails, getVisualStyleVars, goTop, normalizeStyleItem, parseTextCards, reorderArray, serializeTextCards, slugify, visibleCards, adminEditorPath, ProductCard, ScrollArrowRow, MaterialIcon, materialIconOptions } from '../pageLibrary.jsx';
+import { apiBaseUrl, authKey, adminTokenKey, background, brand, logo, animationOptions, gradientOptions, textColorOptions, clampIndex, defaultGradient, defaultSiteContent, getContactDetails, getVisualStyleVars, goTop, normalizeStyleItem, parseTextCards, reorderArray, serializeTextCards, slugify, visibleCards, adminEditorPath, ProductCard, ScrollArrowRow, MaterialIcon, materialIconOptions } from '../pageLibrary.jsx';
 
 
 
 function AdminLoginPage({ setActivePage, setIsAdminAuthed, setAdminToken }) {
-  const [credentials, setCredentials] = useState({ email: adminEmail, password: '' });
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -26,8 +26,10 @@ function AdminLoginPage({ setActivePage, setIsAdminAuthed, setAdminToken }) {
       if (!response.ok || !result?.ok || !result.token) {
         throw new Error(result?.message || 'Invalid admin email or password.');
       }
-      localStorage.setItem(adminTokenKey, result.token);
-      localStorage.setItem(authKey, 'true');
+      sessionStorage.setItem(adminTokenKey, result.token);
+      sessionStorage.setItem(authKey, 'true');
+      localStorage.removeItem(adminTokenKey);
+      localStorage.removeItem(authKey);
       setAdminToken(result.token);
       setIsAdminAuthed(true);
       setActivePage('AdminDashboard');
@@ -45,8 +47,8 @@ function AdminLoginPage({ setActivePage, setIsAdminAuthed, setAdminToken }) {
         <img src={logo} alt={brand} />
         <h1>Admin Login</h1>
         <p>Private content editor for LIYAN'S VASTRA.</p>
-        <label>Email<input type="email" value={credentials.email} onChange={(event) => setCredentials((current) => ({ ...current, email: event.target.value }))} /></label>
-        <label>Password<input type="password" value={credentials.password} onChange={(event) => setCredentials((current) => ({ ...current, password: event.target.value }))} /></label>
+        <label>Email<input type="email" value={credentials.email} autoComplete="username" onChange={(event) => setCredentials((current) => ({ ...current, email: event.target.value }))} /></label>
+        <label>Password<input type="password" value={credentials.password} autoComplete="current-password" onChange={(event) => setCredentials((current) => ({ ...current, password: event.target.value }))} /></label>
         {error && <p className="form-status error">{error}</p>}
         <button className="gold-button" type="submit" disabled={loading}>{loading ? 'Checking...' : 'Login'}</button>
       </form>
@@ -519,6 +521,8 @@ function AdminDashboardPage({ adminSection = 'dashboard', content, setContent, s
   };
 
   const logout = () => {
+    sessionStorage.removeItem(adminTokenKey);
+    sessionStorage.removeItem(authKey);
     localStorage.removeItem(adminTokenKey);
     localStorage.removeItem(authKey);
     setAdminToken('');

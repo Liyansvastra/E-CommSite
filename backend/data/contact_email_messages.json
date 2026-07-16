@@ -1,6 +1,40 @@
 {
-  "generated_at": null,
-  "edit_label": "initial",
+  "generated_at": "2026-07-16T09:34:12.117221+00:00",
+  "edit_label": "db-fetch",
   "table": "contact_email_messages",
-  "rows": []
+  "rows": [
+    {
+      "id": "0ef082e7-a60a-4246-af31-9d157058c416",
+      "name": "QA Test Runner",
+      "email": "qa-test@example.com",
+      "subject": "QA email test 2026-07-10T15:39:25+00:00",
+      "message": "This is an automated QA test message for LIYAN'S VASTRA contact API. Please ignore.",
+      "status": "sent",
+      "provider": "resend",
+      "error_message": "",
+      "created_at": "2026-07-10T15:40:17.967005+00:00"
+    },
+    {
+      "id": "bba10653-1772-4e13-bde9-96b85ab61921",
+      "name": "Test Customer",
+      "email": "test@example.com",
+      "subject": "Supabase contact message test",
+      "message": "This is a test contact message stored in Supabase.",
+      "status": "test",
+      "provider": "manual-test",
+      "error_message": "",
+      "created_at": "2026-07-10T10:26:24.533872+00:00"
+    },
+    {
+      "id": "96049c19-5d98-44a7-aeb7-3f8cf3bcde7d",
+      "name": "Test Customer",
+      "email": "test@example.com",
+      "subject": "Supabase contact message test",
+      "message": "This is a test contact message stored in Supabase.",
+      "status": "test",
+      "provider": "manual-test",
+      "error_message": "",
+      "created_at": "2026-07-10T10:25:39.548786+00:00"
+    }
+  ]
 }

@@ -28,13 +28,23 @@ import {
   AdminContainerEditorPage,
 } from './pages/AdminPages.jsx';
 
+const protectedAdminPages = new Set([
+  'AdminDashboard',
+  'AdminHomeSettings',
+  'AdminAboutSettings',
+  'AdminServicesSettings',
+  'AdminContactSettings',
+  'AdminCategoryEditor',
+  'AdminContainerEditor',
+]);
+
 function App() {
   const initialRoute = getPageFromLocation();
   const [activePage, setActivePageState] = useState(initialRoute.page);
   const [serviceFocus, setServiceFocus] = useState(initialRoute.serviceFocus);
   const [content, setContent] = useState(loadAdminContent);
-  const [adminToken, setAdminToken] = useState(() => localStorage.getItem(adminTokenKey) || '');
-  const [isAdminAuthed, setIsAdminAuthed] = useState(() => localStorage.getItem(authKey) === 'true' && Boolean(localStorage.getItem(adminTokenKey)));
+  const [adminToken, setAdminToken] = useState(() => sessionStorage.getItem(adminTokenKey) || '');
+  const [isAdminAuthed, setIsAdminAuthed] = useState(() => sessionStorage.getItem(authKey) === 'true' && Boolean(sessionStorage.getItem(adminTokenKey)));
   const [adminEditCategoryIndex, setAdminEditCategoryIndex] = useState(initialRoute.adminCategoryIndex || 0);
   const [adminEditItemIndex, setAdminEditItemIndex] = useState(initialRoute.adminItemIndex || 0);
   const [adminSaveStatus, setAdminSaveStatus] = useState({ type: '', message: '' });
@@ -48,14 +58,19 @@ function App() {
     AdminLogin: AdminLoginPage,
     AdminDashboard: AdminDashboardPage,
     AdminHomeSettings: (props) => <AdminDashboardPage {...props} adminSection="home" />,
-    AdminAboutSettings: (props) => <AdminDashboardPage {...props} adminSection="home" />,
+    AdminAboutSettings: (props) => <AdminDashboardPage {...props} adminSection="about" />,
     AdminServicesSettings: (props) => <AdminDashboardPage {...props} adminSection="services" />,
     AdminContactSettings: (props) => <AdminDashboardPage {...props} adminSection="contact" />,
     AdminCategoryEditor: AdminCategoryEditorPage,
     AdminContainerEditor: AdminContainerEditorPage,
-  })[activePage] || HomePage, [activePage]);
+  })[protectedAdminPages.has(activePage) && !isAdminAuthed ? 'AdminLogin' : activePage] || HomePage, [activePage, isAdminAuthed]);
   const navActivePage = activePage === 'ServiceDetail' ? 'Services' : activePage;
   useRevealOnScroll(activePage);
+
+  useEffect(() => {
+    localStorage.removeItem(adminTokenKey);
+    localStorage.removeItem(authKey);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(content));
@@ -91,12 +106,18 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if ((activePage === 'AdminDashboard' || activePage === 'AdminHomeSettings' || activePage === 'AdminAboutSettings' || activePage === 'AdminServicesSettings' || activePage === 'AdminContactSettings' || activePage === 'AdminCategoryEditor' || activePage === 'AdminContainerEditor') && !isAdminAuthed) {
-      setActivePage('AdminLogin');
+    if (protectedAdminPages.has(activePage) && !isAdminAuthed) {
+      window.history.replaceState({}, '', '/admin-login');
+      setActivePageState('AdminLogin');
     }
   }, [activePage, isAdminAuthed]);
 
   const setActivePage = (page, adminTarget = {}) => {
+    if (protectedAdminPages.has(page) && !isAdminAuthed) {
+      window.history.pushState({}, '', '/admin-login');
+      setActivePageState('AdminLogin');
+      return;
+    }
     const nextCategoryIndex = adminTarget.categoryIndex ?? adminEditCategoryIndex;
     const nextItemIndex = adminTarget.itemIndex ?? adminEditItemIndex;
     if (adminTarget.categoryIndex !== undefined) setAdminEditCategoryIndex(adminTarget.categoryIndex);
@@ -123,21 +144,32 @@ function App() {
         body: JSON.stringify({ content: contentOverride }),
       });
       const result = await response.json().catch(() => null);
+      if (response.status === 401) {
+        sessionStorage.removeItem(adminTokenKey);
+        sessionStorage.removeItem(authKey);
+        localStorage.removeItem(adminTokenKey);
+        localStorage.removeItem(authKey);
+        setAdminToken('');
+        setIsAdminAuthed(false);
+        setActivePage('AdminLogin');
+        throw new Error('Admin session expired. Please login again.');
+      }
       if (!response.ok || !result?.ok) throw new Error(result?.message || 'Unable to save content.');
       setAdminSaveStatus({ type: 'success', message: 'Successfully Saved' });
     } catch (error) {
-      setAdminSaveStatus({ type: 'error', message: 'Unable to save to Supabase. Check backend env settings.' });
+      setAdminSaveStatus({ type: 'error', message: error.message || 'Unable to save to Supabase. Check backend env settings.' });
     }
   };
 
   useEffect(() => {
+    if (protectedAdminPages.has(activePage) && !isAdminAuthed) return;
     const nextPath = activePage === 'ServiceDetail'
       ? `/service/group-services/${serviceFocus || content.categories[0]?.id || ''}`
       : adminEditorPath(activePage, adminEditCategoryIndex, adminEditItemIndex);
     if (window.location.pathname !== nextPath) {
       window.history.replaceState({}, '', nextPath);
     }
-  }, [activePage, serviceFocus, content.categories, adminEditCategoryIndex, adminEditItemIndex]);
+  }, [activePage, serviceFocus, content.categories, adminEditCategoryIndex, adminEditItemIndex, isAdminAuthed]);
 
   const isAdminPage = activePage === 'AdminLogin' || activePage === 'AdminDashboard' || activePage === 'AdminHomeSettings' || activePage === 'AdminAboutSettings' || activePage === 'AdminServicesSettings' || activePage === 'AdminContactSettings' || activePage === 'AdminCategoryEditor' || activePage === 'AdminContainerEditor';
   const isServicePage = activePage === 'Services' || activePage === 'ServiceDetail';

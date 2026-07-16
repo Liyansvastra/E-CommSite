@@ -5,6 +5,7 @@ import base64
 import hashlib
 import hmac
 import smtplib
+import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -239,17 +240,31 @@ def _supabase_headers(extra: Dict[str, str] | None = None) -> Dict[str, str]:
 def _supabase_request(path: str, method: str = "GET", body: Any | None = None, extra_headers: Dict[str, str] | None = None) -> Any:
     base_url = os.environ["SUPABASE_URL"].rstrip("/")
     data = None if body is None else json.dumps(body).encode("utf-8")
-    request = urllib.request.Request(
-        f"{base_url}/rest/v1/{path}",
-        data=data,
-        headers=_supabase_headers(extra_headers),
-        method=method,
-    )
-    with urllib.request.urlopen(request, timeout=25) as response:
-        raw = response.read().decode("utf-8", errors="ignore")
-        if not raw:
-            return None
-        return json.loads(raw)
+    last_error: Exception | None = None
+    for attempt in range(3):
+        request = urllib.request.Request(
+            f"{base_url}/rest/v1/{path}",
+            data=data,
+            headers=_supabase_headers(extra_headers),
+            method=method,
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=25) as response:
+                raw = response.read().decode("utf-8", errors="ignore")
+                if not raw:
+                    return None
+                return json.loads(raw)
+        except urllib.error.HTTPError as error:
+            if error.code < 500:
+                raise
+            last_error = error
+        except (TimeoutError, urllib.error.URLError) as error:
+            last_error = error
+        if attempt < 2:
+            time.sleep(0.5 * (attempt + 1))
+    if last_error:
+        raise last_error
+    return None
 
 
 def _b64url_encode(value: bytes) -> str:

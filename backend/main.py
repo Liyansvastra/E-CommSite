@@ -187,18 +187,27 @@ def _send_with_smtp(payload: ContactMessage) -> None:
     safe_subject = _clean(payload.subject)
 
     email = EmailMessage()
-    email["From"] = str(payload.email)
+    email["From"] = f"{_clean(payload.name)} <{smtp_from}>"
     email["To"] = contact_to
     email["Reply-To"] = str(payload.email)
     email["Subject"] = f"LIYAN'S VASTRA enquiry: {safe_subject}"
     email.set_content(_email_text(payload))
 
-    server_class = IPv4SMTPSSL if smtp_port == 465 else IPv4SMTP
-    with server_class(smtp_host, smtp_port, timeout=30) as server:
-        if smtp_port != 465:
-            server.starttls()
-        server.login(smtp_username, smtp_password)
-        server.send_message(email, from_addr=smtp_from, to_addrs=[contact_to])
+    ports = [smtp_port] + [port for port in (465, 587) if port != smtp_port]
+    last_error: Exception | None = None
+    for port in ports:
+        try:
+            server_class = IPv4SMTPSSL if port == 465 else IPv4SMTP
+            with server_class(smtp_host, port, timeout=20) as server:
+                if port != 465:
+                    server.starttls()
+                server.login(smtp_username, smtp_password)
+                server.send_message(email, from_addr=smtp_from, to_addrs=[contact_to])
+            return
+        except Exception as exc:
+            last_error = exc
+    if last_error:
+        raise last_error
 
 
 def _send_email(payload: ContactMessage) -> None:

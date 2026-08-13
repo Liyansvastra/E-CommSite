@@ -148,7 +148,7 @@ function ServicesPage({ categories, serviceFocus, setServiceFocus, setActivePage
               <strong>{category.title}</strong>
               <div className="card-small-line" aria-hidden="true" />
               <small>{category.count} / {category.rate}</small>
-              <span className="explore-link">View Styles <b aria-hidden="true">-&gt;</b></span>
+              <span className="explore-link hide-view-styles">View Styles <b aria-hidden="true">-&gt;</b></span>
             </button>
           ))}
         </div>

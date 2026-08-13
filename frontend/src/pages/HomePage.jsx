@@ -26,18 +26,20 @@ function FeaturedProducts({ categories, setActivePage, setServiceFocus }) {
   });
 
   return (
-    <section className="section-block compact-section">
+    <section className="section-block compact-section hide-home-showcase-containers">
       <div className="container">
-        <SectionTitle
-          eyebrow="Style Samples"
-          title="T-shirt Style Showcase"
-          subtitle="Sample T-shirt, logo, style, and model directions while final client images are pending."
-        />
+        <div className="hide-style-samples-heading">
+          <SectionTitle
+            eyebrow="Style Samples"
+            title="T-shirt Style Showcase"
+            subtitle="Sample T-shirt, logo, style, and model directions while final client images are pending."
+          />
+        </div>
         <ScrollArrowRow className="product-grid">
           {homeCards.map((category) => <ProductCard key={category.id} category={category} onSelect={() => openCategory(category.parentCategoryId || category.id)} />)}
         </ScrollArrowRow>
         <div className="section-action" data-reveal>
-          <button className="gold-button" onClick={openServicesTop}>View Styles</button>
+          <button className="gold-button hide-view-styles" onClick={openServicesTop}>View Styles</button>
         </div>
       </div>
     </section>
@@ -81,7 +83,7 @@ function HomePage({ content, categories, setActivePage, setServiceFocus }) {
             <h1><span>{brand}</span> {content.site.heroTitle}</h1>
             <p>{content.site.heroText}</p>
             <div className="button-row">
-              <button className="gold-button" onClick={openServicesTop}>View Styles</button>
+              <button className="gold-button hide-view-styles" onClick={openServicesTop}>View Styles</button>
               <button className="gold-button" onClick={() => setActivePage('About')}>Our Story</button>
               <button className="dark-button" onClick={() => setActivePage('Contact')}>Get In Touch</button>
             </div>
@@ -105,7 +107,7 @@ function HomePage({ content, categories, setActivePage, setServiceFocus }) {
           <h2>{content.site.storyTitle}</h2>
           {storyParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           <div className="mini-stat-grid">
-            <Stat value="220 GSM" label="Premium Weight Fabric" />
+            <Stat value="GSM" label="start frm 220" />
             <Stat value="100%" label="Pure Cotton" />
             <Stat value="GST" label="Registered" />
             <Stat value="Pan India" label="Delivery" />
@@ -121,7 +123,16 @@ function HomePage({ content, categories, setActivePage, setServiceFocus }) {
 }
 
 function WhyChoose({ content, setActivePage, setServiceFocus }) {
-  const cards = visibleCards(content.site.whyChooseCards || defaultSiteContent.whyChooseCards);
+  const cards = [
+    ...visibleCards(content.site.whyChooseCards || defaultSiteContent.whyChooseCards),
+    {
+      title: 'Bulk Order Available',
+      text: 'Planning team wear, events, or business apparel? We support quantity enquiries with clear pricing and guidance.',
+      icon: 'delivery',
+      target: 'contact',
+      actionLabel: 'Contact',
+    },
+  ];
 
   const openCard = (target) => {
     if (target === 'contact') {

@@ -5,6 +5,8 @@ import { apiBaseUrl, getContactDetails, whatsappUrl, SectionTitle, GoldIcon } fr
 
 function ContactPage({ content }) {
   const contact = getContactDetails(content);
+  const corporationAddress = contact.corporationAddress || contact.address;
+  const registeredAddress = contact.registeredAddress || contact.address;
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,7 +17,8 @@ function ContactPage({ content }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const contacts = [
-    ['Our Address', contact.address, 'location'],
+    ['Coparation Address', corporationAddress, 'location'],
+    ['Register Address', registeredAddress, 'location'],
     ['Phone', `${contact.displayPhone}\nMon - Sat: 10 AM - 6 PM IST`, 'phone'],
     ['Email', `${contact.email}\n${contact.replyText}`, 'email'],
     ['Business Hours', contact.hours, 'clock'],

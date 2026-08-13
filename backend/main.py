@@ -127,11 +127,6 @@ def _smtp_configured() -> bool:
     return all(os.getenv(key) for key in required)
 
 
-def _resend_configured() -> bool:
-    required = ["RESEND_API_KEY", "RESEND_FROM_EMAIL", "CONTACT_TO_EMAIL"]
-    return all(os.getenv(key) for key in required)
-
-
 def _email_text(payload: ContactMessage) -> str:
     safe_name = _clean(payload.name)
     safe_subject = _clean(payload.subject)
@@ -147,37 +142,6 @@ def _email_text(payload: ContactMessage) -> str:
             payload.message.strip(),
         ]
     )
-
-
-def _send_with_resend(payload: ContactMessage) -> None:
-    api_key = os.environ["RESEND_API_KEY"]
-    resend_from = os.environ["RESEND_FROM_EMAIL"]
-    contact_to = os.environ["CONTACT_TO_EMAIL"]
-    safe_subject = _clean(payload.subject)
-    body = {
-        "from": resend_from,
-        "to": [contact_to],
-        "reply_to": str(payload.email),
-        "subject": f"LIYAN'S VASTRA enquiry: {safe_subject}",
-        "text": _email_text(payload),
-    }
-    request = urllib.request.Request(
-        "https://api.resend.com/emails",
-        data=json.dumps(body).encode("utf-8"),
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-            "User-Agent": "liyans-vastra-contact-api/1.0",
-        },
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=20) as response:
-            if response.status >= 300:
-                raise RuntimeError("Resend API rejected the message.")
-    except urllib.error.HTTPError as exc:
-        details = exc.read().decode("utf-8", errors="ignore")
-        raise RuntimeError(f"Resend API error: {details}") from exc
 
 
 def _send_with_smtp(payload: ContactMessage) -> None:
@@ -203,9 +167,6 @@ def _send_with_smtp(payload: ContactMessage) -> None:
 
 
 def _send_email(payload: ContactMessage) -> None:
-    if _resend_configured():
-        _send_with_resend(payload)
-        return
     if _smtp_configured():
         _send_with_smtp(payload)
         return
@@ -213,8 +174,6 @@ def _send_email(payload: ContactMessage) -> None:
 
 
 def _email_provider_name() -> str:
-    if _resend_configured():
-        return "resend"
     if _smtp_configured():
         return "smtp"
     return "not-configured"

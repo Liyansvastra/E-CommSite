@@ -33,14 +33,15 @@ API runs at `http://localhost:8000`.
 
 ## Email Provider
 
-Recommended simple setup: Resend.
+The contact form sends email through your own SMTP server.
 
 ```env
-RESEND_API_KEY=your-resend-api-key
-RESEND_FROM_EMAIL=LIYAN'S VASTRA <onboarding@resend.dev>
 CONTACT_TO_EMAIL=liyansvastra@gmail.com
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USERNAME=your-smtp-username
+SMTP_PASSWORD=your-smtp-password
+SMTP_FROM_EMAIL=no-reply@example.com
 ```
 
-For production, replace `onboarding@resend.dev` with a sender from a verified Resend domain.
-
-SMTP is still supported as a fallback if Resend variables are not configured. All email credentials must stay in backend environment variables only. Do not add them to the frontend.
+All email credentials must stay in backend environment variables only. Do not add them to the frontend.

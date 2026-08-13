@@ -15,6 +15,7 @@ const adminTokenKey = 'liyans_vastra_admin_token_v1';
 const phoneNumber = '+917871357999';
 const displayPhone = '+91 7871357999';
 const emailAddress = 'liyansvastra@gmail.com';
+const companyAddress = "LIYAN'S VASTRA\nNo 53 G1 Sudha Madhuri Homes\nNalluruhalli Main Road\nOpp. HP Petrol Pump, DNA Anantha Layout\nBengaluru - 560066, Karnataka";
 const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=${encodeURIComponent("Hello LIYAN'S VASTRA, I would like to enquire about logo T-shirt styles.")}`;
 const shirtFrontImage = assetPath('t-shirt-model/sample_frontside.png');
 const shirtBackImage = assetPath('t-shirt-model/sample_backside.png');
@@ -121,7 +122,9 @@ const defaultSiteContent = {
     { title: 'Great quality', text: 'The fabric weight and stitching made the product feel premium.' },
   ],
   contactDetails: {
-    address: "LIYAN'S VASTRA\nNo 53 G1 Sudha Madhuri Homes\nNalluruhalli Main Road\nOpp. HP Petrol Pump, DNA Anantha Layout\nBengaluru - 560066, Karnataka",
+    address: companyAddress,
+    corporationAddress: companyAddress,
+    registeredAddress: companyAddress,
     phoneNumber,
     displayPhone,
     email: emailAddress,
@@ -484,7 +487,7 @@ function Header({ activePage, setActivePage }) {
           {navItems.map((item) => (
             <button
               key={item}
-              className={activePage === item ? 'active' : ''}
+              className={[activePage === item ? 'active' : '', item === 'Services' ? 'hide-service-menu' : ''].filter(Boolean).join(' ')}
               onClick={() => changePage(item)}
             >
               {item}
@@ -772,7 +775,7 @@ function FeatureCard({ title, text, icon, centered = false, onSelect, actionLabe
         <h3>{title}</h3>
         <div className="card-small-line" aria-hidden="true" />
         <p>{text}</p>
-        <span className="explore-link">{actionLabel} <b aria-hidden="true">-&gt;</b></span>
+        <span className={actionLabel === 'View Styles' ? 'explore-link hide-view-styles' : 'explore-link'}>{actionLabel} <b aria-hidden="true">-&gt;</b></span>
       </div>
     </article>
   );
@@ -854,6 +857,8 @@ function ProductCard({ category, onSelect }) {
 
 function Footer({ content, setActivePage }) {
   const contact = getContactDetails(content);
+  const corporationAddress = contact.corporationAddress || contact.address;
+  const registeredAddress = contact.registeredAddress || contact.address;
   const socialLinks = [
     ['WhatsApp', whatsappUrl, 'whatsapp'],
     ['Facebook', '#', 'facebook'],
@@ -872,7 +877,8 @@ function Footer({ content, setActivePage }) {
           <p>Premium quality textiles crafted for everyday elegance. Where comfort meets style in every thread.</p>
           <div className="footer-contact">
             <p><b>{brand}</b><span>Proprietor: Kishoreraaj Robert</span></p>
-            <p><b>Address</b><span>{contact.address.split('\n').join(', ')}</span></p>
+            <p><b>Coparation Address</b><span>{corporationAddress.split('\n').join(', ')}</span></p>
+            <p><b>Register Address</b><span>{registeredAddress.split('\n').join(', ')}</span></p>
             <p><b>Phone</b><a href={`tel:${contact.phoneNumber}`}>{contact.displayPhone}</a></p>
             <p><b>Email</b><a href={`mailto:${contact.email}`}>{contact.email}</a></p>
             <p><b>GST</b><span>29AXTPK6839P1Z5</span></p>
@@ -882,7 +888,7 @@ function Footer({ content, setActivePage }) {
           <h3>Company</h3>
           <button onClick={() => linkClick('About')}>About Us</button>
           <button onClick={() => linkClick('Contact')}>Contact Us</button>
-          <button onClick={() => linkClick('Services')}>Services</button>
+          <button className="hide-service-menu" onClick={() => linkClick('Services')}>Services</button>
         </div>
         <div className="footer-column">
           <h3>Legal</h3>

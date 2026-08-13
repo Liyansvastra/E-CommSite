@@ -147,6 +147,13 @@ main.service-no-image-main::before {
 
 .main-nav button.active, .main-nav button:hover { color: var(--gold); }
 
+.hide-view-styles,
+.hide-service-menu,
+.hide-style-samples-heading,
+.hide-home-showcase-containers {
+  display: none !important;
+}
+
 .menu-toggle,
 .mobile-nav-cta {
   display: none;

@@ -5,6 +5,7 @@ import base64
 import hashlib
 import hmac
 import smtplib
+import socket
 import sys
 import time
 import urllib.error
@@ -19,6 +20,37 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
+
+
+def _create_ipv4_connection(host: str, port: int, timeout: float):
+    last_error: OSError | None = None
+    for family, socket_type, proto, _, address in socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM):
+        sock = socket.socket(family, socket_type, proto)
+        sock.settimeout(timeout)
+        try:
+            sock.connect(address)
+            return sock
+        except OSError as exc:
+            last_error = exc
+            sock.close()
+    if last_error:
+        raise last_error
+    raise OSError(f"No IPv4 address found for SMTP host {host}.")
+
+
+class IPv4SMTP(smtplib.SMTP):
+    def _get_socket(self, host: str, port: int, timeout: float):
+        if timeout is not None and not timeout:
+            raise ValueError("Non-blocking socket is not supported.")
+        return _create_ipv4_connection(host, port, timeout)
+
+
+class IPv4SMTPSSL(smtplib.SMTP_SSL):
+    def _get_socket(self, host: str, port: int, timeout: float):
+        if timeout is not None and not timeout:
+            raise ValueError("Non-blocking socket is not supported.")
+        new_socket = _create_ipv4_connection(host, port, timeout)
+        return self.context.wrap_socket(new_socket, server_hostname=self._host)
 
 
 def _load_local_env() -> None:
@@ -161,7 +193,7 @@ def _send_with_smtp(payload: ContactMessage) -> None:
     email["Subject"] = f"LIYAN'S VASTRA enquiry: {safe_subject}"
     email.set_content(_email_text(payload))
 
-    server_class = smtplib.SMTP_SSL if smtp_port == 465 else smtplib.SMTP
+    server_class = IPv4SMTPSSL if smtp_port == 465 else IPv4SMTP
     with server_class(smtp_host, smtp_port, timeout=30) as server:
         if smtp_port != 465:
             server.starttls()

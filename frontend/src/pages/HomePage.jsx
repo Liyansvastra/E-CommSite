@@ -107,7 +107,7 @@ function HomePage({ content, categories, setActivePage, setServiceFocus }) {
           <h2>{content.site.storyTitle}</h2>
           {storyParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           <div className="mini-stat-grid">
-            <Stat value="GSM" label="start frm 220" />
+            <Stat value="GSM" label="Start from 220" />
             <Stat value="100%" label="Pure Cotton" />
             <Stat value="GST" label="Registered" />
             <Stat value="Pan India" label="Delivery" />

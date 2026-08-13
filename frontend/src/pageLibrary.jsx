@@ -903,7 +903,7 @@ function Footer({ content, setActivePage }) {
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>Â© 2026 {brand}. All rights reserved. A Proprietorship Business.</span>
+        <span>Â© 2026 {brand}. All rights reserved. A Proprietorship Business. Powered By Brillaris Global</span>
         <span>Designed with care in India</span>
       </div>
     </footer>

@@ -149,6 +149,7 @@ def _send_with_smtp(payload: ContactMessage) -> None:
     smtp_port = int(os.environ["SMTP_PORT"])
     smtp_username = os.environ["SMTP_USERNAME"]
     smtp_password = os.environ["SMTP_PASSWORD"]
+    smtp_from = os.environ["SMTP_FROM_EMAIL"]
     contact_to = os.environ["CONTACT_TO_EMAIL"]
     safe_subject = _clean(payload.subject)
 
@@ -162,7 +163,7 @@ def _send_with_smtp(payload: ContactMessage) -> None:
     with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as server:
         server.starttls()
         server.login(smtp_username, smtp_password)
-        server.send_message(email)
+        server.send_message(email, from_addr=smtp_from, to_addrs=[contact_to])
 
 
 def _send_email(payload: ContactMessage) -> None:

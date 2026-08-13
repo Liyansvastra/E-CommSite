@@ -573,7 +573,6 @@ def send_contact_email(payload: ContactMessage):
     provider = _email_provider_name()
     try:
         _send_email(payload)
-        _store_contact_message(payload, "sent", provider)
     except Exception as exc:
         try:
             _store_contact_message(payload, "failed", provider, str(exc))
@@ -583,6 +582,11 @@ def send_contact_email(payload: ContactMessage):
             "ok": False,
             "message": "Please check the form details and try again.",
         }
+
+    try:
+        _store_contact_message(payload, "sent", provider)
+    except Exception:
+        pass
 
     return {
         "ok": True,

@@ -161,8 +161,10 @@ def _send_with_smtp(payload: ContactMessage) -> None:
     email["Subject"] = f"LIYAN'S VASTRA enquiry: {safe_subject}"
     email.set_content(_email_text(payload))
 
-    with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as server:
-        server.starttls()
+    server_class = smtplib.SMTP_SSL if smtp_port == 465 else smtplib.SMTP
+    with server_class(smtp_host, smtp_port, timeout=30) as server:
+        if smtp_port != 465:
+            server.starttls()
         server.login(smtp_username, smtp_password)
         server.send_message(email, from_addr=smtp_from, to_addrs=[contact_to])
 

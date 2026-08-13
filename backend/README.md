@@ -36,7 +36,7 @@ API runs at `http://localhost:8000`.
 The contact form sends email through your own SMTP server.
 
 ```env
-CONTACT_TO_EMAIL=liyansvastra@gmail.com
+CONTACT_TO_EMAIL=info@liyansvastra.com
 SMTP_HOST=smtp.example.com
 SMTP_PORT=587
 SMTP_USERNAME=your-smtp-username

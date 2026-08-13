@@ -9,7 +9,7 @@ services:
     autoDeploy: true
     envVars:
       - key: CONTACT_TO_EMAIL
-        value: liyansvastra@brillaris.pro
+        value: info@liyansvastra.com
       - key: SMTP_HOST
         value: mail.liyansvastra.com
       - key: SMTP_PORT

@@ -149,12 +149,11 @@ def _send_with_smtp(payload: ContactMessage) -> None:
     smtp_port = int(os.environ["SMTP_PORT"])
     smtp_username = os.environ["SMTP_USERNAME"]
     smtp_password = os.environ["SMTP_PASSWORD"]
-    smtp_from = os.environ["SMTP_FROM_EMAIL"]
     contact_to = os.environ["CONTACT_TO_EMAIL"]
     safe_subject = _clean(payload.subject)
 
     email = EmailMessage()
-    email["From"] = smtp_from
+    email["From"] = str(payload.email)
     email["To"] = contact_to
     email["Reply-To"] = str(payload.email)
     email["Subject"] = f"LIYAN'S VASTRA enquiry: {safe_subject}"

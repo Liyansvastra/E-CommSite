@@ -5,6 +5,7 @@ import base64
 import hashlib
 import hmac
 import smtplib
+import sys
 import time
 import urllib.error
 import urllib.request
@@ -575,6 +576,7 @@ def send_contact_email(payload: ContactMessage):
     try:
         _send_email(payload)
     except Exception as exc:
+        print(f"Contact email send failed: {type(exc).__name__}: {exc}", file=sys.stderr, flush=True)
         try:
             _store_contact_message(payload, "failed", provider, str(exc))
         except Exception:

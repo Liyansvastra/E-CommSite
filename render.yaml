@@ -12,6 +12,8 @@ services:
         value: info@liyansvastra.com
       - key: SMTP_HOST
         value: server147.nethost.in
+      - key: SMTP_FALLBACK_HOSTS
+        value: server147.nethost.in
       - key: SMTP_PORT
         value: "465"
       - key: SMTP_USERNAME

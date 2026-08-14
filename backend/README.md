@@ -38,6 +38,7 @@ The contact form sends email through your own SMTP server.
 ```env
 CONTACT_TO_EMAIL=info@liyansvastra.com
 SMTP_HOST=server147.nethost.in
+SMTP_FALLBACK_HOSTS=server147.nethost.in
 SMTP_PORT=465
 SMTP_USERNAME=info@liyansvastra.com
 SMTP_PASSWORD=your-smtp-password

@@ -878,7 +878,7 @@ function Footer({ content, setActivePage }) {
           <p>Premium quality textiles crafted for everyday elegance. Where comfort meets style in every thread.</p>
           <div className="footer-contact">
             <p><b>{brand}</b><span>Proprietor: Kishoreraaj Robert</span></p>
-            <p><b>Coparation Address</b><span>{corporationAddress.split('\n').join(', ')}</span></p>
+            <p><b>Corporate Address</b><span>{corporationAddress.split('\n').join(', ')}</span></p>
             <p><b>Register Address</b><span>{registeredAddress.split('\n').join(', ')}</span></p>
             <p><b>Phone</b><a href={`tel:${contact.phoneNumber}`}>{contact.displayPhone}</a></p>
             <p><b>Email</b><a href={`mailto:${contact.email}`}>{contact.email}</a></p>

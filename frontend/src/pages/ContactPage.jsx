@@ -17,7 +17,7 @@ function ContactPage({ content }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const contacts = [
-    ['Coparation Address', corporationAddress, 'location'],
+    ['Corporate Address', corporationAddress, 'location'],
     ['Register Address', registeredAddress, 'location'],
     ['Phone', `${contact.displayPhone}\nMon - Sat: 10 AM - 6 PM IST`, 'phone'],
     ['Email', `${contact.email}\n${contact.replyText}`, 'email'],

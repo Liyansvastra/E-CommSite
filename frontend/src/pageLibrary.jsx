@@ -16,6 +16,7 @@ const phoneNumber = '+917871357999';
 const displayPhone = '+91 7871357999';
 const emailAddress = 'liyansvastra@gmail.com';
 const companyAddress = "LIYAN'S VASTRA\nNo 53 G1 Sudha Madhuri Homes\nNalluruhalli Main Road\nOpp. HP Petrol Pump, DNA Anantha Layout\nBengaluru - 560066, Karnataka";
+const corporateAddress = "7th floor Beta block Sigma Tech Park\nWhitefield Main Rd, Varthur Kodi\nPalm Meadows, Whitefield\nBengaluru, Karnataka 560066";
 const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=${encodeURIComponent("Hello LIYAN'S VASTRA, I would like to enquire about logo T-shirt styles.")}`;
 const shirtFrontImage = assetPath('t-shirt-model/sample_frontside.png');
 const shirtBackImage = assetPath('t-shirt-model/sample_backside.png');
@@ -123,7 +124,7 @@ const defaultSiteContent = {
   ],
   contactDetails: {
     address: companyAddress,
-    corporationAddress: companyAddress,
+    corporationAddress: corporateAddress,
     registeredAddress: companyAddress,
     phoneNumber,
     displayPhone,

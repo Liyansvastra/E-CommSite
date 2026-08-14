@@ -31,7 +31,7 @@ function AboutPage({ content, setActivePage, setServiceFocus }) {
           <div className="divider" data-reveal />
           <div className="metric-row">
             <Stat value="100%" label="Premium Cotton" />
-            <Stat value="220 GSM" label="Fabric Weight" />
+            <Stat value="GSM" label="Start from 220" />
             <Stat value="Pan India" label="Delivery" />
             <Stat value="GST" label="Registered" />
           </div>

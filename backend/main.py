@@ -114,6 +114,7 @@ async def validation_exception_handler(_, __):
 class ContactMessage(BaseModel):
     name: str = Field(..., min_length=2, max_length=80)
     email: str = Field(..., min_length=5, max_length=254)
+    phoneNumber: str = Field(..., min_length=7, max_length=30)
     subject: str = Field(..., min_length=3, max_length=120)
     message: str = Field(..., min_length=10, max_length=2000)
 
@@ -123,6 +124,14 @@ class ContactMessage(BaseModel):
         value = value.strip()
         if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", value):
             raise ValueError("Invalid email address.")
+        return value
+
+    @field_validator("phoneNumber")
+    @classmethod
+    def validate_phone_number(cls, value: str) -> str:
+        value = value.strip()
+        if not re.match(r"^\+?[0-9][0-9\s().-]{6,29}$", value):
+            raise ValueError("Invalid phone number.")
         return value
 
 
@@ -169,6 +178,7 @@ def _email_text(payload: ContactMessage) -> str:
             "",
             f"Name: {safe_name}",
             f"Email: {payload.email}",
+            f"Phone: {_clean(payload.phoneNumber)}",
             f"Subject: {safe_subject}",
             "",
             "Message:",

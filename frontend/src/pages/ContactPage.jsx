@@ -10,6 +10,7 @@ function ContactPage({ content }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phoneNumber: '',
     subject: '',
     message: '',
   });
@@ -59,13 +60,18 @@ function ContactPage({ content }) {
     event.preventDefault();
     setFormStatus({ type: '', message: '' });
 
-    if (!formData.name.trim() || !formData.email.trim() || !formData.subject.trim() || !formData.message.trim()) {
+    if (!formData.name.trim() || !formData.email.trim() || !formData.phoneNumber.trim() || !formData.subject.trim() || !formData.message.trim()) {
       setFormStatus({ type: 'error', message: 'Please fill all required fields.' });
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       setFormStatus({ type: 'error', message: 'Please enter a valid email address.' });
+      return;
+    }
+
+    if (!/^\+?[0-9][0-9\s().-]{6,29}$/.test(formData.phoneNumber.trim())) {
+      setFormStatus({ type: 'error', message: 'Please enter a valid phone number.' });
       return;
     }
 
@@ -82,6 +88,7 @@ function ContactPage({ content }) {
         body: JSON.stringify({
           name: formData.name.trim(),
           email: formData.email.trim(),
+          phoneNumber: formData.phoneNumber.trim(),
           subject: formData.subject.trim(),
           message: formData.message.trim(),
         }),
@@ -91,7 +98,7 @@ function ContactPage({ content }) {
         throw new Error(result?.message || 'Unable to send message.');
       }
       setFormStatus({ type: 'success', message: result.message || 'Message sent successfully.' });
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormData({ name: '', email: '', phoneNumber: '', subject: '', message: '' });
     } catch (error) {
       setFormStatus({
         type: 'error',
@@ -135,6 +142,7 @@ function ContactPage({ content }) {
             <label>Your Name *<input required placeholder="Full name" value={formData.name} onChange={(event) => updateField('name', event.target.value)} /></label>
             <label>Email Address *<input required type="email" placeholder="your@email.com" value={formData.email} onChange={(event) => updateField('email', event.target.value)} /></label>
           </div>
+          <label>Phone Number *<input required type="tel" placeholder="+91 98765 43210" value={formData.phoneNumber} onChange={(event) => updateField('phoneNumber', event.target.value)} /></label>
           <label>Subject *<input required placeholder="What is your query about?" value={formData.subject} onChange={(event) => updateField('subject', event.target.value)} /></label>
           <label>Message *<textarea required rows="7" placeholder="Write your message here..." value={formData.message} onChange={(event) => updateField('message', event.target.value)} /></label>
           {formStatus.message && <p className={`form-status ${formStatus.type}`}>{formStatus.message}</p>}

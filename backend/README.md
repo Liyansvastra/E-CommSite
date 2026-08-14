@@ -37,11 +37,11 @@ The contact form sends email through your own SMTP server.
 
 ```env
 CONTACT_TO_EMAIL=info@liyansvastra.com
-SMTP_HOST=smtp.example.com
+SMTP_HOST=server147.nethost.in
 SMTP_PORT=465
-SMTP_USERNAME=your-smtp-username
+SMTP_USERNAME=info@liyansvastra.com
 SMTP_PASSWORD=your-smtp-password
-SMTP_FROM_EMAIL=no-reply@example.com
+SMTP_FROM_EMAIL=info@liyansvastra.com
 ```
 
 All email credentials must stay in backend environment variables only. Do not add them to the frontend.
